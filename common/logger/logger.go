@@ -4,12 +4,22 @@ import "github.com/sirupsen/logrus"
 
 var logger logrus.Logger
 
+// Options contains logger options
+type Options struct {
+	Service string
+}
+
 // Setup setups logger
-func Setup() {
+func Setup(options Options) {
 	logger = *logrus.New()
 
+	service := "default"
+	if options.Service != "" {
+		service = options.Service
+	}
+
 	logger.SetFormatter(&TextFormatter{
-		Service: "default",
+		Service: service,
 	})
 }
 
@@ -21,6 +31,16 @@ func Info(args ...interface{}) {
 // Infof logs INFO_LEVEL message by format
 func Infof(format string, args ...interface{}) {
 	logger.Infof(format, args...)
+}
+
+// Warn logs WARN_LEVEL message
+func Warn(args ...interface{}) {
+	logger.Warnln(args...)
+}
+
+// Warnf logs WARN_LEVEL message
+func Warnf(format string, args ...interface{}) {
+	logger.Warnf(format, args...)
 }
 
 // Error logs ERROR_LEVEL message
