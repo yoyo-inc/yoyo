@@ -12,12 +12,12 @@ func OnError() gin.HandlerFunc {
 		c.Next()
 
 		err := c.Errors.Last()
-		if err != nil {
+		if err == nil {
 			return
 		}
 
 		if e, ok := err.Err.(core.BusinessError); ok {
-			c.AbortWithStatusJSON(http.StatusOK, core.Fail(e.Code, e.Message))
+			c.AbortWithStatusJSON(http.StatusOK, core.FailedResponse(e.Code, e.Message))
 		}
 	}
 }
