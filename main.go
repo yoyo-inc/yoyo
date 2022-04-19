@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ypli0629/yoyo/common/config"
 	"github.com/ypli0629/yoyo/common/db"
+	"github.com/ypli0629/yoyo/common/i18n"
 	"github.com/ypli0629/yoyo/common/logger"
 	"github.com/ypli0629/yoyo/middlewares"
 	"github.com/ypli0629/yoyo/routes"
@@ -18,6 +19,8 @@ func main() {
 	})
 	// db
 	db.Setup()
+	// i18n
+	i18n.Setup()
 
 	engine := gin.New()
 	// middlewares
