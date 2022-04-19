@@ -28,6 +28,6 @@ func Logger() gin.HandlerFunc {
 		// 错误信息
 		errorMessage := c.Errors.ByType(gin.ErrorTypePrivate).String()
 
-		logger.Info(fmt.Sprintf("%15s [%d] %s %#v %v\n%s", clientIP, status, method, path, latency, errorMessage))
+		logger.Info(fmt.Sprintf("%15s [%d] %s %#v %v %s", clientIP, status, method, path, latency, errorMessage))
 	}
 }
