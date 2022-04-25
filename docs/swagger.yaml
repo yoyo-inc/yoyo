@@ -1,4 +1,78 @@
+definitions:
+  core.Response:
+    properties:
+      code:
+        type: string
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  models.User:
+    properties:
+      age:
+        description: 年龄
+        type: integer
+      avatar:
+        description: 头像
+        maxLength: 250
+        type: string
+      createTime:
+        type: string
+      email:
+        description: 邮箱
+        type: string
+      id:
+        type: string
+      modifyTime:
+        type: string
+      password:
+        description: Password 密码
+        maxLength: 250
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      sex:
+        description: 性别
+        type: integer
+      username:
+        description: Username 账户名
+        maxLength: 15
+        minLength: 0
+        type: string
+    required:
+    - password
+    - username
+    type: object
 info:
   contact: {}
-paths: {}
+paths:
+  /user:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user information
+        in: body
+        name: query
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/core.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.User'
+              type: object
+      summary: create user
+      tags:
+      - user
 swagger: "2.0"
