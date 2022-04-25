@@ -6,6 +6,7 @@ import (
 	"github.com/ypli0629/yoyo/common/db"
 	"github.com/ypli0629/yoyo/common/i18n"
 	"github.com/ypli0629/yoyo/common/logger"
+	"github.com/ypli0629/yoyo/common/swag"
 	"github.com/ypli0629/yoyo/middlewares"
 	"github.com/ypli0629/yoyo/routes"
 )
@@ -31,7 +32,7 @@ func main() {
 	// recovery
 	engine.Use(gin.Recovery())
 	// security
-	middlewares.Setup()
+	// middlewares.Setup()
 
 	r := &engine.RouterGroup
 	if config.Config.Server.BasePath != "" {
@@ -40,8 +41,10 @@ func main() {
 
 	routes.SetupNoSecurity(r)
 	// security
-	engine.Use(middlewares.SecurityMiddleware.MiddlewareFunc())
+	// engine.Use(middlewares.SecurityMiddleware.MiddlewareFunc())
 	routes.SetupSecurity(r)
+
+	swag.Setup(r, config.Config)
 
 	address := config.Config.Server.Host + ":" + config.Config.Server.Port
 	logger.Infof("Listen and Serving HTTP on %s", address)
