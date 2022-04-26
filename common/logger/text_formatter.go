@@ -42,7 +42,7 @@ func (f *TextFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	buf.WriteString("] ")
 
 	// file information
-	if entry.Caller != nil {
+	if entry.HasCaller() {
 		buf.WriteString(entry.Caller.File)
 		buf.WriteString(":")
 		buf.WriteString(strconv.Itoa(entry.Caller.Line))
