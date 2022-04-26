@@ -42,9 +42,11 @@ func (f *TextFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	buf.WriteString("] ")
 
 	// file information
-	buf.WriteString(entry.Caller.File)
-	buf.WriteString(":")
-	buf.WriteString(strconv.Itoa(entry.Caller.Line))
+	if entry.Caller != nil {
+		buf.WriteString(entry.Caller.File)
+		buf.WriteString(":")
+		buf.WriteString(strconv.Itoa(entry.Caller.Line))
+	}
 
 	entry.Message = strings.TrimSuffix(entry.Message, "\n")
 	// message
