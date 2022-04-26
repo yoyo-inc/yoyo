@@ -2,7 +2,7 @@ package logger
 
 import (
 	"bytes"
-	"strconv"
+	"fmt"
 	"strings"
 	"time"
 
@@ -29,7 +29,7 @@ func (f *TextFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	timestamp := time.Now().Format(basicTimeLayout)
 	buf.WriteString("[")
 	buf.WriteString(timestamp)
-	buf.WriteString(" ]")
+	buf.WriteString("] ")
 
 	// level
 	buf.WriteString("[")
@@ -43,18 +43,15 @@ func (f *TextFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 	// file information
 	if entry.HasCaller() {
-		buf.WriteString(entry.Caller.File)
-		buf.WriteString(":")
-		buf.WriteString(strconv.Itoa(entry.Caller.Line))
+		buf.WriteString(fmt.Sprintf("%s:%d ", entry.Caller.File, entry.Caller.Line))
 	}
 
 	entry.Message = strings.TrimSuffix(entry.Message, "\n")
 	// message
-	buf.WriteString(" ")
 	buf.WriteString("-")
 	buf.WriteString(" ")
 	buf.WriteString(entry.Message)
-
 	buf.WriteString("\n")
+
 	return buf.Bytes(), nil
 }
