@@ -42,6 +42,7 @@ func (f *TextFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	buf.WriteString(f.Service)
 	buf.WriteString("]")
 
+	entry.Message = strings.TrimSuffix(entry.Message, "\n")
 	// message
 	buf.WriteString(" ")
 	buf.WriteString("-")
