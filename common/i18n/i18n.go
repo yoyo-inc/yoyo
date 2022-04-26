@@ -1,6 +1,9 @@
 package i18n
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
@@ -26,4 +29,9 @@ func setupValidatorI18n() {
 			logger.Panicf("Faile to setup i18n: %s", err)
 		}
 	}
+}
+
+func Translate(err error) error {
+	errs := err.(validator.ValidationErrors)
+	return errors.New(fmt.Sprint(errs.Translate(Trans)))
 }
