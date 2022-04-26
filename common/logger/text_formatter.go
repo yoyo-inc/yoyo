@@ -2,6 +2,7 @@ package logger
 
 import (
 	"bytes"
+	"strconv"
 	"strings"
 	"time"
 
@@ -28,19 +29,22 @@ func (f *TextFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	timestamp := time.Now().Format(basicTimeLayout)
 	buf.WriteString("[")
 	buf.WriteString(timestamp)
-	buf.WriteString("]")
-	buf.WriteString(" ")
+	buf.WriteString(" ]")
 
 	// level
 	buf.WriteString("[")
 	buf.WriteString(strings.ToUpper(entry.Level.String()))
-	buf.WriteString("]")
-	buf.WriteString(" ")
+	buf.WriteString("] ")
 
 	// service name
 	buf.WriteString("[")
 	buf.WriteString(f.Service)
-	buf.WriteString("]")
+	buf.WriteString("] ")
+
+	// file information
+	buf.WriteString(entry.Caller.File)
+	buf.WriteString(":")
+	buf.WriteString(strconv.Itoa(entry.Caller.Line))
 
 	entry.Message = strings.TrimSuffix(entry.Message, "\n")
 	// message
