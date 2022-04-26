@@ -39,5 +39,5 @@ func OK(c *gin.Context, data interface{}) {
 
 // Fail returns error code and message
 func Fail(c *gin.Context, code string, message string) {
-	c.JSON(http.StatusOK, FailedResponse(code, message))
+	c.JSON(http.StatusServiceUnavailable, FailedResponse(code, message))
 }
