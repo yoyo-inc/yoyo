@@ -12,10 +12,11 @@ var (
 
 func Init() {
 	NoSecurityControllers = []core.NoSecurityController{
-		&LoginController{},
+		&loginController{},
 	}
 	SecurityControllers = []core.Controller{
-		&LoginController{},
+		&loginController{},
+		&userController{},
 	}
 }
 
