@@ -2,11 +2,13 @@ package middlewares
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ypli0629/yoyo/core"
 )
 
+// OnError handles runtime error
 func OnError() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
@@ -16,6 +18,9 @@ func OnError() gin.HandlerFunc {
 			return
 		}
 
+		if e, ok := err.Err.(core.ParameterError); ok {
+			c.AbortWithStatusJSON(http.StatusBadRequest, core.FailedResponse(strconv.Itoa(http.StatusBadRequest), e.Error()))
+		}
 		if e, ok := err.Err.(core.BusinessError); ok {
 			c.AbortWithStatusJSON(http.StatusOK, core.FailedResponse(e.Code, e.Message))
 		}
