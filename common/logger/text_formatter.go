@@ -9,7 +9,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const basicTimeLayout = "2006/01/02 15:04:05.000"
+const basicTimeLayout = "2006-01-02 15:04:05.000"
 
 // TextFormatter provides
 type TextFormatter struct {
