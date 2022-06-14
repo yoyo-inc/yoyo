@@ -26,7 +26,7 @@ func setupValidatorI18n() {
 		Trans, err = uts.GetTranslator("zh")
 		zhTranslations.RegisterDefaultTranslations(v, Trans)
 		if !err {
-			logger.Panicf("Faile to setup i18n: %s", err)
+			logger.Panicf("Failed to setup i18n: %s", err)
 		}
 	}
 }
