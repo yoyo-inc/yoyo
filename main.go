@@ -47,7 +47,7 @@ func main() {
 	swag.Setup(r, config.Config)
 
 	address := config.Config.Server.Host + ":" + config.Config.Server.Port
-	logger.Infof("Listen and Serving HTTP on %s", address)
+	logger.Infof("Listen and Serving HTTP on http://%s", address)
 
 	// startup
 	engine.Run(address)
