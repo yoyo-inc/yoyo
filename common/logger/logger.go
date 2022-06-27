@@ -33,14 +33,6 @@ func Setup(options Options) {
 		Service: service,
 	})
 
-	hook, err := logrus_syslog.NewSyslogHook("udp", "localhost:514", syslog.LOG_LOCAL2, "")
-	if err != nil {
-		logger.Error(err)
-		return
-	} else {
-		logger.AddHook(hook)
-	}
-
 	if options.Syslog != nil {
 		SetupSyslog(service, options.Syslog)
 	}
