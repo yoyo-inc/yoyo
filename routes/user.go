@@ -10,6 +10,29 @@ import (
 
 type userController struct{}
 
+// RetrieveUser returns user
+// @Summary query user
+// @Tags user
+// @Produce json
+// @Param query query models.QueryUser true "request param"
+// @Success 200 {array} core.Response{data=models.User}
+// @Router /user [get]
+func (*userController) RetrieveUser(c *gin.Context) {
+	var query models.QueryUser
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.Error(core.NewParameterError(err.Error()))
+		return
+	}
+
+	var users []models.User
+	if result := db.Client.Where("username", query.Username).Where("phone", query.Phone).Find(&users); result.Error != nil {
+		c.Error(errors.ErrQueryUser)
+		return
+	}
+
+	core.OK(c, users)
+}
+
 // CreateUser creates user
 // @Summary create user
 // @Tags user
@@ -31,6 +54,10 @@ func (*userController) CreateUser(c *gin.Context) {
 	core.OK(c, query)
 }
 
+func (*userController) DeleteUser(c *gin.Context) {
+
+}
+
 func (user *userController) Setup(r *gin.RouterGroup) {
-	r.POST("/user", user.CreateUser)
+	r.GET("/user", user.RetrieveUser).POST("/user", user.CreateUser)
 }
