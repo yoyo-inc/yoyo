@@ -9,6 +9,22 @@ definitions:
       success:
         type: boolean
     type: object
+  models.Role:
+    properties:
+      createTime:
+        type: string
+      id:
+        type: string
+      modifyTime:
+        type: string
+      name:
+        maxLength: 250
+        type: string
+      remark:
+        type: string
+    required:
+    - name
+    type: object
   models.User:
     properties:
       age:
@@ -28,28 +44,56 @@ definitions:
       modifyTime:
         type: string
       password:
-        description: Password 密码
-        maxLength: 250
+        description: 密码
         type: string
       phone:
         description: 手机号
         type: string
+      roles:
+        description: 角色
+        items:
+          $ref: '#/definitions/models.Role'
+        type: array
       sex:
-        description: 性别
+        description: '性别 0: 男 1: 女'
         type: integer
       username:
-        description: Username 账户名
+        description: 账户名
         maxLength: 15
         minLength: 0
         type: string
     required:
-    - password
     - username
     type: object
 info:
   contact: {}
 paths:
   /user:
+    get:
+      parameters:
+      - in: query
+        name: phone
+        type: string
+      - in: query
+        name: username
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              allOf:
+              - $ref: '#/definitions/core.Response'
+              - properties:
+                  data:
+                    $ref: '#/definitions/models.User'
+                type: object
+            type: array
+      summary: query user
+      tags:
+      - user
     post:
       consumes:
       - application/json

@@ -17,6 +17,50 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/user": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "query user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "phone",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "username",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "allOf": [
+                                    {
+                                        "$ref": "#/definitions/core.Response"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "$ref": "#/definitions/models.User"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -78,10 +122,33 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Role": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "createTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "modifyTime": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 250
+                },
+                "remark": {
+                    "type": "string"
+                }
+            }
+        },
         "models.User": {
             "type": "object",
             "required": [
-                "password",
                 "username"
             ],
             "properties": {
@@ -108,20 +175,26 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
-                    "description": "Password 密码",
-                    "type": "string",
-                    "maxLength": 250
+                    "description": "密码",
+                    "type": "string"
                 },
                 "phone": {
                     "description": "手机号",
                     "type": "string"
                 },
+                "roles": {
+                    "description": "角色",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Role"
+                    }
+                },
                 "sex": {
-                    "description": "性别",
+                    "description": "性别 0: 男 1: 女",
                     "type": "integer"
                 },
                 "username": {
-                    "description": "Username 账户名",
+                    "description": "账户名",
                     "type": "string",
                     "maxLength": 15,
                     "minLength": 0
