@@ -1,12 +1,23 @@
 package logger
 
-import "github.com/sirupsen/logrus"
+import (
+	"github.com/sirupsen/logrus"
+	logrus_syslog "github.com/sirupsen/logrus/hooks/syslog"
+	"log/syslog"
+)
 
 var logger logrus.Logger
+
+type SyslogOption struct {
+	Network  string
+	Addr     string
+	Priority syslog.Priority
+}
 
 // Options contains logger options
 type Options struct {
 	Service string
+	Syslog  *SyslogOption
 }
 
 // Setup setups logger
@@ -21,6 +32,28 @@ func Setup(options Options) {
 	logger.SetFormatter(&TextFormatter{
 		Service: service,
 	})
+
+	hook, err := logrus_syslog.NewSyslogHook("udp", "localhost:514", syslog.LOG_LOCAL2, "")
+	if err != nil {
+		logger.Error(err)
+		return
+	} else {
+		logger.AddHook(hook)
+	}
+
+	if options.Syslog != nil {
+		SetupSyslog(service, options.Syslog)
+	}
+}
+
+func SetupSyslog(service string, option *SyslogOption) {
+	hook, err := logrus_syslog.NewSyslogHook(option.Network, option.Addr, option.Priority, service)
+	if err != nil {
+		logger.Error(err)
+		return
+	} else {
+		logger.AddHook(hook)
+	}
 }
 
 // Info logs INFO_LEVEL message
