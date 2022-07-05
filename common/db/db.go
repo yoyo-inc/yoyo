@@ -3,13 +3,15 @@ package db
 import (
 	"github.com/ypli0629/yoyo/common/config"
 	"github.com/ypli0629/yoyo/common/logger"
-	"github.com/ypli0629/yoyo/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 // Client provides the ability to manipulate database
 var Client *gorm.DB
+
+//AutoMigrateModels contains all models which to be migrated
+var AutoMigrateModels []interface{}
 
 // Setup setups database connection
 func Setup() {
@@ -27,10 +29,14 @@ func Setup() {
 	automigrate()
 }
 
+func AddAutoMigrateModel(model interface{}) {
+	AutoMigrateModels = append(AutoMigrateModels, model)
+}
+
 func automigrate() {
 	Client.
 		Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4").
 		AutoMigrate(
-			&models.User{},
+			AutoMigrateModels...,
 		)
 }
