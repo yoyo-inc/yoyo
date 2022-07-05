@@ -50,5 +50,9 @@ func main() {
 	logger.Infof("Listen and Serving HTTP on http://%s", address)
 
 	// startup
-	engine.Run(address)
+	err := engine.Run(address)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
 }
