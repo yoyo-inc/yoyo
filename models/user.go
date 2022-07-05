@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/ypli0629/yoyo/common/db"
 	"github.com/ypli0629/yoyo/core"
 	"github.com/ypli0629/yoyo/utils"
 )
@@ -24,6 +25,10 @@ type User struct {
 	Age int `json:"age" gorm:"comment:年龄"`
 	// 角色
 	Roles []Role `json:"roles" gorm:"many2many:user_roles"`
+}
+
+func init() {
+	db.AddAutoMigrateModel(&User{})
 }
 
 // Check checks whether the passwords are the same
