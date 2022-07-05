@@ -2,7 +2,7 @@ package logger
 
 import (
 	"github.com/sirupsen/logrus"
-	logrus_syslog "github.com/sirupsen/logrus/hooks/syslog"
+	logrusSyslog "github.com/sirupsen/logrus/hooks/syslog"
 	"log/syslog"
 )
 
@@ -39,7 +39,7 @@ func Setup(options Options) {
 }
 
 func SetupSyslog(service string, option *SyslogOption) {
-	hook, err := logrus_syslog.NewSyslogHook(option.Network, option.Addr, option.Priority, service)
+	hook, err := logrusSyslog.NewSyslogHook(option.Network, option.Addr, option.Priority, service)
 	if err != nil {
 		logger.Error(err)
 		return
