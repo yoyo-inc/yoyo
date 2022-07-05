@@ -25,6 +25,9 @@ type User struct {
 	Age int `json:"age" gorm:"comment:年龄"`
 	// 角色
 	Roles []Role `json:"roles" gorm:"many2many:user_roles"`
+	// 组织ID
+	OrganizationID string       `json:"organizationID" gorm:"comment:组织ID"`
+	Organization   Organization `json:"organization"`
 }
 
 func init() {
