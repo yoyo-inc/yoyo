@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/ypli0629/yoyo/common/db"
+	"github.com/ypli0629/yoyo/common/logger"
 	"github.com/ypli0629/yoyo/core"
 	"github.com/ypli0629/yoyo/errors"
 	"github.com/ypli0629/yoyo/models"
@@ -25,7 +26,8 @@ func (*userController) RetrieveUser(c *gin.Context) {
 	}
 
 	var users []models.User
-	if result := db.Client.Where("username", query.Username).Where("phone", query.Phone).Find(&users); result.Error != nil {
+	if result := db.Client.Where(&query).Find(&users); result.Error != nil {
+		logger.Error(result.Error)
 		c.Error(errors.ErrQueryUser)
 		return
 	}
@@ -48,16 +50,54 @@ func (*userController) CreateUser(c *gin.Context) {
 		return
 	}
 	if result := db.Client.Create(&query); result.Error != nil {
+		logger.Error(result.Error)
 		c.Error(errors.ErrCreateUser)
 		return
 	}
 	core.OK(c, query)
 }
 
-func (*userController) DeleteUser(c *gin.Context) {
+// UpdateUser update user
+// @Summary update user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param query body models.User true "user information"
+// @Success 200 {object} core.Response{data=bool}
+// @Router /user [put]
+func (*userController) UpdateUser(c *gin.Context) {
+	var query models.User
+	if err := c.ShouldBindJSON(&query); err != nil {
+		c.Error(core.NewParameterError(err.Error()))
+		return
+	}
 
+	if result := db.Client.Save(&query); result.Error != nil {
+		logger.Error(result.Error)
+		c.Error(errors.ErrUpdateUser)
+		return
+	}
+	core.OK(c, true)
+}
+
+// DeleteUser delete user
+// @Summary delete user
+// @Tags user
+// @Produce json
+// @Parma userID path string true "userID"
+// @Success 200 {object} core.Response{data=bool}
+// @Router /user/{userID} [delete]
+func (*userController) DeleteUser(c *gin.Context) {
+	userID := c.Param("userID")
+
+	if result := db.Client.Delete(&models.User{}, userID); result.Error != nil {
+		logger.Error(result.Error)
+		c.Error(errors.ErrDeleteUser)
+		return
+	}
+	core.OK(c, true)
 }
 
 func (user *userController) Setup(r *gin.RouterGroup) {
-	r.GET("/user", user.RetrieveUser).POST("/user", user.CreateUser)
+	r.GET("/user", user.RetrieveUser).POST("/user", user.CreateUser).PUT("/user", user.UpdateUser).DELETE("/user/:userID", user.DeleteUser)
 }
