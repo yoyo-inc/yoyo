@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"github.com/ypli0629/yoyo/common/logger"
 	"net/http"
 	"strconv"
 
@@ -19,6 +20,7 @@ func OnError() gin.HandlerFunc {
 		}
 
 		if e, ok := err.Err.(core.ParameterError); ok {
+			logger.Error(e)
 			c.AbortWithStatusJSON(http.StatusBadRequest, core.FailedResponse(strconv.Itoa(http.StatusBadRequest), e.Error()))
 		}
 		if e, ok := err.Err.(core.BusinessError); ok {
