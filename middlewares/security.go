@@ -16,7 +16,7 @@ import (
 var (
 	// SecurityMiddleware security middleware
 	SecurityMiddleware *jwt.GinJWTMiddleware
-	identityKey        string = "userID"
+	identityKey        = "userID"
 )
 
 type loginPayload struct {
