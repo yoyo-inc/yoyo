@@ -4,6 +4,7 @@ import (
 	"github.com/ypli0629/yoyo/common/db"
 	"github.com/ypli0629/yoyo/core"
 	"github.com/ypli0629/yoyo/utils"
+	"gorm.io/gorm"
 )
 
 // User represents user model
@@ -39,10 +40,16 @@ func (user User) Check(actual string) bool {
 	return user.Password == utils.Encrypt(actual)
 }
 
+func (user *User) BeforeUpdate(tx *gorm.DB) (err error) {
+	if user.Password == "" {
+		tx.Statement.Omit("password")
+	} else {
+		user.Password = utils.Encrypt(user.Password)
+	}
+	return
+}
+
 type QueryUser struct {
 	Username string `form:"username"`
 	Phone    string `form:"phone"`
-}
-
-type UpdateUser struct {
 }
