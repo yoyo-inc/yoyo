@@ -18,5 +18,6 @@ func init() {
 }
 
 type QueryRole struct {
+	// 角色名
 	Name string `json:"name"`
 }
