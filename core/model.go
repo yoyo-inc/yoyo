@@ -24,5 +24,13 @@ func (m *Model) BeforeCreate(tx *gorm.DB) (err error) {
 		m.ID = id
 	}
 
+	m.CreateTime = nil
+	m.ModifyTime = nil
+	return
+}
+
+func (m *Model) BeforeUpdate(tx *gorm.DB) (err error) {
+	m.CreateTime = nil
+	m.ModifyTime = nil
 	return
 }
