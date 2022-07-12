@@ -9,8 +9,11 @@ import (
 )
 
 type Model struct {
-	ID         string     `json:"id" gorm:"primarykey;size:32"`
+	// 主键
+	ID string `json:"id" gorm:"primarykey;size:32;comment:主键"`
+	// 创建时间
 	CreateTime *time.Time `json:"createTime" gorm:"autoCreateTime;comment:创建时间"`
+	// 更新时间
 	ModifyTime *time.Time `json:"modifyTime" gorm:"autoUpdateTime;comment:更新时间"`
 }
 
