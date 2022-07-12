@@ -14,6 +14,11 @@ type Response struct {
 	Data    interface{} `json:"data"`
 }
 
+type PaginatedData struct {
+	Data  interface{} `json:"list"`
+	Total int64       `json:"total"`
+}
+
 func SucceedResponse(data interface{}) Response {
 	return Response{
 		Success: true,
@@ -40,4 +45,8 @@ func OK(c *gin.Context, data interface{}) {
 // Fail returns error code and message
 func Fail(c *gin.Context, code string, message string) {
 	c.JSON(http.StatusServiceUnavailable, FailedResponse(code, message))
+}
+
+func Paginated(data interface{}, total int64) PaginatedData {
+	return PaginatedData{data, total}
 }
