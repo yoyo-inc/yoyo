@@ -29,8 +29,9 @@ type User struct {
 	// 角色
 	Roles []Role `json:"roles" gorm:"many2many:user_roles"`
 	// 组织ID
-	OrganizationID string       `json:"organizationID" gorm:"comment:组织ID"`
-	Organization   Organization `json:"organization"`
+	OrganizationID string `json:"organizationID" gorm:"comment:组织ID"`
+	// 组织
+	Organization Organization `json:"organization"`
 }
 
 func init() {
