@@ -87,3 +87,7 @@ func Panic(args ...interface{}) {
 func Panicf(format string, args ...interface{}) {
 	logger.Panicf(format, args...)
 }
+
+func GetLogger() *logrus.Logger {
+	return &logger
+}
