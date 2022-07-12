@@ -16,3 +16,7 @@ type Role struct {
 func init() {
 	db.AddAutoMigrateModel(&Role{})
 }
+
+type QueryRole struct {
+	Name string `json:"name"`
+}
