@@ -16,7 +16,7 @@ type userController struct{}
 // @Tags user
 // @Produce json
 // @Param query query models.QueryUser true "request param"
-// @Success 200 {array} core.Response{data=models.User}
+// @Success 200 {array} core.Response{data=core.PaginatedData{list=[]models.User}}
 // @Router /user [get]
 func (*userController) RetrieveUser(c *gin.Context) {
 	var query models.QueryUser
@@ -26,13 +26,20 @@ func (*userController) RetrieveUser(c *gin.Context) {
 	}
 
 	var users []models.User
-	if result := db.Client.Where(&query).Find(&users); result.Error != nil {
+	if result := db.Client.Model(&models.User{}).Where(&query).Scopes(core.Paginator(c)).Find(&users); result.Error != nil {
 		logger.Error(result.Error)
 		c.Error(errors.ErrQueryUser)
 		return
 	}
 
-	core.OK(c, users)
+	var total int64
+	if result := db.Client.Model(&models.User{}).Where(&query).Count(&total); result.Error != nil {
+		logger.Error(result.Error)
+		c.Error(errors.ErrQueryUser)
+		return
+	}
+
+	core.OK(c, core.Paginated(users, total))
 }
 
 // CreateUser creates user
