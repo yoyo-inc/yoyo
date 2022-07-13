@@ -10,4 +10,5 @@ var (
 	ErrQueryUser          = core.NewBusinessError("104", "用户查询失败")
 	ErrDeleteUser         = core.NewBusinessError("105", "用户删除失败")
 	ErrUpdateUser         = core.NewBusinessError("106", "用户更新失败")
+	ErrQueryCurrentUser   = core.NewBusinessError("107", "当前用户查询失败")
 )
