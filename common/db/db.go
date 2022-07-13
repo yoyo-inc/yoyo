@@ -34,9 +34,11 @@ func AddAutoMigrateModel(model interface{}) {
 }
 
 func automigrate() {
-	Client.
+	if err := Client.
 		Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4").
 		AutoMigrate(
 			AutoMigrateModels...,
-		)
+		); err != nil {
+		logger.Error(err)
+	}
 }
