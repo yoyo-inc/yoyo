@@ -10,7 +10,7 @@ var (
 	NoSecurityControllers []core.NoSecurityController
 )
 
-func Init() {
+func init() {
 	NoSecurityControllers = []core.NoSecurityController{
 		&loginController{},
 	}
@@ -27,8 +27,6 @@ func SetupSecurity(r *gin.RouterGroup) {
 }
 
 func SetupNoSecurity(r *gin.RouterGroup) {
-	Init()
-
 	for _, nsc := range NoSecurityControllers {
 		nsc.SetupNoSecurity(r)
 	}
