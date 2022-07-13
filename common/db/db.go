@@ -12,6 +12,7 @@ var Client *gorm.DB
 
 //AutoMigrateModels contains all models which to be migrated
 var AutoMigrateModels []interface{}
+var AutoMigrateMethods []func(db *gorm.DB)
 
 // Setup setups database connection
 func Setup() {
@@ -33,6 +34,10 @@ func AddAutoMigrateModel(model interface{}) {
 	AutoMigrateModels = append(AutoMigrateModels, model)
 }
 
+func AddAutoMigrateMethods(method func(client *gorm.DB)) {
+	AutoMigrateMethods = append(AutoMigrateMethods, method)
+}
+
 func automigrate() {
 	if err := Client.
 		Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4").
@@ -40,5 +45,9 @@ func automigrate() {
 			AutoMigrateModels...,
 		); err != nil {
 		logger.Error(err)
+	}
+
+	for _, method := range AutoMigrateMethods {
+		method(Client)
 	}
 }
