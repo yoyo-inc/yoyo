@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ypli0629/yoyo/common/logger"
+	"github.com/yoyo-inc/yoyo/common/logger"
 )
 
 // Logger middleware

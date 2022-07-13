@@ -1,4 +1,10 @@
 definitions:
+  core.PaginatedData:
+    properties:
+      list: {}
+      total:
+        type: integer
+    type: object
   core.Response:
     properties:
       code:
@@ -9,17 +15,59 @@ definitions:
       success:
         type: boolean
     type: object
+  models.Organization:
+    properties:
+      createTime:
+        description: 创建时间
+        type: string
+      id:
+        description: 主键
+        type: string
+      modifyTime:
+        description: 更新时间
+        type: string
+      name:
+        description: 组织名
+        type: string
+      parentId:
+        type: string
+    type: object
+  models.Permission:
+    properties:
+      createTime:
+        description: 创建时间
+        type: string
+      id:
+        description: 主键
+        type: string
+      modifyTime:
+        description: 更新时间
+        type: string
+      name:
+        description: 权限名称
+        type: string
+      parentID:
+        description: 父级权限
+        type: string
+    type: object
   models.Role:
     properties:
       createTime:
+        description: 创建时间
         type: string
       id:
+        description: 主键
         type: string
       modifyTime:
+        description: 更新时间
         type: string
       name:
         maxLength: 250
         type: string
+      permissions:
+        items:
+          $ref: '#/definitions/models.Permission'
+        type: array
       remark:
         type: string
     required:
@@ -32,19 +80,34 @@ definitions:
         type: integer
       avatar:
         description: 头像
-        maxLength: 250
+        maxLength: 255
         type: string
       createTime:
+        description: 创建时间
         type: string
       email:
         description: 邮箱
+        maxLength: 255
         type: string
       id:
+        description: 主键
         type: string
       modifyTime:
+        description: 更新时间
+        type: string
+      nickname:
+        description: 昵称
+        maxLength: 255
+        type: string
+      organization:
+        $ref: '#/definitions/models.Organization'
+        description: 组织
+      organizationID:
+        description: 组织ID
         type: string
       password:
         description: 密码
+        maxLength: 255
         type: string
       phone:
         description: 手机号
@@ -68,13 +131,34 @@ definitions:
 info:
   contact: {}
 paths:
+  /role:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 角色名
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/core.Response'
+      summary: 查询角色列表
+      tags:
+      - role
   /user:
     get:
       parameters:
-      - in: query
+      - description: 手机号
+        in: query
         name: phone
         type: string
-      - in: query
+      - description: 账户名
+        in: query
         name: username
         type: string
       produces:
@@ -88,17 +172,24 @@ paths:
               - $ref: '#/definitions/core.Response'
               - properties:
                   data:
-                    $ref: '#/definitions/models.User'
+                    allOf:
+                    - $ref: '#/definitions/core.PaginatedData'
+                    - properties:
+                        list:
+                          items:
+                            $ref: '#/definitions/models.User'
+                          type: array
+                      type: object
                 type: object
             type: array
-      summary: query user
+      summary: 查询用户列表
       tags:
       - user
     post:
       consumes:
       - application/json
       parameters:
-      - description: user information
+      - description: 用户信息
         in: body
         name: query
         required: true
@@ -116,7 +207,55 @@ paths:
                 data:
                   $ref: '#/definitions/models.User'
               type: object
-      summary: create user
+      summary: 创建用户
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 用户信息
+        in: body
+        name: query
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/core.Response'
+            - properties:
+                data:
+                  type: boolean
+              type: object
+      summary: 更新用户
+      tags:
+      - user
+  /user/{userID}:
+    delete:
+      parameters:
+      - description: 用户ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/core.Response'
+            - properties:
+                data:
+                  type: boolean
+              type: object
+      summary: 删除用户
       tags:
       - user
 swagger: "2.0"

@@ -1,12 +1,12 @@
 package middlewares
 
 import (
-	"github.com/ypli0629/yoyo/common/logger"
+	"github.com/yoyo-inc/yoyo/common/logger"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ypli0629/yoyo/core"
+	"github.com/yoyo-inc/yoyo/core"
 )
 
 // OnError handles runtime error

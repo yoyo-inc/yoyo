@@ -16,6 +16,36 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/role": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "role"
+                ],
+                "summary": "查询角色列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "角色名",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/core.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user": {
             "get": {
                 "produces": [
@@ -24,15 +54,17 @@ const docTemplate = `{
                 "tags": [
                     "user"
                 ],
-                "summary": "query user",
+                "summary": "查询用户列表",
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "手机号",
                         "name": "phone",
                         "in": "query"
                     },
                     {
                         "type": "string",
+                        "description": "账户名",
                         "name": "username",
                         "in": "query"
                     }
@@ -51,12 +83,70 @@ const docTemplate = `{
                                         "type": "object",
                                         "properties": {
                                             "data": {
-                                                "$ref": "#/definitions/models.User"
+                                                "allOf": [
+                                                    {
+                                                        "$ref": "#/definitions/core.PaginatedData"
+                                                    },
+                                                    {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "list": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "$ref": "#/definitions/models.User"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                ]
                                             }
                                         }
                                     }
                                 ]
                             }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "更新用户",
+                "parameters": [
+                    {
+                        "description": "用户信息",
+                        "name": "query",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/core.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -71,10 +161,10 @@ const docTemplate = `{
                 "tags": [
                     "user"
                 ],
-                "summary": "create user",
+                "summary": "创建用户",
                 "parameters": [
                     {
-                        "description": "user information",
+                        "description": "用户信息",
                         "name": "query",
                         "in": "body",
                         "required": true,
@@ -104,9 +194,58 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user/{userID}": {
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "删除用户",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户ID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/core.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "core.PaginatedData": {
+            "type": "object",
+            "properties": {
+                "list": {},
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "core.Response": {
             "type": "object",
             "properties": {
@@ -122,6 +261,55 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Organization": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "主键",
+                    "type": "string"
+                },
+                "modifyTime": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "组织名",
+                    "type": "string"
+                },
+                "parentId": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Permission": {
+            "type": "object",
+            "properties": {
+                "createTime": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "主键",
+                    "type": "string"
+                },
+                "modifyTime": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "权限名称",
+                    "type": "string"
+                },
+                "parentID": {
+                    "description": "父级权限",
+                    "type": "string"
+                }
+            }
+        },
         "models.Role": {
             "type": "object",
             "required": [
@@ -129,17 +317,26 @@ const docTemplate = `{
             ],
             "properties": {
                 "createTime": {
+                    "description": "创建时间",
                     "type": "string"
                 },
                 "id": {
+                    "description": "主键",
                     "type": "string"
                 },
                 "modifyTime": {
+                    "description": "更新时间",
                     "type": "string"
                 },
                 "name": {
                     "type": "string",
                     "maxLength": 250
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Permission"
+                    }
                 },
                 "remark": {
                     "type": "string"
@@ -159,24 +356,42 @@ const docTemplate = `{
                 "avatar": {
                     "description": "头像",
                     "type": "string",
-                    "maxLength": 250
+                    "maxLength": 255
                 },
                 "createTime": {
+                    "description": "创建时间",
                     "type": "string"
                 },
                 "email": {
                     "description": "邮箱",
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "id": {
+                    "description": "主键",
                     "type": "string"
                 },
                 "modifyTime": {
+                    "description": "更新时间",
+                    "type": "string"
+                },
+                "nickname": {
+                    "description": "昵称",
+                    "type": "string",
+                    "maxLength": 255
+                },
+                "organization": {
+                    "description": "组织",
+                    "$ref": "#/definitions/models.Organization"
+                },
+                "organizationID": {
+                    "description": "组织ID",
                     "type": "string"
                 },
                 "password": {
                     "description": "密码",
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 255
                 },
                 "phone": {
                     "description": "手机号",

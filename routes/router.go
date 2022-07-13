@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/ypli0629/yoyo/core"
+	"github.com/yoyo-inc/yoyo/core"
 )
 
 var (

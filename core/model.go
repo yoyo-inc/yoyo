@@ -2,7 +2,7 @@ package core
 
 import (
 	"github.com/google/uuid"
-	"github.com/ypli0629/yoyo/common/datatypes"
+	"github.com/yoyo-inc/yoyo/common/datatypes"
 	"gorm.io/gorm"
 	"strings"
 )

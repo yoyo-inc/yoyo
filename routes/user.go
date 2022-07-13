@@ -2,11 +2,11 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/ypli0629/yoyo/common/db"
-	"github.com/ypli0629/yoyo/common/logger"
-	"github.com/ypli0629/yoyo/core"
-	"github.com/ypli0629/yoyo/errors"
-	"github.com/ypli0629/yoyo/models"
+	"github.com/yoyo-inc/yoyo/common/db"
+	"github.com/yoyo-inc/yoyo/common/logger"
+	"github.com/yoyo-inc/yoyo/core"
+	"github.com/yoyo-inc/yoyo/errors"
+	"github.com/yoyo-inc/yoyo/models"
 )
 
 type userController struct{}

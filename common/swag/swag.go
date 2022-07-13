@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/ypli0629/yoyo/common/config"
-	"github.com/ypli0629/yoyo/docs"
+	"github.com/yoyo-inc/yoyo/common/config"
+	"github.com/yoyo-inc/yoyo/docs"
 )
 
 func Setup(r *gin.RouterGroup, config config.Application) {

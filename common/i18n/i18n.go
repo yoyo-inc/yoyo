@@ -9,7 +9,7 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
-	"github.com/ypli0629/yoyo/common/logger"
+	"github.com/yoyo-inc/yoyo/common/logger"
 )
 
 var Trans ut.Translator

@@ -1,4 +1,4 @@
-module github.com/ypli0629/yoyo
+module github.com/yoyo-inc/yoyo
 
 go 1.17
 

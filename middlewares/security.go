@@ -6,11 +6,11 @@ import (
 
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
-	"github.com/ypli0629/yoyo/common/logger"
-	"github.com/ypli0629/yoyo/core"
-	"github.com/ypli0629/yoyo/errors"
-	"github.com/ypli0629/yoyo/models"
-	"github.com/ypli0629/yoyo/services"
+	"github.com/yoyo-inc/yoyo/common/logger"
+	"github.com/yoyo-inc/yoyo/core"
+	"github.com/yoyo-inc/yoyo/errors"
+	"github.com/yoyo-inc/yoyo/models"
+	"github.com/yoyo-inc/yoyo/services"
 )
 
 var (

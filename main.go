@@ -2,13 +2,13 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/ypli0629/yoyo/common/config"
-	"github.com/ypli0629/yoyo/common/db"
-	"github.com/ypli0629/yoyo/common/i18n"
-	"github.com/ypli0629/yoyo/common/logger"
-	"github.com/ypli0629/yoyo/common/swag"
-	"github.com/ypli0629/yoyo/middlewares"
-	"github.com/ypli0629/yoyo/routes"
+	"github.com/yoyo-inc/yoyo/common/config"
+	"github.com/yoyo-inc/yoyo/common/db"
+	"github.com/yoyo-inc/yoyo/common/i18n"
+	"github.com/yoyo-inc/yoyo/common/logger"
+	"github.com/yoyo-inc/yoyo/common/swag"
+	"github.com/yoyo-inc/yoyo/middlewares"
+	"github.com/yoyo-inc/yoyo/routes"
 )
 
 func main() {

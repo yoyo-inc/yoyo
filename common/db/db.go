@@ -1,8 +1,8 @@
 package db
 
 import (
-	"github.com/ypli0629/yoyo/common/config"
-	"github.com/ypli0629/yoyo/common/logger"
+	"github.com/yoyo-inc/yoyo/common/config"
+	"github.com/yoyo-inc/yoyo/common/logger"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

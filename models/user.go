@@ -1,9 +1,9 @@
 package models
 
 import (
-	"github.com/ypli0629/yoyo/common/db"
-	"github.com/ypli0629/yoyo/core"
-	"github.com/ypli0629/yoyo/utils"
+	"github.com/yoyo-inc/yoyo/common/db"
+	"github.com/yoyo-inc/yoyo/core"
+	"github.com/yoyo-inc/yoyo/utils"
 	"gorm.io/gorm"
 )
 

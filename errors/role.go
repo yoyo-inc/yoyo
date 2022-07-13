@@ -1,6 +1,6 @@
 package errors
 
-import "github.com/ypli0629/yoyo/core"
+import "github.com/yoyo-inc/yoyo/core"
 
 var (
 	ErrCreateRole = core.NewBusinessError("200", "角色创建失败")

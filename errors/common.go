@@ -1,6 +1,6 @@
 package errors
 
-import "github.com/ypli0629/yoyo/core"
+import "github.com/yoyo-inc/yoyo/core"
 
 var (
 	ErrInvalidParameters = core.NewBusinessError("001", "无效的参数")

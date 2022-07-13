@@ -12,7 +12,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/viper"
-	"github.com/ypli0629/yoyo/common/logger"
+	"github.com/yoyo-inc/yoyo/common/logger"
 )
 
 // Config contains user custom configuration

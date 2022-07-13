@@ -1,9 +1,9 @@
 package services
 
 import (
-	"github.com/ypli0629/yoyo/common/db"
-	"github.com/ypli0629/yoyo/errors"
-	"github.com/ypli0629/yoyo/models"
+	"github.com/yoyo-inc/yoyo/common/db"
+	"github.com/yoyo-inc/yoyo/errors"
+	"github.com/yoyo-inc/yoyo/models"
 )
 
 // DoLogin does login
