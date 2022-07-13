@@ -32,7 +32,7 @@ func main() {
 	// recovery
 	engine.Use(gin.Recovery())
 	// security
-	// middlewares.Setup()
+	middlewares.Setup()
 
 	r := &engine.RouterGroup
 	if config.Config.Server.BasePath != "" {
@@ -41,7 +41,7 @@ func main() {
 
 	routes.SetupNoSecurity(r)
 	// security
-	// engine.Use(middlewares.SecurityMiddleware.MiddlewareFunc())
+	engine.Use(middlewares.SecurityMiddleware.MiddlewareFunc())
 	routes.SetupSecurity(r)
 
 	swag.Setup(r, config.Config)
