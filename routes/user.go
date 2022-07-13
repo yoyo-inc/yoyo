@@ -5,7 +5,7 @@ import (
 	"github.com/yoyo-inc/yoyo/common/db"
 	"github.com/yoyo-inc/yoyo/common/logger"
 	"github.com/yoyo-inc/yoyo/core"
-	"github.com/yoyo-inc/yoyo/errors"
+	"github.com/yoyo-inc/yoyo/errs"
 	"github.com/yoyo-inc/yoyo/models"
 )
 
@@ -28,14 +28,14 @@ func (*userController) RetrieveUser(c *gin.Context) {
 	var users []models.User
 	if result := db.Client.Model(&models.User{}).Where(&query).Scopes(core.Paginator(c)).Find(&users); result.Error != nil {
 		logger.Error(result.Error)
-		c.Error(errors.ErrQueryUser)
+		c.Error(errs.ErrQueryUser)
 		return
 	}
 
 	var total int64
 	if result := db.Client.Model(&models.User{}).Where(&query).Count(&total); result.Error != nil {
 		logger.Error(result.Error)
-		c.Error(errors.ErrQueryUser)
+		c.Error(errs.ErrQueryUser)
 		return
 	}
 
@@ -58,7 +58,7 @@ func (*userController) CreateUser(c *gin.Context) {
 	}
 	if result := db.Client.Create(&query); result.Error != nil {
 		logger.Error(result.Error)
-		c.Error(errors.ErrCreateUser)
+		c.Error(errs.ErrCreateUser)
 		return
 	}
 	core.OK(c, query)
@@ -81,7 +81,7 @@ func (*userController) UpdateUser(c *gin.Context) {
 
 	if result := db.Client.Save(&query); result.Error != nil {
 		logger.Error(result.Error)
-		c.Error(errors.ErrUpdateUser)
+		c.Error(errs.ErrUpdateUser)
 		return
 	}
 	core.OK(c, true)
@@ -99,7 +99,7 @@ func (*userController) DeleteUser(c *gin.Context) {
 
 	if result := db.Client.Delete(&models.User{}, userID); result.Error != nil {
 		logger.Error(result.Error)
-		c.Error(errors.ErrDeleteUser)
+		c.Error(errs.ErrDeleteUser)
 		return
 	}
 	core.OK(c, true)

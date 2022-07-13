@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/yoyo-inc/yoyo/common/logger"
 	"github.com/yoyo-inc/yoyo/core"
-	"github.com/yoyo-inc/yoyo/errors"
+	"github.com/yoyo-inc/yoyo/errs"
 	"github.com/yoyo-inc/yoyo/models"
 	"github.com/yoyo-inc/yoyo/services"
 )
@@ -50,7 +50,7 @@ func Setup() {
 		Authenticator: func(c *gin.Context) (interface{}, error) {
 			var payload loginPayload
 			if err := c.ShouldBindJSON(&payload); err != nil {
-				return nil, errors.ErrUsernameOrPassword
+				return nil, errs.ErrUsernameOrPassword
 			}
 
 			user, err := services.DoLogin(payload.Username, payload.Password)
