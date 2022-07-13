@@ -16,7 +16,7 @@ import (
 var (
 	// SecurityMiddleware security middleware
 	SecurityMiddleware *jwt.GinJWTMiddleware
-	identityKey        = "userID"
+	IdentityKey        = "userID"
 )
 
 type loginPayload struct {
@@ -32,11 +32,11 @@ func Setup() {
 		Key:         []byte{},
 		Timeout:     30 * 24 * time.Hour,
 		MaxRefresh:  30 * 24 * time.Hour,
-		IdentityKey: identityKey,
+		IdentityKey: IdentityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(models.User); ok {
 				return jwt.MapClaims{
-					identityKey: v.ID,
+					IdentityKey: v.ID,
 				}
 			}
 
@@ -44,7 +44,7 @@ func Setup() {
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
-			return claims[identityKey]
+			return claims[IdentityKey]
 		},
 		TokenLookup: "header: Authorization, query: token",
 		Authenticator: func(c *gin.Context) (interface{}, error) {
