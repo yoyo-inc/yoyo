@@ -50,11 +50,13 @@ func Setup() {
 		Authenticator: func(c *gin.Context) (interface{}, error) {
 			var payload loginPayload
 			if err := c.ShouldBindJSON(&payload); err != nil {
+				logger.Error(err)
 				return nil, errs.ErrUsernameOrPassword
 			}
 
 			user, err := services.DoLogin(payload.Username, payload.Password)
 			if err != nil {
+				logger.Errorf("%s: %s", err, payload.Username)
 				return nil, err
 			}
 
