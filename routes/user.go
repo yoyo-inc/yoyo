@@ -1,11 +1,13 @@
 package routes
 
 import (
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/yoyo-inc/yoyo/common/db"
 	"github.com/yoyo-inc/yoyo/common/logger"
 	"github.com/yoyo-inc/yoyo/core"
 	"github.com/yoyo-inc/yoyo/errs"
+	"github.com/yoyo-inc/yoyo/middlewares"
 	"github.com/yoyo-inc/yoyo/models"
 )
 
@@ -103,6 +105,19 @@ func (*userController) DeleteUser(c *gin.Context) {
 		return
 	}
 	core.OK(c, true)
+}
+
+func (*userController) RetrieveCurrentUser(c *gin.Context) {
+	claims := jwt.ExtractClaims(c)
+	userID, _ := claims[middlewares.IdentityKey].(string)
+
+	var user models.User
+	if result := db.Client.Omit("password").Find(&user, userID); result.Error != nil {
+		logger.Error(result.Error)
+		c.Error(errs.ErrQueryCurrentUser)
+		return
+	}
+	core.OK(c, user)
 }
 
 func (user *userController) Setup(r *gin.RouterGroup) {
