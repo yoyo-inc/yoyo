@@ -13,7 +13,7 @@ type userController struct{}
 
 // RetrieveUser
 // @Summary  查询用户列表
-// @Tags     用户
+// @Tags     user
 // @Produce  json
 // @Param    query  query    models.QueryUser  true  "参数"
 // @Success  200    {array}  core.Response{data=core.PaginatedData{list=[]models.User}}
@@ -44,7 +44,7 @@ func (*userController) RetrieveUser(c *gin.Context) {
 
 // CreateUser
 // @Summary  创建用户
-// @Tags     用户
+// @Tags     user
 // @Accept   json
 // @Produce  json
 // @Param    query  body      models.User  true  "用户信息"
@@ -66,7 +66,7 @@ func (*userController) CreateUser(c *gin.Context) {
 
 // UpdateUser
 // @Summary  更新用户
-// @Tags     用户
+// @Tags     user
 // @Accept   json
 // @Produce  json
 // @Param    query  body      models.User  true  "用户信息"
@@ -89,7 +89,7 @@ func (*userController) UpdateUser(c *gin.Context) {
 
 // DeleteUser
 // @Summary  删除用户
-// @Tags     用户
+// @Tags     user
 // @Produce  json
 // @Param    userID path string true "用户ID"
 // @Success  200  {object}  core.Response{data=bool}
