@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/yoyo-inc/yoyo/common/db"
+	"github.com/yoyo-inc/yoyo/common/logger"
 	"github.com/yoyo-inc/yoyo/core"
 	"github.com/yoyo-inc/yoyo/utils"
 	"gorm.io/gorm"
@@ -36,11 +37,43 @@ type User struct {
 
 func init() {
 	db.AddAutoMigrateModel(&User{})
+	db.AddAutoMigrateMethods(func(client *gorm.DB) {
+		var count int64
+		if res := client.Model(&User{}).Where("username = 'admin'").Count(&count); res.Error != nil {
+			logger.Error(res.Error)
+			return
+		}
+		if count > 0 {
+			return
+		}
+
+		client.Create(&User{
+			Username: "admin",
+			Nickname: "admin",
+			Password: "qaz321!@#",
+			Email:    "",
+			Phone:    "",
+			Avatar:   "",
+			Sex:      0,
+			Age:      0,
+			Organization: Organization{
+				Name:     "yoyo",
+				ParentID: "0",
+			},
+		})
+	})
 }
 
 // Check checks whether the passwords are the same
 func (user User) Check(actual string) bool {
 	return user.Password == utils.Encrypt(actual)
+}
+
+func (user *User) BeforeCreate(tx *gorm.DB) (err error) {
+	if user.Password != "" {
+		user.Password = utils.Encrypt(user.Password)
+	}
+	return
 }
 
 func (user *User) BeforeUpdate(tx *gorm.DB) (err error) {
