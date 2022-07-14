@@ -32,19 +32,16 @@ func main() {
 	// recovery
 	engine.Use(gin.Recovery())
 	// security
-	middlewares.Setup()
+	engine.Use(middlewares.Security()())
 
+	// base_path
 	r := &engine.RouterGroup
 	if config.Config.Server.BasePath != "" {
 		r = engine.Group(config.Config.Server.BasePath)
 	}
 
-	routes.SetupNoSecurity(r)
-	// security
-	engine.Use(middlewares.SecurityMiddleware.MiddlewareFunc())
-	routes.SetupSecurity(r)
-
 	swag.Setup(r, config.Config)
+	routes.Setup(r)
 
 	address := config.Config.Server.Host + ":" + config.Config.Server.Port
 	logger.Infof("Listen and Serving HTTP on http://%s", address)
