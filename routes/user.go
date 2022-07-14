@@ -17,7 +17,8 @@ type userController struct{}
 // @Summary  查询用户列表
 // @Tags     user
 // @Produce  json
-// @Param    query  query    models.QueryUser  true  "参数"
+// @Param    query  query    models.QueryUser   false  "参数"
+// @Param    query  query    models.Pagination  false  "参数"
 // @Success  200    {array}  core.Response{data=core.PaginatedData{list=[]models.User}}
 // @Router   /user [get]
 func (*userController) RetrieveUser(c *gin.Context) {
@@ -93,8 +94,8 @@ func (*userController) UpdateUser(c *gin.Context) {
 // @Summary  删除用户
 // @Tags     user
 // @Produce  json
-// @Param    userID path string true "用户ID"
-// @Success  200  {object}  core.Response{data=bool}
+// @Param    userID  path      string  true  "用户ID"
+// @Success  200     {object}  core.Response{data=bool}
 // @Router   /user/{userID} [delete]
 func (*userController) DeleteUser(c *gin.Context) {
 	userID := c.Param("userID")
