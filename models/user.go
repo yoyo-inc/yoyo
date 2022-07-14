@@ -47,13 +47,13 @@ func init() {
 			return
 		}
 
-		client.Create(&User{
+		client.Debug().Create(&User{
 			Username: "admin",
 			Nickname: "admin",
 			Password: "qaz321!@#",
 			Email:    "",
 			Phone:    "",
-			Avatar:   "",
+			Avatar:   "https://joeschmoe.io/api/v1/random",
 			Sex:      0,
 			Age:      0,
 			Organization: Organization{
