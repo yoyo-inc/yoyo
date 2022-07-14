@@ -108,6 +108,13 @@ func (*userController) DeleteUser(c *gin.Context) {
 	core.OK(c, true)
 }
 
+// RetrieveCurrentUser
+// @Summary      查询当前用户信息
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  core.Response{data=models.User}
+// @Router       /user/current [get]
 func (*userController) RetrieveCurrentUser(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	userID, _ := claims[middlewares.IdentityKey].(string)
@@ -122,5 +129,9 @@ func (*userController) RetrieveCurrentUser(c *gin.Context) {
 }
 
 func (user *userController) Setup(r *gin.RouterGroup) {
-	r.GET("/user", user.RetrieveUser).POST("/user", user.CreateUser).PUT("/user", user.UpdateUser).DELETE("/user/:userID", user.DeleteUser)
+	r.GET("/user", user.RetrieveUser).
+		POST("/user", user.CreateUser).
+		PUT("/user", user.UpdateUser).
+		DELETE("/user/:userID", user.DeleteUser).
+		GET("/user/current", user.RetrieveCurrentUser)
 }
