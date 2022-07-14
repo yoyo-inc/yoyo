@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"time"
 
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	jwt "github.com/yoyo-inc/gin-jwt/v3"
 	"github.com/yoyo-inc/yoyo/common/logger"
 	"github.com/yoyo-inc/yoyo/core"
 	"github.com/yoyo-inc/yoyo/errs"
@@ -24,8 +24,8 @@ type loginPayload struct {
 	Password string `form:"password" json:"password" binding:"required"`
 }
 
-// Setup setups security
-func Setup() {
+// Security setups security
+func Security() func() gin.HandlerFunc {
 	var err error
 	SecurityMiddleware, err = jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "yoyo",
@@ -60,7 +60,7 @@ func Setup() {
 				return nil, err
 			}
 
-			return user, nil
+			return user.ID, nil
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
 			c.JSON(code, core.FailedResponse(strconv.Itoa(code), message))
@@ -76,4 +76,6 @@ func Setup() {
 	if err != nil {
 		logger.Panicf("Failed to setup security: %s", err)
 	}
+
+	return SecurityMiddleware.MiddlewareFunc
 }
