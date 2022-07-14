@@ -16,7 +16,7 @@ type Model struct {
 	ModifyTime *datatypes.LocalTime `json:"modifyTime" gorm:"autoUpdateTime;comment:更新时间"`
 }
 
-func (m *Model) BeforeCreate(tx *gorm.DB) (err error) {
+func (m *Model) BeforeSave(tx *gorm.DB) (err error) {
 	if m.ID == "" {
 		id := uuid.NewString()
 		id = strings.ReplaceAll(id, "-", "")
