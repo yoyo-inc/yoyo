@@ -1,8 +1,8 @@
 package routes
 
 import (
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	jwt "github.com/yoyo-inc/gin-jwt/v3"
 	"github.com/yoyo-inc/yoyo/common/db"
 	"github.com/yoyo-inc/yoyo/common/logger"
 	"github.com/yoyo-inc/yoyo/core"
