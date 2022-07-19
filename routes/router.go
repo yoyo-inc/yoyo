@@ -14,6 +14,7 @@ func init() {
 	controllers = []core.Controller{
 		&loginController{},
 		&userController{},
+		&notificationController{},
 	}
 }
 
