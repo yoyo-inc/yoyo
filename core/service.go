@@ -7,7 +7,7 @@ import (
 )
 
 func Paginator(c *gin.Context) func(db *gorm.DB) *gorm.DB {
-	page := getParam(c, "page", 1)
+	page := getParam(c, "current", 1)
 	pageSize := getParam(c, "pageSize", 10)
 
 	return func(db *gorm.DB) *gorm.DB {
