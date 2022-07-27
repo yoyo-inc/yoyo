@@ -5,3 +5,6 @@ server:
   base_path: "/api"
 db:
   dns: "yoyo:yoyo@tcp(localhost:3306)/yoyo?charset=utf8mb4,utf8&parseTime=True&loc=Local"
+logger:
+  rolling_file:
+    base_dir: "./logs"
