@@ -3,7 +3,7 @@
 //		server:
 //			host: '127.0.0.1'
 //			port:	'8080'
-//			basepath: ''
+//			base_path: ''
 //    db:
 //			dns: root:123456@tcp(127.0.0.1:3306)/yoyo?charset=utf8mb4&parseTime=True&loc=Local
 package config
@@ -79,4 +79,8 @@ func GetStringMapString(key string) map[string]string {
 
 func GetStringMap(key string) map[string]interface{} {
 	return viper.GetStringMap(key)
+}
+
+func UnmarshalKey(key string, value interface{}) error {
+	return viper.UnmarshalKey(key, value)
 }
