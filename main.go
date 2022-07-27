@@ -12,13 +12,40 @@ import (
 	"github.com/yoyo-inc/yoyo/routes"
 )
 
+func ReadLoggerConfig() logger.Options {
+	var options logger.Options
+	options.Service = config.GetString("name")
+
+	options.Level = config.GetString("logger.level")
+
+	// logger
+	// syslog
+	if config.Get("logger.syslog") != nil {
+		var syslog logger.SyslogOption
+		err := config.UnmarshalKey("logger.syslog", &syslog)
+		if err != nil {
+			logger.Error(err)
+		}
+		options.Syslog = &syslog
+	}
+	// rollingFile
+	if config.Get("logger.rolling_file") != nil {
+		var rollingFileOption logger.RollingFileOption
+		err := config.UnmarshalKey("logger.rolling_file", &rollingFileOption)
+		if err != nil {
+			logger.Error(err)
+		}
+		options.RollingFile = &rollingFileOption
+	}
+
+	return options
+}
+
 func main() {
 	// config
 	config.Setup()
 	// logger
-	logger.Setup(logger.Options{
-		Service: config.GetString("name"),
-	})
+	logger.Setup(ReadLoggerConfig())
 	// db
 	db.Setup()
 	// i18n
