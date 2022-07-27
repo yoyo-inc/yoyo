@@ -15,28 +15,6 @@ import (
 	"github.com/yoyo-inc/yoyo/common/logger"
 )
 
-// Config contains user custom configuration
-var Config Application
-
-// DB contains database connection
-type DB struct {
-	DNS string
-}
-
-// Server contains server configuration
-type Server struct {
-	Host     string
-	Port     string
-	BasePath string `mapstructure:"base_path"`
-}
-
-// Application contains application configuration
-type Application struct {
-	Name   string
-	Server Server
-	DB     DB
-}
-
 // Setup setups config parser
 func Setup() {
 	// application config file name: application.yml
@@ -58,11 +36,6 @@ func Setup() {
 		panic(fmt.Errorf("Fatal to read config file: %w", err))
 	}
 
-	err = viper.Unmarshal(&Config)
-	if err != nil {
-		panic(fmt.Errorf("Fatal to unmarshal config: %w", err))
-	}
-
 	logger.Info("Load config file successfully")
 }
 
@@ -70,4 +43,40 @@ func setDefaultConfig() {
 	viper.SetDefault("name", "default")
 	viper.SetDefault("server.host", "127.0.0.1")
 	viper.SetDefault("server.port", "8080")
+}
+
+func Get(key string) interface{} {
+	return viper.Get(key)
+}
+
+func GetString(key string) string {
+	return viper.GetString(key)
+}
+
+func GetInt(key string) int {
+	return viper.GetInt(key)
+}
+
+func GetSlice(key string) []interface{} {
+	return GetSlice(key)
+}
+
+func GetIntSlice(key string) []int {
+	return viper.GetIntSlice(key)
+}
+
+func GetStringSlice(key string) []string {
+	return viper.GetStringSlice(key)
+}
+
+func GetMap(key string) map[string]string {
+	return GetStringMapString(key)
+}
+
+func GetStringMapString(key string) map[string]string {
+	return viper.GetStringMapString(key)
+}
+
+func GetStringMap(key string) map[string]interface{} {
+	return viper.GetStringMap(key)
 }
