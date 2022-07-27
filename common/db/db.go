@@ -16,7 +16,7 @@ var AutoMigrateMethods []func(db *gorm.DB)
 
 // Setup setups database connection
 func Setup() {
-	dns := config.Config.DB.DNS
+	dns := config.GetString("db.dns")
 	var err error
 	Client, err = gorm.Open(mysql.Open(dns), &gorm.Config{})
 

@@ -8,13 +8,13 @@ import (
 	"github.com/yoyo-inc/yoyo/docs"
 )
 
-func Setup(r *gin.RouterGroup, config config.Application) {
-	if config.Name != "" {
-		docs.SwaggerInfo.Title = config.Name
+func Setup(r *gin.RouterGroup) {
+	if config.GetString("name") != "" {
+		docs.SwaggerInfo.Title = config.GetString("name")
 	} else {
 		docs.SwaggerInfo.Title = "yoyo"
 	}
 	docs.SwaggerInfo.Version = "1.0.0"
-	docs.SwaggerInfo.BasePath = config.Server.BasePath
+	docs.SwaggerInfo.BasePath = config.GetString("server.base_path")
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 }
