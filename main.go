@@ -17,7 +17,7 @@ func main() {
 	config.Setup()
 	// logger
 	logger.Setup(logger.Options{
-		Service: config.Config.Name,
+		Service: config.GetString("name"),
 	})
 	// db
 	db.Setup()
@@ -39,14 +39,14 @@ func main() {
 
 	// base_path
 	r := &engine.RouterGroup
-	if config.Config.Server.BasePath != "" {
-		r = engine.Group(config.Config.Server.BasePath)
+	if config.GetString("server.base_path") != "" {
+		r = engine.Group(config.GetString("server.base_path"))
 	}
 
-	swag.Setup(r, config.Config)
+	swag.Setup(r)
 	routes.Setup(r)
 
-	address := config.Config.Server.Host + ":" + config.Config.Server.Port
+	address := config.GetString("server.host") + ":" + config.GetString("server.port")
 	logger.Infof("Listen and Serving HTTP on http://%s", address)
 
 	// startup
