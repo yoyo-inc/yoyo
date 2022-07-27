@@ -1,6 +1,7 @@
 package logger
 
 import (
+	logrus_rollingfile_hook "github.com/gfremex/logrus-rollingfile-hook"
 	"github.com/sirupsen/logrus"
 	logrusSyslog "github.com/sirupsen/logrus/hooks/syslog"
 	"log/syslog"
@@ -15,11 +16,16 @@ type SyslogOption struct {
 	Priority syslog.Priority
 }
 
+type RollingFileOption struct {
+	BaseDir string `mapstructure:"base_dir"`
+}
+
 // Options contains logger options
 type Options struct {
-	Service string
-	Level   string
-	Syslog  *SyslogOption
+	Service     string
+	Level       string
+	Syslog      *SyslogOption
+	RollingFile *RollingFileOption
 }
 
 // Setup setups logger
@@ -58,10 +64,25 @@ func Setup(options Options) {
 	if options.Syslog != nil {
 		SetupSyslog(service, options.Syslog)
 	}
+
+	if options.RollingFile != nil {
+		SetupRollingFile(service, options.RollingFile)
+	}
 }
 
 func SetupSyslog(service string, option *SyslogOption) {
 	hook, err := logrusSyslog.NewSyslogHook(option.Network, option.Addr, option.Priority, service)
+	if err != nil {
+		logger.Error(err)
+		return
+	} else {
+		logger.AddHook(hook)
+	}
+}
+
+func SetupRollingFile(service string, option *RollingFileOption) {
+	filenamePattern := strings.TrimSuffix(option.BaseDir, "/") + "/" + service + "-%Y-%m-%d.log"
+	hook, err := logrus_rollingfile_hook.NewTimeBasedRollingFileHook("rolling-file", logrus.AllLevels, &TextFormatter{Service: service}, filenamePattern)
 	if err != nil {
 		logger.Error(err)
 		return
