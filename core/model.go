@@ -11,9 +11,9 @@ type Model struct {
 	// 主键
 	ID string `json:"id" gorm:"primarykey;size:32;comment:主键"`
 	// 创建时间
-	CreateTime *datatypes.LocalTime `json:"createTime" gorm:"autoCreateTime;comment:创建时间"`
+	CreateTime *datatypes.LocalTime `json:"createTime" gorm:"type:timestamp;default:current_timestamp;<-:create;comment:创建时间"`
 	// 更新时间
-	ModifyTime *datatypes.LocalTime `json:"modifyTime" gorm:"autoUpdateTime;comment:更新时间"`
+	ModifyTime *datatypes.LocalTime `json:"modifyTime" gorm:"type:timestamp;default:current_timestamp on update current_timestamp;comment:更新时间"`
 }
 
 func (m *Model) BeforeSave(tx *gorm.DB) (err error) {
