@@ -31,6 +31,7 @@ type Options struct {
 // Setup setups logger
 func Setup(options Options) {
 	logger = *logrus.New()
+	logger.ReportCaller = true
 
 	service := "default"
 	if options.Service != "" {
