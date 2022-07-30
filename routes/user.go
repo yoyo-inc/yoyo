@@ -29,7 +29,7 @@ func (*userController) RetrieveUser(c *gin.Context) {
 	}
 
 	var users []models.User
-	if result := db.Client.Model(&models.User{}).Where(&query).Scopes(core.Paginator(c)).Find(&users); result.Error != nil {
+	if result := db.Client.Model(&models.User{}).Omit("username").Where(&query).Where("username like %?%", query.Username).Scopes(core.Paginator(c)).Find(&users); result.Error != nil {
 		logger.Error(result.Error)
 		c.Error(errs.ErrQueryUser)
 		return
