@@ -16,7 +16,7 @@ type Model struct {
 	ModifyTime *datatypes.LocalTime `json:"modifyTime" gorm:"type:timestamp;default:current_timestamp on update current_timestamp;comment:更新时间"`
 }
 
-func (m *Model) BeforeSave(tx *gorm.DB) (err error) {
+func (m *Model) BeforeCreate(tx *gorm.DB) (err error) {
 	if m.ID == "" {
 		id := uuid.NewString()
 		id = strings.ReplaceAll(id, "-", "")
