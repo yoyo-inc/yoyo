@@ -19,7 +19,7 @@ type userController struct{}
 // @Produce  json
 // @Param    query  query    models.QueryUser   false  "参数"
 // @Param    query  query    models.Pagination  false  "参数"
-// @Success  200    {array}  core.Response{data=core.PaginatedData{list=[]models.User}}
+// @Success  200    {object}  core.Response{data=core.PaginatedData{list=[]models.User}}
 // @Router   /user [get]
 func (*userController) RetrieveUser(c *gin.Context) {
 	var query models.QueryUser
@@ -29,7 +29,12 @@ func (*userController) RetrieveUser(c *gin.Context) {
 	}
 
 	var users []models.User
-	if result := db.Client.Model(&models.User{}).Omit("username").Where(&query).Where("username like %?%", query.Username).Scopes(core.Paginator(c)).Find(&users); result.Error != nil {
+	modelQuery := db.Client.Model(&models.User{})
+	if query.Username != "" {
+		modelQuery.Where("username like %?%", query.Username)
+		query.Username = ""
+	}
+	if result := modelQuery.Where(&query).Scopes(core.Paginator(c)).Find(&users); result.Error != nil {
 		logger.Error(result.Error)
 		c.Error(errs.ErrQueryUser)
 		return
