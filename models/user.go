@@ -69,7 +69,7 @@ func (user User) Check(actual string) bool {
 	return user.Password == utils.Encrypt(actual)
 }
 
-func (user *User) BeforeCreate(tx *gorm.DB) (err error) {
+func (user *User) BeforeSave(tx *gorm.DB) (err error) {
 	if user.Password != "" {
 		user.Password = utils.Encrypt(user.Password)
 	}
