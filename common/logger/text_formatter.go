@@ -2,6 +2,7 @@ package logger
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -9,7 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const basicTimeLayout = "2006-01-02 15:04:05.000"
+const DateTimeLayout = "2006-01-02 15:04:05.000"
 
 // TextFormatter provides
 type TextFormatter struct {
@@ -24,9 +25,12 @@ func (f *TextFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	} else {
 		buf = &bytes.Buffer{}
 	}
+	if buf == nil {
+		return nil, errors.New("entry buffer nil")
+	}
 
 	// timestamp
-	timestamp := time.Now().Format(basicTimeLayout)
+	timestamp := time.Now().Format(DateTimeLayout)
 	buf.WriteString("[")
 	buf.WriteString(timestamp)
 	buf.WriteString("] ")
