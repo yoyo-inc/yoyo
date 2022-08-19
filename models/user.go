@@ -79,8 +79,6 @@ func (user *User) BeforeSave(tx *gorm.DB) (err error) {
 func (user *User) BeforeUpdate(tx *gorm.DB) (err error) {
 	if user.Password == "" {
 		tx.Statement.Omit("password")
-	} else {
-		user.Password = utils.Encrypt(user.Password)
 	}
 	return
 }
