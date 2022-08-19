@@ -1,6 +1,6 @@
 module github.com/yoyo-inc/yoyo
 
-go 1.17
+go 1.18
 
 require (
 	github.com/gfremex/logrus-rollingfile-hook v0.0.0-20180720051747-a075fdd5dccf
