@@ -1,11 +1,13 @@
 // Package config provide read custom configuration from file or environment variables
 // Example:
-//		server:
-//			host: '127.0.0.1'
-//			port:	'8080'
-//			base_path: ''
-//    db:
-//			dns: root:123456@tcp(127.0.0.1:3306)/yoyo?charset=utf8mb4&parseTime=True&loc=Local
+//   server:
+//	   host: '127.0.0.1'
+//     port:	'8080'
+//     base_path: ''
+//   db:
+//     dns: root:123456@tcp(127.0.0.1:3306)/yoyo?charset=utf8mb4&parseTime=True&loc=Local
+//     logger:
+//       level: info
 package config
 
 import (
