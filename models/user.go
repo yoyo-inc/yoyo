@@ -11,28 +11,17 @@ import (
 // User represents user model
 type User struct {
 	core.Model
-	// 账户名
-	Username string `json:"username" gorm:"size:15;unique;not null;index;comment:账户名" binding:"required,min=0,max=15"`
-	// 昵称
-	Nickname string `json:"nickname" gorm:"size:255;index;comment:昵称" binding:"max=255"`
-	// 密码
-	Password string `json:"password,omitempty" gorm:"size:255;not null;comment:密码" binding:"max=255"`
-	// 邮箱
-	Email string `json:"email" gorm:"size:255;comment:邮箱" binding:"email,max=255"`
-	// 手机号
-	Phone string `json:"phone" gorm:"size:11;comment:手机号" binding:"len=11"`
-	// 头像
-	Avatar string `json:"avatar" gorm:"size:255;comment:头像" binding:"max=255"`
-	// 性别 0: 男 1: 女
-	Sex int `json:"sex" gorm:"comment:性别"`
-	// 年龄
-	Age int `json:"age" gorm:"comment:年龄"`
-	// 角色
-	Roles []Role `json:"roles" gorm:"many2many:user_roles"`
-	// 组织ID
-	OrganizationID string `json:"organizationID" gorm:"comment:组织ID"`
-	// 组织
-	Organization Organization `json:"organization"`
+	Username       string       `json:"username" gorm:"size:15;unique;not null;index;comment:账户名" binding:"required,min=0,max=15"` // 账户名
+	Nickname       string       `json:"nickname" gorm:"size:255;index;comment:昵称" binding:"max=255"`                               // 昵称
+	Password       string       `json:"password,omitempty" gorm:"size:255;not null;comment:密码" binding:"max=255"`                  // 密码
+	Email          string       `json:"email" gorm:"size:255;comment:邮箱" binding:"email,max=255"`                                  // 邮箱
+	Phone          string       `json:"phone" gorm:"size:11;comment:手机号" binding:"len=11"`                                         // 手机号
+	Avatar         string       `json:"avatar" gorm:"size:255;comment:头像" binding:"max=255"`                                       // 头像
+	Sex            int          `json:"sex" gorm:"comment:性别"`                                                                     // 性别 0: 男 1: 女
+	Age            int          `json:"age" gorm:"comment:年龄"`                                                                     // 年龄
+	Roles          []Role       `json:"roles" gorm:"many2many:user_roles"`                                                         // 角色
+	OrganizationID string       `json:"organizationID" gorm:"comment:组织ID"`                                                        // 组织ID
+	Organization   Organization `json:"organization"`                                                                              // 组织
 }
 
 func init() {
