@@ -7,23 +7,18 @@ import (
 )
 
 func Paginator(c *gin.Context) func(db *gorm.DB) *gorm.DB {
-	page := getParam(c, "current", 1)
-	pageSize := getParam(c, "pageSize", 10)
+	page, _ := strconv.Atoi(getParam(c, "current", "1"))
+	pageSize, _ := strconv.Atoi(getParam(c, "pageSize", "10"))
 
 	return func(db *gorm.DB) *gorm.DB {
 		return db.Limit(pageSize).Offset((page - 1) * pageSize)
 	}
 }
 
-func getParam(c *gin.Context, key string, defaultValue int) int {
+func getParam(c *gin.Context, key string, defaultValue string) string {
 	var result = defaultValue
 	if param, exists := c.GetQuery(key); exists {
-		var err error
-		result, err = strconv.Atoi(param)
-		if err != nil {
-			result = defaultValue
-		}
+		result = param
 	}
-
 	return result
 }
