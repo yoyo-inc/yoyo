@@ -15,6 +15,7 @@ func init() {
 		&loginController{},
 		&userController{},
 		&notificationController{},
+		&auditLogController{},
 	}
 }
 
