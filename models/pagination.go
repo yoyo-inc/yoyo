@@ -1,8 +1,6 @@
 package models
 
 type Pagination struct {
-	// 页数
-	Current int `json:"current"`
-	// 每页大小
-	PageSize int `json:"pageSize"`
+	Current  int `json:"current"`  // 页数
+	PageSize int `json:"pageSize"` // 每页大小
 }
