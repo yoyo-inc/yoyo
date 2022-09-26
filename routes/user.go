@@ -17,7 +17,7 @@ import (
 
 type userController struct{}
 
-// Retrieve
+// RetrieveUser
 // @Summary  查询用户列表
 // @Tags     user
 // @Produce  json
@@ -25,7 +25,7 @@ type userController struct{}
 // @Param    query  query    models.Pagination  false  "参数"
 // @Success  200    {object}  core.Response{data=core.PaginatedData{list=[]models.User}}
 // @Router   /user [get]
-func (*userController) Retrieve(c *gin.Context) {
+func (*userController) RetrieveUser(c *gin.Context) {
 	var query models.QueryUser
 	if err := c.ShouldBindQuery(&query); err != nil {
 		c.Error(core.NewParameterError(err.Error()))
@@ -156,7 +156,7 @@ func (*userController) RetrieveCurrentUser(c *gin.Context) {
 }
 
 func (user *userController) Setup(r *gin.RouterGroup) {
-	r.GET("/user", user.Retrieve).
+	r.GET("/user", user.RetrieveUser).
 		POST("/user", user.CreateUser).
 		PUT("/user", user.UpdateUser).
 		DELETE("/user/:userID", user.DeleteUser).
