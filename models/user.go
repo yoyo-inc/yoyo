@@ -71,10 +71,3 @@ func (user *User) BeforeUpdate(tx *gorm.DB) (err error) {
 	}
 	return
 }
-
-type QueryUser struct {
-	// 账户名
-	Username string `form:"username"`
-	// 手机号
-	Phone string `form:"phone"`
-}
