@@ -17,7 +17,7 @@ import (
 
 type userController struct{}
 
-// RetrieveUser
+// RetrieveUsers
 // @Summary  查询用户列表
 // @Tags     user
 // @Produce  json
@@ -25,28 +25,30 @@ type userController struct{}
 // @Param    query  query    models.Pagination  false  "参数"
 // @Success  200    {object}  core.Response{data=core.PaginatedData{list=[]models.User}}
 // @Router   /user [get]
-func (*userController) RetrieveUser(c *gin.Context) {
+func (*userController) RetrieveUsers(c *gin.Context) {
 	var query models.QueryUser
 	if err := c.ShouldBindQuery(&query); err != nil {
 		c.Error(core.NewParameterError(err.Error()))
 		return
 	}
 
-	var users []models.User
-	modelQuery := db.Client.Model(&models.User{})
-	if query.Username != "" {
-		modelQuery.Where("username like %?%", query.Username)
-		query.Username = ""
+	queries := core.GetPaginatedQuery(&models.User{})
+	for i := range queries {
+		if query.Username != "" {
+			queries[i].Where("username like %?%", query.Username)
+			query.Username = ""
+		}
 	}
 
-	if result := modelQuery.Where(&query).Scopes(core.Paginator(c)).Find(&users); result.Error != nil {
+	var users []models.User
+	if result := queries[0].Scopes(core.Paginator(c)).Find(&users); result.Error != nil {
 		logger.Error(result.Error)
 		c.Error(errs.ErrQueryUser)
 		return
 	}
 
 	var total int64
-	if result := db.Client.Model(&models.User{}).Where(&query).Count(&total); result.Error != nil {
+	if result := queries[1].Count(&total); result.Error != nil {
 		logger.Error(result.Error)
 		c.Error(errs.ErrQueryUser)
 		return
@@ -156,7 +158,7 @@ func (*userController) RetrieveCurrentUser(c *gin.Context) {
 }
 
 func (user *userController) Setup(r *gin.RouterGroup) {
-	r.GET("/user", user.RetrieveUser).
+	r.GET("/user", user.RetrieveUsers).
 		POST("/user", user.CreateUser).
 		PUT("/user", user.UpdateUser).
 		DELETE("/user/:userID", user.DeleteUser).
