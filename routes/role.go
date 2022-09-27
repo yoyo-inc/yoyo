@@ -11,7 +11,7 @@ import (
 
 type roleController struct{}
 
-// RetrieveRole returns role list
+// RetrieveRoles returns role list
 // @Summary  查询角色列表
 // @Tags     role
 // @Accept   json
@@ -19,7 +19,7 @@ type roleController struct{}
 // @Param    query  query     models.QueryRole  true  "参数"
 // @Success  200    {object}  core.Response
 // @Router   /role  [get]
-func (role *roleController) RetrieveRole(c *gin.Context) {
+func (role *roleController) RetrieveRoles(c *gin.Context) {
 	var query models.QueryRole
 	if err := c.ShouldBindJSON(&query); err != nil {
 		c.Error(core.NewParameterError(err.Error()))
