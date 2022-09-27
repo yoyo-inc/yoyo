@@ -12,6 +12,7 @@ import (
 	"github.com/yoyo-inc/yoyo/middlewares"
 	"github.com/yoyo-inc/yoyo/models"
 	"github.com/yoyo-inc/yoyo/services/audit_log"
+	"github.com/yoyo-inc/yoyo/vo"
 	"gorm.io/gorm"
 )
 
@@ -21,12 +22,12 @@ type userController struct{}
 // @Summary  查询用户列表
 // @Tags     user
 // @Produce  json
-// @Param    query  query    models.QueryUser   false  "参数"
+// @Param    query  query    vo.QueryUser   false  "参数"
 // @Param    query  query    models.Pagination  false  "参数"
 // @Success  200    {object}  core.Response{data=core.PaginatedData{list=[]models.User}}
 // @Router   /user [get]
 func (*userController) RetrieveUsers(c *gin.Context) {
-	var query models.QueryUser
+	var query vo.QueryUser
 	if err := c.ShouldBindQuery(&query); err != nil {
 		c.Error(core.NewParameterError(err.Error()))
 		return
@@ -35,20 +36,20 @@ func (*userController) RetrieveUsers(c *gin.Context) {
 	queries := core.GetPaginatedQuery(&models.User{})
 	for i := range queries {
 		if query.Username != "" {
-			queries[i].Where("username like %?%", query.Username)
+			queries[i].Where("username like ?", "%"+query.Username+"%")
 			query.Username = ""
 		}
 	}
 
 	var users []models.User
-	if result := queries[0].Scopes(core.Paginator(c)).Find(&users); result.Error != nil {
+	if result := queries[0].Scopes(core.Paginator(c)).Where(query).Find(&users); result.Error != nil {
 		logger.Error(result.Error)
 		c.Error(errs.ErrQueryUser)
 		return
 	}
 
 	var total int64
-	if result := queries[1].Count(&total); result.Error != nil {
+	if result := queries[1].Where(query).Count(&total); result.Error != nil {
 		logger.Error(result.Error)
 		c.Error(errs.ErrQueryUser)
 		return
