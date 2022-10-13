@@ -24,6 +24,12 @@ type User struct {
 	Organization   Organization `json:"organization"`                                                                              // 组织
 }
 
+// UserRole represents the relations between user and role
+type UserRole struct {
+	UserID string `json:"userID"`
+	RoleID string `json:"roleID"`
+}
+
 func init() {
 	db.AddAutoMigrateModel(&User{})
 	db.AddAutoMigrateMethods(func(client *gorm.DB) {
@@ -36,10 +42,10 @@ func init() {
 			return
 		}
 
-		client.Debug().Create(&User{
+		client.Create(&User{
 			Username: "admin",
 			Nickname: "admin",
-			Password: "qaz321!@#",
+			Password: "qaz123!@#",
 			Email:    "",
 			Phone:    "",
 			Avatar:   "https://joeschmoe.io/api/v1/random",
