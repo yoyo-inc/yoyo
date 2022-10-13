@@ -15,7 +15,7 @@ type auditLogController struct {
 // @Summary  查询操作日志列表
 // @Tags     auditLog
 // @Produce  json
-// @Param    query  query    models.Pagination  false  "参数"
+// @Param    query  query     models.Pagination  false  "参数"
 // @Success  200    {object}  core.Response{data=core.PaginatedData{list=[]models.AuditLog}}
 // @Router   /audit_log [get]
 func (*auditLogController) Retrieve(c *gin.Context) {
