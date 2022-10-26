@@ -17,7 +17,7 @@ require (
 	github.com/swaggo/swag v1.8.1
 	github.com/yoyo-inc/gin-jwt/v3 v3.0.2
 	gorm.io/driver/mysql v1.3.3
-	gorm.io/gorm v1.23.4
+	gorm.io/gorm v1.24.0
 )
 
 require (
