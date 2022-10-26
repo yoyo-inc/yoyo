@@ -11,14 +11,14 @@ import (
 type auditLogController struct {
 }
 
-// Retrieve
+// QueryAuditLog
 // @Summary  查询操作日志列表
 // @Tags     auditLog
 // @Produce  json
 // @Param    query  query     models.Pagination  false  "参数"
 // @Success  200    {object}  core.Response{data=core.PaginatedData{list=[]models.AuditLog}}
 // @Router   /audit_log [get]
-func (*auditLogController) Retrieve(c *gin.Context) {
+func (*auditLogController) QueryAuditLog(c *gin.Context) {
 	var auditLogs []models.AuditLog
 	quires := core.GetPaginatedQuery(&models.AuditLog{})
 	if res := quires[0].Scopes(core.Paginator(c)).Find(&auditLogs); res.Error != nil {
@@ -36,5 +36,5 @@ func (*auditLogController) Retrieve(c *gin.Context) {
 }
 
 func (alc *auditLogController) Setup(r *gin.RouterGroup) {
-	r.GET("/audit_log", alc.Retrieve)
+	r.GET("/audit_logs", alc.QueryAuditLog)
 }

@@ -12,13 +12,13 @@ import (
 
 type permissionController struct{}
 
-// RetrievePermissions
+// QueryPermissions
 // @Summary  查询列表
 // @Tags     permissions
 // @Produce  json
 // @Success  200  {object}  core.Response{data=vo.PermissionVO}
 // @Router   /permissions [get]
-func (*permissionController) RetrievePermissions(c *gin.Context) {
+func (*permissionController) QueryPermissions(c *gin.Context) {
 	var permissions []models.Permission
 	if res := db.Client.Model(&models.Permission{}).Find(&permissions); res.Error != nil {
 		logger.Error(res.Error)
@@ -50,5 +50,5 @@ func (*permissionController) RetrievePermissions(c *gin.Context) {
 }
 
 func (permission *permissionController) Setup(r *gin.RouterGroup) {
-	r.GET("/permissions", permission.RetrievePermissions)
+	r.GET("/permissions", permission.QueryPermissions)
 }

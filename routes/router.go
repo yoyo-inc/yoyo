@@ -14,9 +14,15 @@ func init() {
 	controllers = []core.Controller{
 		&loginController{},
 		&userController{},
+		&roleController{},
+		&permissionController{},
 		&notificationController{},
 		&auditLogController{},
 	}
+}
+
+func AddService(controller core.Controller) {
+	controllers = append(controllers, controller)
 }
 
 func Setup(r *gin.RouterGroup) {
