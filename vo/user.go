@@ -1,6 +1,13 @@
 package vo
 
-type QueryUser struct {
+import "github.com/yoyo-inc/yoyo/models"
+
+type UserVO struct {
+	models.User
+	Roles []string `json:"roles"`
+}
+
+type QueryUserVO struct {
 	// 账户名
 	Username string `form:"username"`
 	// 手机号
