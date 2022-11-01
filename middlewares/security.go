@@ -63,7 +63,7 @@ func Security() func() gin.HandlerFunc {
 			return user.ID, nil
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
-			c.JSON(code, core.FailedResponse(strconv.Itoa(code), message))
+			c.JSON(code, core.NewFailedResponse(strconv.Itoa(code), message))
 		},
 		LoginResponse: func(c *gin.Context, code int, token string, expire time.Time) {
 			core.OK(c, map[string]interface{}{

@@ -1,9 +1,10 @@
 package middlewares
 
 import (
-	"github.com/yoyo-inc/yoyo/common/logger"
 	"net/http"
 	"strconv"
+
+	"github.com/yoyo-inc/yoyo/common/logger"
 
 	"github.com/gin-gonic/gin"
 	"github.com/yoyo-inc/yoyo/core"
@@ -21,10 +22,10 @@ func OnError() gin.HandlerFunc {
 
 		if e, ok := err.Err.(core.ParameterError); ok {
 			logger.Error(e)
-			c.AbortWithStatusJSON(http.StatusBadRequest, core.FailedResponse(strconv.Itoa(http.StatusBadRequest), e.Error()))
+			c.AbortWithStatusJSON(http.StatusBadRequest, core.NewFailedResponse(strconv.Itoa(http.StatusBadRequest), e.Error()))
 		}
 		if e, ok := err.Err.(core.BusinessError); ok {
-			c.AbortWithStatusJSON(http.StatusOK, core.FailedResponse(e.Code, e.Message))
+			c.AbortWithStatusJSON(http.StatusOK, core.NewFailedResponse(e.Code, e.Message))
 		}
 	}
 }
