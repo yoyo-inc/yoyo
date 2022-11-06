@@ -2,7 +2,6 @@ package models
 
 import (
 	"github.com/yoyo-inc/yoyo/common/db"
-	"github.com/yoyo-inc/yoyo/common/logger"
 	"github.com/yoyo-inc/yoyo/core"
 	"github.com/yoyo-inc/yoyo/utils"
 	"gorm.io/gorm"
@@ -20,7 +19,7 @@ type User struct {
 	Sex            int          `json:"sex" gorm:"comment:性别"`                                                                     // 性别 0: 男 1: 女
 	Age            int          `json:"age" gorm:"comment:年龄"`                                                                     // 年龄
 	Roles          []Role       `json:"roles" gorm:"many2many:user_roles"`                                                         // 角色
-	OrganizationID string       `json:"organizationID" gorm:"comment:组织ID"`                                                        // 组织ID
+	OrganizationID int          `json:"organizationID" gorm:"comment:组织ID"`                                                        // 组织ID
 	Organization   Organization `json:"organization"`                                                                              // 组织
 }
 
@@ -32,31 +31,31 @@ type UserRole struct {
 
 func init() {
 	db.AddAutoMigrateModel(&User{})
-	db.AddAutoMigrateMethods(func(client *gorm.DB) {
-		var count int64
-		if res := client.Model(&User{}).Where("username = 'admin'").Count(&count); res.Error != nil {
-			logger.Error(res.Error)
-			return
-		}
-		if count > 0 {
-			return
-		}
-
-		client.Create(&User{
-			Username: "admin",
-			Nickname: "admin",
-			Password: "qaz123!@#",
-			Email:    "",
-			Phone:    "",
-			Avatar:   "https://joeschmoe.io/api/v1/random",
-			Sex:      0,
-			Age:      0,
-			Organization: Organization{
-				Name:     "yoyo",
-				ParentID: "0",
-			},
-		})
-	})
+	// db.AddAutoMigrateMethods(func(client *gorm.DB) {
+	// 	var count int64
+	// 	if res := client.Model(&User{}).Where("username = 'admin'").Count(&count); res.Error != nil {
+	// 		logger.Error(res.Error)
+	// 		return
+	// 	}
+	// 	if count > 0 {
+	// 		return
+	// 	}
+	//
+	// 	client.Create(&User{
+	// 		Username: "admin",
+	// 		Nickname: "admin",
+	// 		Password: "qaz123!@#",
+	// 		Email:    "",
+	// 		Phone:    "",
+	// 		Avatar:   "https://joeschmoe.io/api/v1/random",
+	// 		Sex:      0,
+	// 		Age:      0,
+	// 		Organization: Organization{
+	// 			Name:     "yoyo",
+	// 			ParentID: "0",
+	// 		},
+	// 	})
+	// })
 }
 
 // Check checks whether the passwords are the same
