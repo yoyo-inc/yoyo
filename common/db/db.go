@@ -1,8 +1,12 @@
 package db
 
 import (
+	"strings"
+
 	"github.com/yoyo-inc/yoyo/common/config"
+	"github.com/yoyo-inc/yoyo/common/datatypes"
 	"github.com/yoyo-inc/yoyo/common/logger"
+	"github.com/yoyo-inc/yoyo/resources"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	log "gorm.io/gorm/logger"
@@ -11,7 +15,7 @@ import (
 // Client provides the ability to manipulate database
 var Client *gorm.DB
 
-//AutoMigrateModels contains all models which to be migrated
+// AutoMigrateModels contains all models which to be migrated
 var AutoMigrateModels []interface{}
 var AutoMigrateMethods []func(db *gorm.DB)
 
@@ -29,7 +33,6 @@ func Setup() {
 		logger.Info("Connect database successfully")
 	}
 
-	logger.Info("Begin to autoMigrate")
 	autoMigrate()
 }
 
@@ -56,23 +59,83 @@ func AddAutoMigrateMethods(method func(client *gorm.DB)) {
 	AutoMigrateMethods = append(AutoMigrateMethods, method)
 }
 
-func MigrateModels(models []interface{}) {
+func RunMigrateModels(models []interface{}) bool {
 	if err := Client.
 		Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4").
 		AutoMigrate(
 			models...,
 		); err != nil {
 		logger.Error(err)
+		return false
 	}
+	return true
 }
 
-func MigrateMethods(methods []func(db *gorm.DB)) {
+func RunMigrateMethods(methods []func(db *gorm.DB)) {
 	for _, method := range methods {
 		method(Client)
 	}
 }
 
+func MigrateFromFile() bool {
+	sql := string(resources.DefaultSql)
+	blocks := strings.Split(sql, ";")
+	for _, block := range blocks {
+		s := strings.Trim(block, "\n")
+		s = strings.Trim(s, "\r\n")
+		if s == "" {
+			continue
+		}
+
+		if res := Client.Exec(s); res.Error != nil {
+			logger.Error(res.Error)
+			return false
+		}
+	}
+	return true
+}
+
+type AutoMigrateModel struct {
+	// 主键
+	ID int `json:"id" gorm:"primarykey;autoIncreatment;comment:主键"`
+	// 创建时间
+	CreateTime *datatypes.LocalTime `json:"createTime" gorm:"type:timestamp;default:current_timestamp;<-:create;comment:创建时间"`
+}
+
+func (AutoMigrateModel) TableName() string {
+	return "_automigrate"
+}
+
+func canMigrate() bool {
+	var migrateCount int64
+	if res := Client.Model(&AutoMigrateModel{}).Count(&migrateCount); res.Error != nil {
+		logger.Error(res.Error)
+		return false
+	}
+
+	return migrateCount == 0
+}
+
+func recordMigrate() {
+	if res := Client.Model(&AutoMigrateModel{}).Create(&AutoMigrateModel{}); res.Error != nil {
+		logger.Error(res.Error)
+	}
+}
+
 func autoMigrate() {
-	MigrateModels(AutoMigrateModels)
-	MigrateMethods(AutoMigrateMethods)
+	RunMigrateModels([]interface{}{&AutoMigrateModel{}})
+	if !canMigrate() {
+		return
+	}
+
+	logger.Info("Begin to autoMigrate")
+	if !RunMigrateModels(AutoMigrateModels) {
+		return
+	}
+	RunMigrateMethods(AutoMigrateMethods)
+	if !MigrateFromFile() {
+		return
+	}
+
+	recordMigrate()
 }
