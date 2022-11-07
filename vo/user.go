@@ -4,7 +4,7 @@ import "github.com/yoyo-inc/yoyo/models"
 
 type UserVO struct {
 	models.User
-	Roles []string `json:"roles"`
+	Roles []int `json:"roles"`
 }
 
 type QueryUserVO struct {
