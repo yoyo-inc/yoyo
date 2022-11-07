@@ -16,5 +16,5 @@ func Setup(r *gin.RouterGroup) {
 	}
 	docs.SwaggerInfo.Version = "1.0.0"
 	docs.SwaggerInfo.BasePath = config.GetString("server.base_path")
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler, ginSwagger.PersistAuthorization(true)))
 }
