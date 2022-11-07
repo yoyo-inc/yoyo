@@ -3,5 +3,5 @@ package utils
 import "testing"
 
 func TestEncrypt(t *testing.T) {
-	print(Encrypt("qaz321!@#"))
+	print(Encrypt("qaz123#@!"))
 }
