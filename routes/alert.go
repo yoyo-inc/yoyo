@@ -17,13 +17,14 @@ func init() {
 }
 
 // QueryAlerts
-// @Summary  查询告警列表
-// @Tags     alert
-// @Produce  json
-// @Param    query  query     vo.QueryAlertVO    false  "参数"
-// @Param    query  query     models.Pagination  false  "参数"
-// @Success  200    {object}  core.Response{data=core.PaginatedData{list=[]models.Alert}}
-// @Router   /alerts [get]
+// @Summary 查询告警列表
+// @Tags    alert
+// @Produce json
+// @Param   query query    vo.QueryAlertVO   false "参数"
+// @Param   query query    models.Pagination false "参数"
+// @Success 200   {object} core.Response{data=core.PaginatedData{list=[]models.Alert}}
+// @Security JWT
+// @Router  /alerts [get]
 func (*alertController) QueryAlerts(c *gin.Context) {
 	var query vo.QueryAlertVO
 	if err := c.ShouldBindQuery(&query); err != nil {
@@ -51,13 +52,14 @@ func (*alertController) QueryAlerts(c *gin.Context) {
 }
 
 // UpdateAlert
-// @Summary  更新告警
-// @Tags     alert
-// @Accept   json
-// @Produce  json
-// @Param    query  body      vo.UpdateAlertVO  true  "告警信息"
-// @Success  200    {object}  core.Response{data=bool}
-// @Router   /alert [put]
+// @Summary 更新告警
+// @Tags    alert
+// @Accept  json
+// @Produce json
+// @Param   query body     vo.UpdateAlertVO true "告警信息"
+// @Success 200   {object} core.Response{data=bool}
+// @Security JWT
+// @Router  /alert [put]
 func (*alertController) UpdateAlert(c *gin.Context) {
 	var query vo.UpdateAlertVO
 	if err := c.ShouldBindJSON(&query); err != nil {

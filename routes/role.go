@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"strconv"
+
 	"github.com/duke-git/lancet/v2/slice"
 	"github.com/gin-gonic/gin"
 	"github.com/yoyo-inc/yoyo/common/db"
@@ -16,13 +18,14 @@ import (
 type roleController struct{}
 
 // QueryRoles
-// @Summary  查询角色列表
-// @Tags     role
-// @Accept   json
-// @Produce  json
-// @Param    query  query     vo.QueryRoleVO  true  "参数"
-// @Success  200    {object}  core.Response
-// @Router   /roles  [get]
+// @Summary 查询角色列表
+// @Tags    role
+// @Accept  json
+// @Produce json
+// @Param   query query    vo.QueryRoleVO true "参数"
+// @Success 200   {object} core.Response
+// @Security JWT
+// @Router  /roles  [get]
 func (*roleController) QueryRoles(c *gin.Context) {
 	var query vo.QueryRoleVO
 	if err := c.ShouldBindQuery(&query); err != nil {
@@ -55,13 +58,14 @@ func (*roleController) QueryRoles(c *gin.Context) {
 }
 
 // CreateRole
-// @Summary  创建角色
-// @Tags     role
-// @Accept   json
-// @Produce  json
-// @Param    query  body      vo.RoleVO  true  "参数"
-// @Success  200     {object}  core.Response{data=boolean}
-// @Router   /role  [post]
+// @Summary 创建角色
+// @Tags    role
+// @Accept  json
+// @Produce json
+// @Param   query body     vo.RoleVO true "参数"
+// @Success 200   {object} core.Response{data=boolean}
+// @Security JWT
+// @Router  /role  [post]
 func (*roleController) CreateRole(c *gin.Context) {
 	var query vo.RoleVO
 	if err := c.ShouldBindJSON(&query); err != nil {
@@ -99,25 +103,27 @@ func (*roleController) CreateRole(c *gin.Context) {
 }
 
 // DeleteRole
-// @Summary  删除角色
-// @Tags     role
-// @Accept   json
-// @Produce  json
-// @Param    roleID  path      string  true  "参数"
-// @Success  200    {object}  core.Response{data=boolean}
-// @Router   /role/{roleID}  [delete]
+// @Summary 删除角色
+// @Tags    role
+// @Accept  json
+// @Produce json
+// @Param   roleID path     string true "参数"
+// @Success 200    {object} core.Response{data=boolean}
+// @Security JWT
+// @Router  /role/{roleID}  [delete]
 func (*roleController) DeleteRole(c *gin.Context) {
 	roleID := c.Param("roleID")
+	id, _ := strconv.Atoi(roleID)
 
 	var existRole models.Role
-	if res := db.Client.Where("id = ?", roleID).First(&existRole); res.Error != nil {
+	if res := db.Client.Where("id = ?", id).First(&existRole); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrNotExistRole)
 		return
 	}
 
 	// delete associations
-	if res := db.Client.Select(clause.Associations).Delete(&models.Role{Model: core.Model{ID: roleID}}); res.Error != nil {
+	if res := db.Client.Select(clause.Associations).Delete(&models.Role{Model: core.Model{ID: id}}); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrDeleteRole)
 		return
@@ -127,13 +133,14 @@ func (*roleController) DeleteRole(c *gin.Context) {
 }
 
 // UpdateRole
-// @Summary  更新角色
-// @Tags     role
-// @Accept   json
-// @Produce  json
-// @Param    query  body      vo.RoleVO  true  "参数"
-// @Success  200    {object}  core.Response{data=boolean}
-// @Router   /role  [put]
+// @Summary 更新角色
+// @Tags    role
+// @Accept  json
+// @Produce json
+// @Param   query body     vo.RoleVO true "参数"
+// @Success 200   {object} core.Response{data=boolean}
+// @Security JWT
+// @Router  /role  [put]
 func (*roleController) UpdateRole(c *gin.Context) {
 	var query vo.RoleVO
 
@@ -152,7 +159,7 @@ func (*roleController) UpdateRole(c *gin.Context) {
 	// process role associations
 	// process user permissions
 	if query.Permissions != nil {
-		permissions := slice.Map(query.Permissions, func(_ int, permissionID string) models.Permission {
+		permissions := slice.Map(query.Permissions, func(_ int, permissionID int) models.Permission {
 			return models.Permission{Model: core.Model{ID: permissionID}}
 		})
 
