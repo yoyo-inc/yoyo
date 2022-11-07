@@ -31,31 +31,6 @@ type UserRole struct {
 
 func init() {
 	db.AddAutoMigrateModel(&User{})
-	// db.AddAutoMigrateMethods(func(client *gorm.DB) {
-	// 	var count int64
-	// 	if res := client.Model(&User{}).Where("username = 'admin'").Count(&count); res.Error != nil {
-	// 		logger.Error(res.Error)
-	// 		return
-	// 	}
-	// 	if count > 0 {
-	// 		return
-	// 	}
-	//
-	// 	client.Create(&User{
-	// 		Username: "admin",
-	// 		Nickname: "admin",
-	// 		Password: "qaz123!@#",
-	// 		Email:    "",
-	// 		Phone:    "",
-	// 		Avatar:   "https://joeschmoe.io/api/v1/random",
-	// 		Sex:      0,
-	// 		Age:      0,
-	// 		Organization: Organization{
-	// 			Name:     "yoyo",
-	// 			ParentID: "0",
-	// 		},
-	// 	})
-	// })
 }
 
 // Check checks whether the passwords are the same
