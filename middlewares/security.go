@@ -36,7 +36,7 @@ func Security() func() gin.HandlerFunc {
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(models.User); ok {
 				return jwt.MapClaims{
-					IdentityKey: v.ID,
+					IdentityKey: strconv.Itoa(v.ID),
 				}
 			}
 
@@ -60,7 +60,7 @@ func Security() func() gin.HandlerFunc {
 				return nil, err
 			}
 
-			return user.ID, nil
+			return user, nil
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
 			c.JSON(code, core.NewFailedResponse(strconv.Itoa(code), message))
