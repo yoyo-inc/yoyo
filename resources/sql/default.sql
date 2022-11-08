@@ -14,7 +14,7 @@ VALUES
   ('log', '日志管理', 1);
 
 INSERT INTO
-  roles (name, remark, default)
+  roles (name, remark, is_default)
 VALUES
   ('管理员', '', 1),
   ('操作员', '', 1),
