@@ -14,11 +14,11 @@ VALUES
   ('log', '日志管理', 1);
 
 INSERT INTO
-  roles (name, remark)
+  roles (name, remark, default)
 VALUES
-  ('管理员', ''),
-  ('操作员', ''),
-  ('审计员', '');
+  ('管理员', '', 1),
+  ('操作员', '', 1),
+  ('审计员', '', 1);
 
 INSERT INTO
   role_permissions (role_id, permission_id)
@@ -58,3 +58,8 @@ VALUES
     18,
     1
   );
+
+INSERT INTO
+  user_roles (user_id, role_id)
+VALUES
+  (1, 1)
