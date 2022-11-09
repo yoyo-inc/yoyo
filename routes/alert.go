@@ -29,7 +29,7 @@ func (*alertController) QueryAlerts(c *gin.Context) {
 	var query vo.QueryAlertVO
 	if err := c.ShouldBindQuery(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err.Error()))
+		c.Error(core.NewParameterError(err))
 		return
 	}
 	queries := core.GetPaginatedQuery(&models.Alert{})
@@ -64,7 +64,7 @@ func (*alertController) UpdateAlert(c *gin.Context) {
 	var query vo.UpdateAlertVO
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err.Error()))
+		c.Error(core.NewParameterError(err))
 		return
 	}
 
