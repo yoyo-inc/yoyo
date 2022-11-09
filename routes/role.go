@@ -29,7 +29,7 @@ type roleController struct{}
 func (*roleController) QueryRoles(c *gin.Context) {
 	var query vo.QueryRoleVO
 	if err := c.ShouldBindQuery(&query); err != nil {
-		c.Error(core.NewParameterError(err.Error()))
+		c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -69,7 +69,7 @@ func (*roleController) QueryRoles(c *gin.Context) {
 func (*roleController) CreateRole(c *gin.Context) {
 	var query vo.RoleVO
 	if err := c.ShouldBindJSON(&query); err != nil {
-		c.Error(core.NewParameterError(err.Error()))
+		c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -146,7 +146,7 @@ func (*roleController) UpdateRole(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
-		c.Error(err)
+		c.Error(core.NewParameterError(err))
 		return
 	}
 
