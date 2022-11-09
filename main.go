@@ -8,6 +8,7 @@ import (
 	"github.com/yoyo-inc/yoyo/common/i18n"
 	"github.com/yoyo-inc/yoyo/common/logger"
 	"github.com/yoyo-inc/yoyo/common/swag"
+	"github.com/yoyo-inc/yoyo/common/validator"
 	"github.com/yoyo-inc/yoyo/middlewares"
 	"github.com/yoyo-inc/yoyo/routes"
 )
@@ -59,6 +60,8 @@ func main() {
 	i18n.Setup()
 	// hub
 	hub.Setup()
+	// validator
+	validator.Setup()
 
 	engine := gin.New()
 	// middlewares
