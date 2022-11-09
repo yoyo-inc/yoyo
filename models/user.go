@@ -11,11 +11,11 @@ import (
 type User struct {
 	core.Model
 	Username       string       `json:"username" gorm:"size:15;unique;not null;index;comment:账户名" binding:"required,min=0,max=15"` // 账户名
-	Nickname       string       `json:"nickname" gorm:"size:255;index;comment:昵称" binding:"max=255"`                               // 昵称
+	Nickname       string       `json:"nickname" gorm:"size:255;index;comment:昵称" binding:"omitempty,max=255"`                     // 昵称
 	Password       string       `json:"password,omitempty" gorm:"size:255;not null;comment:密码" binding:"max=255"`                  // 密码
-	Email          string       `json:"email" gorm:"size:255;comment:邮箱" binding:"email,max=255"`                                  // 邮箱
-	Phone          string       `json:"phone" gorm:"size:11;comment:手机号" binding:"len=11"`                                         // 手机号
-	Avatar         string       `json:"avatar" gorm:"size:255;comment:头像" binding:"max=255"`                                       // 头像
+	Email          string       `json:"email" gorm:"size:255;comment:邮箱" binding:"omitempty,email,max=255"`                        // 邮箱
+	Phone          string       `json:"phone" gorm:"size:11;comment:手机号" binding:"omitempty,len=11"`                               // 手机号
+	Avatar         string       `json:"avatar" gorm:"size:255;comment:头像" binding:"omitempty,max=255"`                             // 头像
 	Sex            int          `json:"sex" gorm:"comment:性别"`                                                                     // 性别 0: 男 1: 女
 	Age            int          `json:"age" gorm:"comment:年龄"`                                                                     // 年龄
 	Roles          []Role       `json:"roles" gorm:"many2many:user_roles"`                                                         // 角色
