@@ -32,7 +32,7 @@ type userController struct{}
 func (*userController) QueryUsers(c *gin.Context) {
 	var query vo.QueryUserVO
 	if err := c.ShouldBindQuery(&query); err != nil {
-		c.Error(core.NewParameterError(err.Error()))
+		c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -45,7 +45,7 @@ func (*userController) QueryUsers(c *gin.Context) {
 	}
 
 	var users []models.User
-	if res := queries[0].Preload("Roles").Scopes(core.Paginator(c)).Where(query).Find(&users); res.Error != nil {
+	if res := queries[0].Preload("Roles").Omit("password").Scopes(core.Paginator(c)).Where(query).Find(&users); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQueryUser)
 		return
@@ -73,7 +73,7 @@ func (*userController) QueryUsers(c *gin.Context) {
 func (*userController) CreateUser(c *gin.Context) {
 	var query vo.UserVO
 	if err := c.ShouldBindJSON(&query); err != nil {
-		c.Error(core.NewParameterError(err.Error()))
+		c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -119,11 +119,11 @@ func (*userController) CreateUser(c *gin.Context) {
 func (*userController) UpdateUser(c *gin.Context) {
 	var query vo.UserVO
 	if err := c.ShouldBindJSON(&query); err != nil {
-		c.Error(core.NewParameterError(err.Error()))
+		c.Error(core.NewParameterError(err))
 		return
 	}
 
-	if res := db.Client.Save(&query.User); res.Error != nil {
+	if res := db.Client.Where("id = ?", query.ID).Updates(&query.User); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrUpdateUser)
 		audit_log.Fail(c, "用户", "更新", "用户名："+query.Username)
@@ -136,10 +136,11 @@ func (*userController) UpdateUser(c *gin.Context) {
 		roles := slice.Map(query.Roles, func(_ int, roleID int) models.Role {
 			return models.Role{Model: core.Model{ID: roleID}}
 		})
-		if err := db.Client.Model(&models.User{}).Association("Roles").Replace(roles); err != nil {
+		if err := db.Client.Model(&models.User{Model: core.Model{ID: query.ID}}).Association("Roles").Replace(roles); err != nil {
 			logger.Error(err)
 			c.Error(errs.ErrUpdateUser)
 			audit_log.Fail(c, "用户", "更新", "用户名："+query.Username)
+			return
 		}
 	}
 	audit_log.Success(c, "用户", "更新", "用户名："+query.Username)
