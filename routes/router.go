@@ -18,6 +18,7 @@ func init() {
 		&permissionController{},
 		&notificationController{},
 		&auditLogController{},
+		&alertController{},
 	}
 }
 
