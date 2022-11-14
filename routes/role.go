@@ -36,12 +36,12 @@ func (*roleController) QueryRoles(c *gin.Context) {
 	queries := core.GetPaginatedQuery(&models.Role{})
 	for i := range queries {
 		if query.Name != "" {
-			queries[i].Where("name = ?", "%"+query.Name+"%")
+			queries[i].Where("name like ?", "%"+query.Name+"%")
 		}
 	}
 	query.Name = ""
 	var roles []models.Role
-	if res := queries[0].Scopes(core.Paginator(c)).Where(&query).Find(&roles); res.Error != nil {
+	if res := queries[0].Preload("Permissions").Scopes(core.Paginator(c)).Where(&query).Find(&roles); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQueryRole)
 		return
