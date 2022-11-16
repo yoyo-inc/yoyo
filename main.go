@@ -5,7 +5,6 @@ import (
 	"github.com/yoyo-inc/yoyo/common/config"
 	"github.com/yoyo-inc/yoyo/common/db"
 	"github.com/yoyo-inc/yoyo/common/hub"
-	"github.com/yoyo-inc/yoyo/common/i18n"
 	"github.com/yoyo-inc/yoyo/common/logger"
 	"github.com/yoyo-inc/yoyo/common/swag"
 	"github.com/yoyo-inc/yoyo/common/validator"
@@ -42,13 +41,13 @@ func ReadLoggerConfig() logger.Options {
 	return options
 }
 
-// @Title yoyo
-// @Description yoyo
-// @Host 127.0.0.1:8080
-// @BasePath /API
+// @Title                      yoyo
+// @Description                yoyo
+// @Host                       127.0.0.1:8080
+// @BasePath                   /API
 // @SecurityDefinitions.apikey JWT
-// @In header
-// @Name Authorization
+// @In                         header
+// @Name                       Authorization
 func main() {
 	// config
 	config.Setup()
@@ -56,8 +55,6 @@ func main() {
 	logger.Setup(ReadLoggerConfig())
 	// db
 	db.Setup()
-	// i18n
-	i18n.Setup()
 	// hub
 	hub.Setup()
 	// validator
