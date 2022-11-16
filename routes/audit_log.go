@@ -15,13 +15,13 @@ type auditLogController struct {
 }
 
 // QueryAuditLog
-// @Summary 查询审计日志列表
-// @Tags    auditLog
-// @Produce json
-// @Param   query query    models.Pagination false "参数"
-// @Success 200   {object} core.Response{data=core.PaginatedData{list=[]models.AuditLog}}
+// @Summary  查询审计日志列表
+// @Tags     auditLog
+// @Produce  json
+// @Param    query query    models.Pagination false "参数"
+// @Success  200   {object} core.Response{data=core.PaginatedData{list=[]models.AuditLog}}
 // @Security JWT
-// @Router  /audit_logs [get]
+// @Router   /audit_logs [get]
 func (*auditLogController) QueryAuditLog(c *gin.Context) {
 	var query vo.QueryAuditLogVO
 	if err := c.ShouldBindQuery(&query); err != nil {
@@ -47,12 +47,12 @@ func (*auditLogController) QueryAuditLog(c *gin.Context) {
 }
 
 // QueryAuditLogModules
-// @Summary 查询审计日志列表
-// @Tags    auditLog
-// @Produce json
-// @success 200   {object} core.Response{data=array,string}}
+// @Summary  查询审计日志列表
+// @Tags     auditLog
+// @Produce  json
+// @success  200 {object} core.Response{data=array,string}}
 // @security jwt
-// @Router  /audit_log/modules [get]
+// @Router   /audit_log/modules [get]
 func (*auditLogController) QueryAuditLogModules(c *gin.Context) {
 	var auditLogs []models.AuditLog
 	if res := db.Client.Model(&models.AuditLog{}).Select("module").Distinct("module").Find(&auditLogs); res.Error != nil {

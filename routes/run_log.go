@@ -12,14 +12,14 @@ import (
 type runLog struct{}
 
 // QueryRunLogVO
-// @Summary 查询运行日志列表
-// @Tags    runLog
-// @Produce json
-// @Param   query query    vo.QueryRunLogVO    false "参数"
-// @Param   query query    models.Pagination false "参数"
-// @Success 200   {object} core.Response{data=core.PaginatedData{list=[]models.RunLog}}
+// @Summary  查询运行日志列表
+// @Tags     runLog
+// @Produce  json
+// @Param    query query    vo.QueryRunLogVO  false "参数"
+// @Param    query query    models.Pagination false "参数"
+// @Success  200   {object} core.Response{data=core.PaginatedData{list=[]models.RunLog}}
 // @Security JWT
-// @Router  /runlogs [get]
+// @Router   /runlogs [get]
 func (*runLog) QueryRunLogs(c *gin.Context) {
 	var query vo.QueryRunLogVO
 	if err := c.ShouldBindQuery(&query); err != nil {

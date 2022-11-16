@@ -18,14 +18,14 @@ import (
 type roleController struct{}
 
 // QueryRoles
-// @Summary 查询角色列表
-// @Tags    role
-// @Accept  json
-// @Produce json
-// @Param   query query    vo.QueryRoleVO true "参数"
-// @Success 200   {object} core.Response
+// @Summary  查询角色列表
+// @Tags     role
+// @Accept   json
+// @Produce  json
+// @Param    query query    vo.QueryRoleVO true "参数"
+// @Success  200   {object} core.Response
 // @Security JWT
-// @Router  /roles  [get]
+// @Router   /roles  [get]
 func (*roleController) QueryRoles(c *gin.Context) {
 	var query vo.QueryRoleVO
 	if err := c.ShouldBindQuery(&query); err != nil {
@@ -58,14 +58,14 @@ func (*roleController) QueryRoles(c *gin.Context) {
 }
 
 // CreateRole
-// @Summary 创建角色
-// @Tags    role
-// @Accept  json
-// @Produce json
-// @Param   query body     vo.RoleVO true "参数"
-// @Success 200   {object} core.Response{data=boolean}
+// @Summary  创建角色
+// @Tags     role
+// @Accept   json
+// @Produce  json
+// @Param    query body     vo.RoleVO true "参数"
+// @Success  200   {object} core.Response{data=boolean}
 // @Security JWT
-// @Router  /role  [post]
+// @Router   /role  [post]
 func (*roleController) CreateRole(c *gin.Context) {
 	var query vo.RoleVO
 	if err := c.ShouldBindJSON(&query); err != nil {
@@ -103,14 +103,14 @@ func (*roleController) CreateRole(c *gin.Context) {
 }
 
 // DeleteRole
-// @Summary 删除角色
-// @Tags    role
-// @Accept  json
-// @Produce json
-// @Param   roleID path     string true "参数"
-// @Success 200    {object} core.Response{data=boolean}
+// @Summary  删除角色
+// @Tags     role
+// @Accept   json
+// @Produce  json
+// @Param    roleID path     string true "参数"
+// @Success  200    {object} core.Response{data=boolean}
 // @Security JWT
-// @Router  /role/{roleID}  [delete]
+// @Router   /role/{roleID}  [delete]
 func (*roleController) DeleteRole(c *gin.Context) {
 	roleID := c.Param("roleID")
 	id, _ := strconv.Atoi(roleID)
@@ -133,14 +133,14 @@ func (*roleController) DeleteRole(c *gin.Context) {
 }
 
 // UpdateRole
-// @Summary 更新角色
-// @Tags    role
-// @Accept  json
-// @Produce json
-// @Param   query body     vo.RoleVO true "参数"
-// @Success 200   {object} core.Response{data=boolean}
+// @Summary  更新角色
+// @Tags     role
+// @Accept   json
+// @Produce  json
+// @Param    query body     vo.RoleVO true "参数"
+// @Success  200   {object} core.Response{data=boolean}
 // @Security JWT
-// @Router  /role  [put]
+// @Router   /role  [put]
 func (*roleController) UpdateRole(c *gin.Context) {
 	var query vo.RoleVO
 

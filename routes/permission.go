@@ -13,12 +13,12 @@ import (
 type permissionController struct{}
 
 // QueryPermissions
-// @Summary 查询列表
-// @Tags    permissions
-// @Produce json
-// @Success 200 {object} core.Response{data=vo.PermissionVO}
+// @Summary  查询列表
+// @Tags     permissions
+// @Produce  json
+// @Success  200 {object} core.Response{data=vo.PermissionVO}
 // @Security JWT
-// @Router  /permissions [get]
+// @Router   /permissions [get]
 func (*permissionController) QueryPermissions(c *gin.Context) {
 	var permissions []models.Permission
 	if res := db.Client.Model(&models.Permission{}).Find(&permissions); res.Error != nil {
