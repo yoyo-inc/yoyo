@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/yoyo-inc/yoyo/common/config"
-	"github.com/yoyo-inc/yoyo/common/datatypes"
+	"github.com/yoyo-inc/yoyo/common/dt"
 	"github.com/yoyo-inc/yoyo/common/logger"
 	"github.com/yoyo-inc/yoyo/resources"
 	"gorm.io/driver/mysql"
@@ -99,7 +99,7 @@ type AutoMigrateModel struct {
 	// 主键
 	ID int `json:"id" gorm:"primarykey;autoIncreatment;comment:主键"`
 	// 创建时间
-	CreateTime *datatypes.LocalTime `json:"createTime" gorm:"type:timestamp;default:current_timestamp;<-:create;comment:创建时间"`
+	CreateTime *dt.LocalTime `json:"createTime" gorm:"type:timestamp;default:current_timestamp;<-:create;comment:创建时间"`
 }
 
 func (AutoMigrateModel) TableName() string {
