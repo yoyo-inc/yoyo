@@ -17,6 +17,8 @@ require (
 	github.com/swaggo/gin-swagger v1.5.3
 	github.com/swaggo/swag v1.8.7
 	github.com/yoyo-inc/gin-jwt/v3 v3.0.2
+	golang.org/x/crypto v0.1.0
+	gorm.io/datatypes v1.0.7
 	gorm.io/driver/mysql v1.4.3
 	gorm.io/gorm v1.24.0
 )
@@ -54,7 +56,6 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
-	golang.org/x/crypto v0.1.0 // indirect
 	golang.org/x/net v0.1.0 // indirect
 	golang.org/x/sys v0.1.0 // indirect
 	golang.org/x/text v0.4.0 // indirect
