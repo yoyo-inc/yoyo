@@ -1,9 +1,10 @@
 package core
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"strconv"
 )
 
 func Paginator(c *gin.Context) func(db *gorm.DB) *gorm.DB {
@@ -12,6 +13,21 @@ func Paginator(c *gin.Context) func(db *gorm.DB) *gorm.DB {
 
 	return func(db *gorm.DB) *gorm.DB {
 		return db.Limit(pageSize).Offset((page - 1) * pageSize)
+	}
+}
+
+func DateTimeRanger(c *gin.Context) func(db *gorm.DB) *gorm.DB {
+	startTime := getParam(c, "startTime", "")
+	endTime := getParam(c, "endTime", "")
+
+	if startTime == "" || endTime == "" {
+		return func(db *gorm.DB) *gorm.DB {
+			return db
+		}
+	}
+
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Where("create_time between ? and ?", startTime, endTime)
 	}
 }
 
