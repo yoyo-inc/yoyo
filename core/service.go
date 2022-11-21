@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +17,7 @@ func Paginator(c *gin.Context) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
-func DateTimeRanger(c *gin.Context) func(db *gorm.DB) *gorm.DB {
+func DateTimeRanger(c *gin.Context, fieldName string) func(db *gorm.DB) *gorm.DB {
 	startTime := getParam(c, "startTime", "")
 	endTime := getParam(c, "endTime", "")
 
@@ -26,8 +27,12 @@ func DateTimeRanger(c *gin.Context) func(db *gorm.DB) *gorm.DB {
 		}
 	}
 
+	if fieldName == "" {
+		fieldName = "create_time"
+	}
+
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Where("create_time between ? and ?", startTime, endTime)
+		return db.Where(fmt.Sprintf("%s between ? and ?", fieldName), startTime, endTime)
 	}
 }
 
