@@ -106,6 +106,7 @@ func (AutoMigrateModel) TableName() string {
 	return "_automigrate"
 }
 
+// TODO:compare version
 func canMigrate() bool {
 	var migrateCount int64
 	if res := Client.Model(&AutoMigrateModel{}).Count(&migrateCount); res.Error != nil {
@@ -129,10 +130,13 @@ func autoMigrate() {
 	}
 
 	logger.Info("Begin to autoMigrate")
+	// migrate models
 	if !RunMigrateModels(AutoMigrateModels) {
 		return
 	}
+	// migrate methods
 	RunMigrateMethods(AutoMigrateMethods)
+	// migrate from file
 	if !MigrateFromFile() {
 		return
 	}
