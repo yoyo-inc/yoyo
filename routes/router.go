@@ -19,6 +19,7 @@ func init() {
 		&notificationController{},
 		&auditLogController{},
 		&alertController{},
+		&systemSettingController{},
 	}
 }
 
@@ -30,6 +31,7 @@ func Setup(r *gin.RouterGroup) {
 	middlewares.SecurityMiddleware.AddIgnore(
 		"/api/login",
 		"/api/swagger/*path",
+		"/system/settings",
 	)
 
 	for _, sc := range controllers {
