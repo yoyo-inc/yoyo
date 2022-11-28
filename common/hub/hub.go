@@ -1,10 +1,11 @@
 package hub
 
 import (
-	"github.com/gorilla/websocket"
-	"github.com/yoyo-inc/yoyo/common/logger"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/websocket"
+	"github.com/yoyo-inc/yoyo/common/logger"
 )
 
 var hub Hub
