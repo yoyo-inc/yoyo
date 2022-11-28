@@ -3,11 +3,19 @@ package routes
 import (
 	"errors"
 	"fmt"
+	"net/http"
+	"reflect"
 	"strconv"
+	"strings"
 
+	"github.com/duke-git/lancet/v2/slice"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-module/carbon/v2"
 	jsoniter "github.com/json-iterator/go"
+	"github.com/prometheus/alertmanager/template"
 	"github.com/yoyo-inc/yoyo/common/db"
+	"github.com/yoyo-inc/yoyo/common/dt"
+	"github.com/yoyo-inc/yoyo/common/hub"
 	"github.com/yoyo-inc/yoyo/common/logger"
 	"github.com/yoyo-inc/yoyo/core"
 	"github.com/yoyo-inc/yoyo/errs"
@@ -18,11 +26,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type alertController struct{}
-
-func init() {
-	AddService(&alertController{})
+var TypeMappings = map[string]string{
+	"host":    "主机",
+	"service": "服务",
 }
+
+type alertController struct{}
 
 // QueryAlerts
 // @Summary 查询告警列表
@@ -43,14 +52,14 @@ func (*alertController) QueryAlerts(c *gin.Context) {
 	queries := core.GetPaginatedQuery(&models.Alert{})
 
 	var alerts []models.Alert
-	if res := queries[0].Scopes(core.Paginator(c)).Find(&alerts); res.Error != nil {
+	if res := queries[0].Scopes(core.Paginator(c), core.DateTimeRanger(c, "start_at")).Where(&query).Find(&alerts); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQueryAlert)
 		return
 	}
 
 	var count int64
-	if res := queries[1].Count(&count); res.Error != nil {
+	if res := queries[1].Scopes(core.DateTimeRanger(c, "start_at")).Where(&query).Count(&count); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQueryAlert)
 		return
@@ -59,33 +68,60 @@ func (*alertController) QueryAlerts(c *gin.Context) {
 	core.OK(c, core.Paginated(alerts, count))
 }
 
-// UpdateAlert
-// @Summary 更新告警
+// QueryAlertTypes
+// @Summary 查询告警类型
 // @Tags    alert
 // @Accept  json
 // @Produce json
-// @Param   query body     vo.UpdateAlertVO true "告警信息"
+// @Success 200   {object} core.Response{data=array,vo.Record}
+// @Security JWT
+// @Router  /alert/types [get]
+func (*alertController) QueryAlertTypes(c *gin.Context) {
+	var types = []vo.Record[string]{
+		{
+			Label: "主机",
+			Value: "host",
+		},
+		{
+			Label: "服务",
+			Value: "service",
+		},
+	}
+
+	core.OK(c, types)
+}
+
+// ResolvedAlert
+// @Summary 处置告警
+// @Tags    alert
+// @Accept  json
+// @Produce json
+// @Param   body body     vo.ResolveAlertVO true "参数"
 // @Success 200   {object} core.Response{data=bool}
 // @Security JWT
-// @Router  /alert [put]
-func (*alertController) UpdateAlert(c *gin.Context) {
-	var query vo.UpdateAlertVO
+// @Router  /alert/resolve [post]
+func (*alertController) ResolvedAlert(c *gin.Context) {
+	var query vo.ResolveAlertVO
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
 		c.Error(core.NewParameterError(err))
 		return
 	}
 
-	if res := db.Client.Updates(&query); res.Error != nil {
+	if res := db.Client.Model(&models.Alert{}).Where("id = ?", query.ID).Updates(map[string]interface{}{
+		"remark":          query.Remark,
+		"resolved_status": 1,
+		"status":          1,
+	}); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrUpdateAlert)
+		c.Error(errs.ErrResolveAlert)
 		return
 	}
 
-	audit_log.Success(c, "告警", "处置", "")
-
 	core.OK(c, true)
 }
+
+func (*alertController) IgnoreAlert(c *gin.Context) {}
 
 // GetAlertConfig
 // @Summary 查询告警配置
@@ -185,7 +221,7 @@ func (*alertController) QueryAlertAccesses(c *gin.Context) {
 		}
 	}
 	var alertAccesses []models.AlertAccess
-	if res := queries[0].Scopes(core.Paginator(c), core.DateTimeRanger(c)).Find(&alertAccesses); res.Error != nil {
+	if res := queries[0].Scopes(core.Paginator(c), core.DateTimeRanger(c, "")).Find(&alertAccesses); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQueryAlertAccess)
 		return
@@ -292,13 +328,293 @@ func (*alertController) DeleteAlertAccess(c *gin.Context) {
 	core.OK(c, true)
 }
 
+func (*alertController) AccessAlert(c *gin.Context) {
+	var accesses []models.AlertAccess
+	if res := db.Client.Model(&models.AlertAccess{}).Find(&accesses); res.Error != nil {
+		logger.Error(res.Error)
+		c.Error(errs.ErrQueryAlertAccess)
+		return
+	}
+
+	var remoteIP string
+	if ip := c.GetHeader("X-Real-IP"); ip != "" {
+		remoteIP = ip
+	} else {
+		if proxy := c.GetHeader("X-Forwarded-For"); proxy != "" {
+			ips := strings.Split(proxy, ",")
+			if len(ips) > 0 {
+				remoteIP = strings.TrimSpace(ips[0])
+			}
+		} else {
+			remoteIP = c.RemoteIP()
+		}
+	}
+
+	logger.Info(remoteIP)
+
+	if access, ok := slice.Find(accesses, func(_ int, item models.AlertAccess) bool {
+		return item.AccessIP == remoteIP
+	}); ok {
+		// has right
+		var body interface{}
+		json := jsoniter.ConfigCompatibleWithStandardLibrary
+		if err := json.NewDecoder(c.Request.Body).Decode(&body); err != nil {
+			logger.Error(err)
+			c.Error(core.NewParameterError("参数有误"))
+			return
+		}
+
+		assertStr := func(value reflect.Value, field string) (string, bool) {
+			var s string
+			if v := value.MapIndex(reflect.ValueOf(field)); v.IsValid() {
+				s = (v.Interface()).(string)
+				return s, true
+			}
+			return s, false
+		}
+
+		transform := func(value reflect.Value) error {
+			var alert models.Alert
+			if v, ok := assertStr(value, access.StartAtField); ok {
+				t := carbon.Parse(v).Carbon2Time()
+				alert.StartAt = (*dt.LocalTime)(&t)
+			}
+			if v, ok := assertStr(value, access.TypeField); ok {
+				alert.Type = v
+			}
+			if v, ok := assertStr(value, access.LevelField); ok {
+				alert.Level = v
+			}
+			if v, ok := assertStr(value, access.ContentField); ok {
+				alert.Content = v
+			}
+			alert.From = access.AccessIP
+
+			if res := db.Client.Create(&alert); res.Error != nil {
+				logger.Error(res.Error)
+				return res.Error
+			}
+
+			return nil
+		}
+
+		switch reflect.TypeOf(body).Kind() {
+		case reflect.Slice:
+			value := reflect.ValueOf(body)
+			for i := 0; i < value.Len(); i++ {
+				transform(value.Index(i))
+			}
+		case reflect.Map:
+			transform(reflect.ValueOf(body))
+		}
+	} else {
+		// have not right
+		c.AbortWithStatus(http.StatusForbidden)
+	}
+}
+
+// Webhook
+func (*alertController) Webhook(c *gin.Context) {
+	var message template.Data
+	if err := c.ShouldBindJSON(&message); err != nil {
+		logger.Error(err)
+		c.Error(errs.ErrReceiveAlertmanagerMessage)
+		return
+	}
+
+	var pushes []models.AlertPush
+	if res := db.Client.Model(&models.AlertPush{}).Find(&pushes); res.Error != nil {
+		logger.Error(res.Error)
+	}
+
+	json := jsoniter.ConfigCompatibleWithStandardLibrary
+	for _, alert := range message.Alerts {
+		var modelAlert models.Alert
+		modelAlert.From = "本系统"
+		modelAlert.Level = alert.Labels["severity"]
+		modelAlert.Type = convertType(alert.Labels["group"])
+		modelAlert.Content = alert.Annotations["summary"]
+		modelAlert.StartAt = (*dt.LocalTime)(&alert.StartsAt)
+
+		if res := db.Client.Create(&modelAlert); res.Error != nil {
+			logger.Error(res.Error)
+		}
+
+		// broadcast alert to site station
+		msg, _ := json.MarshalToString(&modelAlert)
+		hub.SendMessage(msg)
+
+		// broadcast alert to third party platform
+		if pushes != nil && len(pushes) > 0 {
+			for _, push := range pushes {
+				if ok := services.PushAlert(push, msg); !ok {
+					// faile to push message
+					logger.Errorf("Failed to push %s to %v", msg, push)
+				}
+			}
+		}
+	}
+
+	core.OK(c, true)
+}
+
+// QueryAlertCount
+// @Summary 查询告警数量
+// @Tags    alert
+// @Accept  json
+// @Produce json
+// @Param   query query    vo.QueryAlertCountVO   false "参数"
+// @Success 200   {object} core.Response{data=boolean}
+// @Security JWT
+// @Router  /alert/count [get]
+func (*alertController) QueryAlertCount(c *gin.Context) {
+	var query vo.QueryAlertCountVO
+	if err := c.ShouldBindQuery(&query); err != nil {
+		logger.Error(err)
+		c.Error(core.NewParameterError(err))
+		return
+	}
+
+	var count int64
+	if res := db.Client.Model(&models.Alert{}).Where(&query).Count(&count); res.Error != nil {
+		logger.Error(res.Error)
+		c.Error(errs.ErrQueryAlertCount)
+		return
+	}
+
+	core.OK(c, count)
+}
+
+func convertType(t string) string {
+	if convertedType, ok := TypeMappings[t]; ok {
+		return convertedType
+	} else {
+		return t
+	}
+}
+
+// QueryAlertPushConfigs
+// @Summary 查询告警推送设置
+// @Tags    alert
+// @Accept  json
+// @Produce json
+// @Success 200   {object} core.Response{data=core.PaginatedData{data=models.AlertPush}}
+// @Security JWT
+// @Router  /alert/push [get]
+func (*alertController) QueryAlertPush(c *gin.Context) {
+	queries := core.GetPaginatedQuery(&models.AlertPush{})
+	var alertPushes []models.AlertPush
+	if res := queries[0].Find(&alertPushes); res.Error != nil {
+		logger.Error(res.Error)
+		c.Error(errs.ErrQueryAlertPush)
+		return
+	}
+
+	var count int64
+	if res := queries[1].Count(&count); res.Error != nil {
+		logger.Error(res.Error)
+		c.Error(errs.ErrQueryAlertPush)
+		return
+	}
+
+	core.OK(c, core.Paginated(alertPushes, count))
+
+}
+
+// CreateAlertPush
+// @Summary 创建告警推送设置
+// @Tags    alert
+// @Accept  json
+// @Produce json
+// @Param   body body     models.AlertPush true "参数"
+// @Success 200   {object} core.Response{data=bool}
+// @Security JWT
+// @Router  /alert/push [post]
+func (*alertController) CreateAlertPush(c *gin.Context) {
+	var query models.AlertPush
+	if err := c.ShouldBindJSON(&query); err != nil {
+		logger.Error(err)
+		c.Error(core.NewParameterError(err))
+		return
+	}
+
+	if res := db.Client.Create(&query); res.Error != nil {
+		logger.Error(res.Error)
+		c.Error(errs.ErrCreateAlertPush)
+		return
+	}
+
+	core.OK(c, true)
+}
+
+// UpdateAlertPush
+// @Summary 更新告警推送
+// @Tags    alert
+// @Accept  json
+// @Produce json
+// @Param   body body     models.AlertPush true "参数"
+// @Success 200   {object} core.Response{data=bool}
+// @Security JWT
+// @Router  /alert/push [put]
+func (*alertController) UpdateAlertPush(c *gin.Context) {
+	var query models.AlertPush
+	if err := c.ShouldBindJSON(&query); err != nil {
+		logger.Error(err)
+		c.Error(core.NewParameterError(err))
+		return
+	}
+
+	if res := db.Client.Model(&models.AlertPush{Model: core.Model{ID: query.ID}}).Updates(&query); res.Error != nil {
+		logger.Error(res.Error)
+		c.Error(errs.ErrUpdateAlertPush)
+		return
+	}
+
+	core.OK(c, true)
+}
+
+// DeleteAlertPush
+// @Summary 删除告警推送
+// @Tags    alert
+// @Accept  json
+// @Produce json
+// @Param   id path     string true "参数"
+// @Success 200   {object} core.Response{data=bool}
+// @Security JWT
+// @Router  /alert/push [delete]
+func (*alertController) DeleteAlertPush(c *gin.Context) {
+	rawID := c.Param("id")
+	id, err := strconv.Atoi(rawID)
+	if err != nil {
+		logger.Error(err)
+		c.Error(core.NewParameterError(err.Error()))
+		return
+	}
+
+	if res := db.Client.Delete(&models.AlertPush{Model: core.Model{ID: id}}); res.Error != nil {
+		logger.Error(res.Error)
+		c.Error(errs.ErrDeleteAlertPush)
+		return
+	}
+
+	core.OK(c, true)
+}
+
 func (ac *alertController) Setup(r *gin.RouterGroup) {
 	r.GET("/alerts", ac.QueryAlerts).
-		PUT("/alert", ac.UpdateAlert).
+		GET("/alert/types", ac.QueryAlertTypes).
 		GET("/alert/config", ac.GetAlertConfig).
 		PUT("/alert/config", ac.UpdateAlertConfig).
 		GET("/alert/accesses", ac.QueryAlertAccesses).
 		POST("/alert/access", ac.CreateAlertAccess).
 		PUT("/alert/access", ac.UpdateAlertAccess).
-		DELETE("/alert/access/:id", ac.DeleteAlertAccess)
+		DELETE("/alert/access/:id", ac.DeleteAlertAccess).
+		POST("/access/alert", ac.AccessAlert).
+		POST("/alert/resolve", ac.ResolvedAlert).
+		POST("/alert/webhook", ac.Webhook).
+		GET("/alert/count", ac.QueryAlertCount).
+		GET("/alert/push", ac.QueryAlertPush).
+		POST("/alert/push", ac.CreateAlertPush).
+		PUT("/alert/push", ac.UpdateAlertPush).
+		DELETE("/alert/push/:id", ac.DeleteAlertPush)
 }
