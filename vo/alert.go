@@ -2,9 +2,44 @@ package vo
 
 import "github.com/yoyo-inc/yoyo/models"
 
-type UpdateAlertVO struct {
+type QueryAlertVO struct {
+	models.Alert
+	StartTime string `form:"startTime"`
+	EndTime   string `form:"endTime"`
+}
+
+type ResolveAlertVO struct {
 	models.Alert
 	ID string `json:"id" binding:"required"`
 }
 
-type QueryAlertVO struct{}
+type IgnoreAlertVO struct {
+	ID string `json:"id" binding:"required"`
+}
+
+type SmtpReceiver struct {
+	ID     int    `json:"id"`
+	Email  string `json:"email"`
+	Enable bool   `json:"enable"`
+}
+
+type UpdateAlertConfigVO struct {
+	models.AlertConfig
+	SmptReceivers []SmtpReceiver `json:"smptReceivers"`
+}
+
+type QueryAlertAccessVO struct {
+	StartTime string `form:"startTime"`
+	EndTime   string `form:"endTime"`
+	AccessIP  string `form:"accessIP"`
+}
+
+type UpdateAlertAccessVO struct {
+	models.AlertAccess
+	ID int `json:"id" binding:"required"`
+}
+
+type QueryAlertCountVO struct {
+	Status         int `form:"status"`
+	ResolvedStatus int `form:"resolvedStatus"`
+}
