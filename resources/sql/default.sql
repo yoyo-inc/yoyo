@@ -62,4 +62,9 @@ VALUES
 INSERT INTO
   user_roles (user_id, role_id)
 VALUES
-  (1, 1)
+  (1, 1);
+
+INSERT INTO
+  system_settings (name, description)
+VALUES
+  ("后台管理系统", "一款开箱即用的后台管理系统");
