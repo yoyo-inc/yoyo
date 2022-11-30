@@ -27,7 +27,7 @@ type systemSettingController struct{}
 // @Router  /system/settings [get]
 func (*systemSettingController) QuerySystemSettings(c *gin.Context) {
 	var systemSetting models.SystemSetting
-	if res := db.Client.Model(&models.SystemSetting{}).First(&systemSetting); res.Error != nil {
+	if res := db.Client.Preload("Logo").Model(&models.SystemSetting{}).First(&systemSetting); res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			core.OK(c, map[string]string{})
 			return
