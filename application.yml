@@ -10,3 +10,4 @@ db:
 logger:
   rolling_file:
     base_dir: "./logs"
+resource_dir: "./data"
