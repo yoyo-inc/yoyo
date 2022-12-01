@@ -32,7 +32,7 @@ func (*auditLogController) QueryAuditLog(c *gin.Context) {
 
 	var auditLogs []models.AuditLog
 	queries := core.GetPaginatedQuery(&models.AuditLog{})
-	if res := queries[0].Preload("User").Scopes(core.Paginator(c)).Where(query).Find(&auditLogs); res.Error != nil {
+	if res := queries[0].Preload("User").Scopes(core.Paginator(c)).Where(query).Order("create_time desc").Find(&auditLogs); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQueryAuditLog)
 		return
