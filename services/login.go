@@ -2,21 +2,28 @@ package services
 
 import (
 	"errors"
+	"fmt"
+
+	"github.com/gin-gonic/gin"
 	"github.com/yoyo-inc/yoyo/common/db"
 	"github.com/yoyo-inc/yoyo/errs"
 	"github.com/yoyo-inc/yoyo/models"
+	"github.com/yoyo-inc/yoyo/services/audit_log"
 	"gorm.io/gorm"
 )
 
 // DoLogin does login
-func DoLogin(username string, password string) (user models.User, err error) {
+func DoLogin(c *gin.Context, username string, password string) (user models.User, err error) {
 
 	if res := db.Client.Model(&models.User{}).Where("username = ?", username).First(&user); errors.Is(res.Error, gorm.ErrRecordNotFound) {
 		err = errs.ErrUsernameNotExists
+		audit_log.Fail(c, "用户", "登录", fmt.Sprintf("账号(%s)不存在", username))
 		return
 	}
 	if !user.Check(password) {
 		err = errs.ErrUsernameOrPassword
+		audit_log.Fail(c, "用户", "登录", fmt.Sprintf("账号(%s)或密码错误", username))
 	}
+	audit_log.Success(c, "用户", "登录", fmt.Sprintf("账号(%s)登录成功", username))
 	return
 }
