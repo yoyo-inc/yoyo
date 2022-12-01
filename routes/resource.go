@@ -29,6 +29,7 @@ type resourceController struct{}
 // @Tags    resource
 // @Accept  json
 // @Produce json
+// @Param query query vo.QueryResourceVO true "参数"
 // @Success 200   {object} core.Response{data=array,models.Resource}
 // @Security JWT
 // @Router  /resources [get]
@@ -115,7 +116,7 @@ func (*resourceController) UploadResource(c *gin.Context) {
 	var resource models.Resource
 	resource.ResourceName = resourceName
 	resource.Filename = filename
-	resource.FileType = fileExt
+	resource.FileType = strings.Replace(fileExt, ".", "", 1)
 	resource.Filesize = filesize
 	if res := db.Client.Create(&resource); res.Error != nil {
 		logger.Error(res.Error)
