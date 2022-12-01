@@ -7,13 +7,12 @@ import (
 	jwt "github.com/yoyo-inc/gin-jwt/v3"
 	"github.com/yoyo-inc/yoyo/common/db"
 	"github.com/yoyo-inc/yoyo/common/logger"
-	"github.com/yoyo-inc/yoyo/middlewares"
 	"github.com/yoyo-inc/yoyo/models"
 	"github.com/yoyo-inc/yoyo/utils"
 )
 
 // Log logs audit log
-func Log(userID int, clientIP string, module string, operation string, status int, detail string) {
+func Log(userID *int, clientIP string, module string, operation string, status int, detail string) {
 	auditLog := models.AuditLog{
 		UserID:    userID,
 		IP:        clientIP,
@@ -41,9 +40,12 @@ func Fail(ctx *gin.Context, module string, operation, detail string) {
 	Log(userID, clientIP, module, operation, 0, detail)
 }
 
-func getUserID(ctx *gin.Context) int {
+func getUserID(ctx *gin.Context) *int {
 	claims := jwt.ExtractClaims(ctx)
-	userID := claims[middlewares.IdentityKey].(string)
-	id, _ := strconv.Atoi(userID)
-	return id
+	if userID, ok := claims["userID"]; ok {
+		id, _ := strconv.Atoi(userID.(string))
+		return &id
+	} else {
+		return nil
+	}
 }
