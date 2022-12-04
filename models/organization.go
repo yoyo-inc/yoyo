@@ -6,7 +6,7 @@ import (
 )
 
 type Organization struct {
-	core.Model
+	core.IModel
 	// 组织名
 	Name     string `json:"name" gorm:"size:255;comment:组织名称"`
 	ParentID int    `json:"parentId"`

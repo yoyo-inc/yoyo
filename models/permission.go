@@ -6,7 +6,7 @@ import (
 )
 
 type Permission struct {
-	core.Model
+	core.IModel
 	// 权限名称
 	Name string `json:"name" gorm:"size:255;unique;not null;comment:权限名称"`
 	// 介绍

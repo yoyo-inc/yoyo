@@ -8,7 +8,7 @@ import (
 )
 
 type Alert struct {
-	core.Model
+	core.IModel
 	StartAt        *dt.LocalTime `json:"startAt" gorm:"comment:告警产生时间"`
 	Type           string        `json:"type" form:"type" gorm:"size:20;index;comment:类型"`
 	Level          string        `json:"level" form:"level" gorm:"size:10;index;comment:级别"`
@@ -20,7 +20,7 @@ type Alert struct {
 }
 
 type AlertConfig struct {
-	core.Model
+	core.IModel
 	EmailEnable      bool           `json:"emailEnable" gorm:"comment:邮件通知是否开启"`
 	SmtpServer       string         `json:"smtpServer" gorm:"size:255;comment:邮件服务地址"`
 	SmtpSender       string         `json:"smtpSender" gorm:"size:255;comment:邮件发送方"`
@@ -30,7 +30,7 @@ type AlertConfig struct {
 }
 
 type AlertAccess struct {
-	core.Model
+	core.IModel
 	AccessIP     string `json:"accessIP" gorm:"size:20;comment:接入IP" binding:"required"`
 	Remark       string `json:"remark" gorm:"size:2000;comment:备注"`
 	StartAtField string `json:"startAtField" gorm:"size:20;comment:告警时间字段名"`
@@ -40,7 +40,7 @@ type AlertAccess struct {
 }
 
 type AlertPush struct {
-	core.Model
+	core.IModel
 	Enable        bool           `json:"enable" gorm:"comment:是否启用"`
 	Type          string         `json:"type" gorm:"size:20;comment:推送类型"`
 	SyslogNetwork string         `json:"syslogNetwork" gorm:"size:20;comment:syslog网络类型(tcp|udp)"`

@@ -6,7 +6,7 @@ import (
 )
 
 type AuditLog struct {
-	core.Model
+	core.IModel
 	UserID    *int   `json:"userID" gorm:"comment:用户ID"`
 	User      User   `json:"user"`
 	IP        string `json:"ip" gorm:"comment:ip"`
