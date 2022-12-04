@@ -89,7 +89,7 @@ func (*roleController) CreateRole(c *gin.Context) {
 	var role = query.Role
 	if query.Permissions != nil {
 		for _, val := range query.Permissions {
-			role.Permissions = append(role.Permissions, models.Permission{Model: core.Model{ID: val}})
+			role.Permissions = append(role.Permissions, models.Permission{IModel: core.IModel{ID: val}})
 		}
 	}
 	if result := db.Client.Create(&role); result.Error != nil {
@@ -123,7 +123,7 @@ func (*roleController) DeleteRole(c *gin.Context) {
 	}
 
 	// delete associations
-	if res := db.Client.Select(clause.Associations).Delete(&models.Role{Model: core.Model{ID: id}}); res.Error != nil {
+	if res := db.Client.Select(clause.Associations).Delete(&models.Role{IModel: core.IModel{ID: id}}); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrDeleteRole)
 		return
@@ -160,7 +160,7 @@ func (*roleController) UpdateRole(c *gin.Context) {
 	// process user permissions
 	if query.Permissions != nil {
 		permissions := slice.Map(query.Permissions, func(_ int, permissionID int) models.Permission {
-			return models.Permission{Model: core.Model{ID: permissionID}}
+			return models.Permission{IModel: core.IModel{ID: permissionID}}
 		})
 
 		if err := db.Client.Model(&models.User{}).Association("Permissions").Replace(permissions); err != nil {

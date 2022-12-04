@@ -30,7 +30,7 @@ type resourceController struct{}
 // @Accept  json
 // @Produce json
 // @Param query query vo.QueryResourceVO true "参数"
-// @Success 200   {object} core.Response{data=array,models.Resource}
+// @Success 200   {object} core.Response{data=core.PaginatedData{list=[]models.Resource}}
 // @Security JWT
 // @Router  /resources [get]
 func (*resourceController) QueryResources(c *gin.Context) {
@@ -146,7 +146,7 @@ func (rc *resourceController) DeleteResource(c *gin.Context) {
 	id := c.Param("id")
 
 	var resource models.Resource
-	if res := db.Client.Model(&models.Resource{SModel: core.SModel{ID: id}}).Find(&resource); res.Error != nil {
+	if res := db.Client.Model(&models.Resource{Model: core.Model{ID: id}}).Find(&resource); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrNotExistResource)
 		return
@@ -170,7 +170,7 @@ func (rc *resourceController) DeleteResource(c *gin.Context) {
 	}
 
 	// delete resource record
-	if res := db.Client.Delete(&models.Resource{SModel: core.SModel{ID: id}}); res.Error != nil {
+	if res := db.Client.Delete(&models.Resource{Model: core.Model{ID: id}}); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrDeleteResource)
 		audit_log.Fail(c, "资源管理", "删除", fmt.Sprintf("数据记录不存在，资源文件名：%s", resource.Filename))

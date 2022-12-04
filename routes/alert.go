@@ -317,7 +317,7 @@ func (*alertController) DeleteAlertAccess(c *gin.Context) {
 		return
 	}
 
-	if res := db.Client.Delete(&models.AlertAccess{Model: core.Model{ID: id}}); res.Error != nil {
+	if res := db.Client.Delete(&models.AlertAccess{IModel: core.IModel{ID: id}}); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrDeleteAlertAccess)
 		return
@@ -564,7 +564,7 @@ func (*alertController) UpdateAlertPush(c *gin.Context) {
 		return
 	}
 
-	if res := db.Client.Model(&models.AlertPush{Model: core.Model{ID: query.ID}}).Updates(&query); res.Error != nil {
+	if res := db.Client.Model(&models.AlertPush{IModel: core.IModel{ID: query.ID}}).Updates(&query); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrUpdateAlertPush)
 		return
@@ -591,7 +591,7 @@ func (*alertController) DeleteAlertPush(c *gin.Context) {
 		return
 	}
 
-	if res := db.Client.Delete(&models.AlertPush{Model: core.Model{ID: id}}); res.Error != nil {
+	if res := db.Client.Delete(&models.AlertPush{IModel: core.IModel{ID: id}}); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrDeleteAlertPush)
 		return

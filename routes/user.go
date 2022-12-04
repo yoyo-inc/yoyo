@@ -93,7 +93,7 @@ func (*userController) CreateUser(c *gin.Context) {
 
 	var user = query.User
 	user.Roles = slice.Map(query.Roles, func(_ int, roleID int) models.Role {
-		return models.Role{Model: core.Model{ID: roleID}}
+		return models.Role{IModel: core.IModel{ID: roleID}}
 	})
 
 	if res := db.Client.Create(&user); res.Error != nil {
@@ -134,9 +134,9 @@ func (*userController) UpdateUser(c *gin.Context) {
 	// update user roles
 	if query.Roles != nil {
 		roles := slice.Map(query.Roles, func(_ int, roleID int) models.Role {
-			return models.Role{Model: core.Model{ID: roleID}}
+			return models.Role{IModel: core.IModel{ID: roleID}}
 		})
-		if err := db.Client.Model(&models.User{Model: core.Model{ID: query.ID}}).Association("Roles").Replace(roles); err != nil {
+		if err := db.Client.Model(&models.User{IModel: core.IModel{ID: query.ID}}).Association("Roles").Replace(roles); err != nil {
 			logger.Error(err)
 			c.Error(errs.ErrUpdateUser)
 			audit_log.Fail(c, "用户", "更新", "用户名："+query.Username)
@@ -160,14 +160,14 @@ func (*userController) DeleteUser(c *gin.Context) {
 	id, _ := strconv.Atoi(userID)
 
 	var existUser models.User
-	if res := db.Client.Model(&models.User{Model: core.Model{ID: id}}).First(&existUser); res.Error != nil {
+	if res := db.Client.Model(&models.User{IModel: core.IModel{ID: id}}).First(&existUser); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrUsernameNotExists)
 		audit_log.Fail(c, "用户", "删除", fmt.Sprintf("用户ID(%s)不存在", userID))
 		return
 	}
 
-	if res := db.Client.Select(clause.Associations).Delete(&models.User{Model: core.Model{ID: id}}); res.Error != nil {
+	if res := db.Client.Select(clause.Associations).Delete(&models.User{IModel: core.IModel{ID: id}}); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrDeleteUser)
 		audit_log.Fail(c, "用户", "删除", "用户名："+existUser.Username)

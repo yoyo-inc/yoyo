@@ -21,6 +21,7 @@ func init() {
 		&alertController{},
 		&systemSettingController{},
 		&resourceController{},
+		&reportController{},
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/yoyo-inc/yoyo/common/db"
 	"github.com/yoyo-inc/yoyo/common/logger"
 	"github.com/yoyo-inc/yoyo/core"
@@ -58,13 +59,15 @@ func (*systemSettingController) UpdateSystemSetting(c *gin.Context) {
 		return
 	}
 
-	if res := db.Client.Model(&models.SystemSetting{Model: core.Model{ID: query.ID}}).Updates(query.SystemSetting); res.Error != nil {
+	if res := db.Client.Model(&models.SystemSetting{IModel: core.IModel{ID: query.ID}}).Updates(query.SystemSetting); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrUpdateSystemSetting)
 		return
 	}
 
-	audit_log.Success(c, "系统设置", "更新", fmt.Sprintf("%v", query))
+	json := jsoniter.ConfigCompatibleWithStandardLibrary
+	s, _ := json.MarshalToString(query)
+	audit_log.Success(c, "系统设置", "更新", fmt.Sprintf("配置内容:%s", s))
 	core.OK(c, true)
 }
 
