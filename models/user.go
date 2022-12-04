@@ -9,7 +9,7 @@ import (
 
 // User represents user model
 type User struct {
-	core.Model
+	core.IModel
 	Username       string       `json:"username" gorm:"size:15;unique;not null;index;comment:账户名" binding:"required,min=0,max=15"` // 账户名
 	Nickname       string       `json:"nickname" gorm:"size:255;index;comment:昵称" binding:"omitempty,max=255"`                     // 昵称
 	Password       string       `json:"password,omitempty" gorm:"size:255;not null;comment:密码" binding:"max=255"`                  // 密码
