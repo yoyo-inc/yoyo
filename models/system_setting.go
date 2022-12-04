@@ -6,7 +6,7 @@ import (
 )
 
 type SystemSetting struct {
-	core.Model
+	core.IModel
 	Name        string    `json:"name" gorm:"size:100;comment:系统名称"`
 	Description string    `json:"description" gorm:"size:1000;comment:系统描述"`
 	ResourceID  string    `json:"resourceID" gorm:"comment:资源ID"`
