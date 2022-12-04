@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Model struct {
+type IModel struct {
 	// 主键
 	ID int `json:"id" gorm:"primarykey;autoIncreatment;comment:主键"`
 	// 创建时间
@@ -17,7 +17,7 @@ type Model struct {
 	ModifyTime *dt.LocalTime `json:"modifyTime" gorm:"type:timestamp;default:current_timestamp on update current_timestamp;comment:更新时间"`
 }
 
-type SModel struct {
+type Model struct {
 	// 主键
 	ID string `json:"id" gorm:"primarykey;size:32;comment:主键"`
 	// 创建时间
@@ -26,7 +26,7 @@ type SModel struct {
 	ModifyTime *dt.LocalTime `json:"modifyTime" gorm:"type:timestamp;default:current_timestamp on update current_timestamp;comment:更新时间"`
 }
 
-func (m *SModel) BeforeCreate(tx *gorm.DB) (err error) {
+func (m *Model) BeforeCreate(tx *gorm.DB) (err error) {
 	if m.ID == "" {
 		id := uuid.NewString()
 		id = strings.ReplaceAll(id, "-", "")
@@ -38,7 +38,7 @@ func (m *SModel) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-func (m *SModel) BeforeUpdate(tx *gorm.DB) (err error) {
+func (m *Model) BeforeUpdate(tx *gorm.DB) (err error) {
 	m.CreateTime = nil
 	m.ModifyTime = nil
 	return
