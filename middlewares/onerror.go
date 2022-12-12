@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/yoyo-inc/yoyo/common/logger"
-
 	"github.com/gin-gonic/gin"
 	"github.com/yoyo-inc/yoyo/core"
 )
@@ -20,12 +18,13 @@ func OnError() gin.HandlerFunc {
 			return
 		}
 
-		if e, ok := err.Err.(core.ParameterError); ok {
-			logger.Error(e)
+		switch e := err.Err.(type) {
+		case core.ParameterError:
 			c.AbortWithStatusJSON(http.StatusBadRequest, core.NewFailedResponse(strconv.Itoa(http.StatusBadRequest), e.Error()))
-		}
-		if e, ok := err.Err.(core.BusinessError); ok {
+		case core.BusinessError:
 			c.AbortWithStatusJSON(http.StatusOK, core.NewFailedResponse(e.Code, e.Message))
+		default:
+			c.AbortWithError(http.StatusInternalServerError, e)
 		}
 	}
 }
