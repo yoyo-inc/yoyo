@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -18,6 +17,7 @@ import (
 	"github.com/yoyo-inc/yoyo/core"
 	"github.com/yoyo-inc/yoyo/errs"
 	"github.com/yoyo-inc/yoyo/models"
+	"github.com/yoyo-inc/yoyo/services"
 	"github.com/yoyo-inc/yoyo/services/audit_log"
 	"github.com/yoyo-inc/yoyo/vo"
 )
@@ -51,7 +51,7 @@ func (*resourceController) QueryResources(c *gin.Context) {
 	}
 
 	var resources []models.Resource
-	if res := queries[0].Scopes(core.DateTimeRanger(c, "create_time")).Where(&query).Find(&resources); res.Error != nil {
+	if res := queries[0].Scopes(core.DateTimeRanger(c, "create_time"), core.Paginator(c)).Where(&query).Find(&resources); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQueryResources)
 		return
@@ -72,29 +72,27 @@ func (*resourceController) QueryResources(c *gin.Context) {
 // @Tags    resource
 // @Accept  mpfd
 // @Produce json
+// @Param resourceType path string true "资源类型"
 // @Param   file formData     file true "参数"
 // @Success 200   {object} core.Response{data=bool}
 // @Security JWT
-// @Router  /resource [post]
+// @Router  /resource/:resourceType/upload [post]
 func (*resourceController) UploadResource(c *gin.Context) {
+	errUploadResource := errors.New("文件上传失败")
+
 	file, err := c.FormFile("file")
 	if err != nil {
 		logger.Error(err)
-		c.Error(errs.ErrUploadResource)
+		c.Error(errUploadResource)
 		return
 	}
 
-	resourceDir, err := filepath.Abs(config.GetString("resource_dir"))
-	if err != nil {
-		logger.Error(err)
-		c.Error(errs.ErrUploadResource)
-		return
-	}
-
+	resourceType := c.Param("resourceType")
+	resourceDir := services.GetTypedResourceDir(resourceType)
 	if !fileutil.IsExist(resourceDir) {
 		if err := fileutil.CreateDir(resourceDir); err != nil {
 			logger.Error(err)
-			c.Error(errs.ErrUploadResource)
+			c.Error(errUploadResource)
 			return
 		}
 	}
@@ -108,27 +106,27 @@ func (*resourceController) UploadResource(c *gin.Context) {
 
 	if err := c.SaveUploadedFile(file, resourcePath); err != nil {
 		logger.Error(err)
-		c.Error(errs.ErrUploadResource)
+		c.Error(errUploadResource)
 		audit_log.Fail(c, "资源管理", "上传", fmt.Sprintf("文件保存失败(文件名：%s，文件大小(kb)：%f)", file.Filename, filesize))
 		return
 	}
 
 	var resource models.Resource
 	resource.ResourceName = resourceName
+	resource.ResourceType = resourceType
 	resource.Filename = filename
 	resource.FileType = strings.Replace(fileExt, ".", "", 1)
 	resource.Filesize = filesize
 	if res := db.Client.Create(&resource); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrUploadResource)
+		c.Error(errUploadResource)
 		return
 	}
 
 	audit_log.Success(c, "资源管理", "上传", fmt.Sprintf("文件名：%s，文件大小(kb)：%f", file.Filename, filesize))
-
-	c.JSON(http.StatusOK, map[string]interface{}{
+	core.OK(c, map[string]interface{}{
 		"name": resource.Filename,
-		"url":  config.GetString("server.base_path") + "/static" + resourceName,
+		"url":  config.GetString("server.base_path") + "/static/upload/" + resourceName,
 		"id":   resource.ID,
 	})
 }
@@ -145,47 +143,41 @@ func (*resourceController) UploadResource(c *gin.Context) {
 func (rc *resourceController) DeleteResource(c *gin.Context) {
 	id := c.Param("id")
 
-	var resource models.Resource
-	if res := db.Client.Model(&models.Resource{Model: core.Model{ID: id}}).Find(&resource); res.Error != nil {
-		logger.Error(res.Error)
-		c.Error(errs.ErrNotExistResource)
-		return
-	}
-
-	resourceDir, err := filepath.Abs(config.GetString("resource_dir"))
-	if err != nil {
+	if err := services.DeleteResourceFile(c, id); err != nil {
 		logger.Error(err)
 		c.Error(errs.ErrDeleteResource)
 		return
 	}
-
-	// delete resource file
-	if err := fileutil.RemoveFile(filepath.Join(resourceDir, resource.ResourceName)); err != nil {
-		logger.Error(err)
-		if !errors.Is(err, os.ErrNotExist) {
-			c.Error(errs.ErrDeleteResource)
-			return
-		}
-		audit_log.Fail(c, "资源管理", "删除", fmt.Sprintf("资源文件不存在，资源文件名：%s", resource.Filename))
-	}
-
-	// delete resource record
-	if res := db.Client.Delete(&models.Resource{Model: core.Model{ID: id}}); res.Error != nil {
-		logger.Error(res.Error)
-		c.Error(errs.ErrDeleteResource)
-		audit_log.Fail(c, "资源管理", "删除", fmt.Sprintf("数据记录不存在，资源文件名：%s", resource.Filename))
-		return
-	}
-
-	audit_log.Success(c, "资源管理", "删除", fmt.Sprintf("资源文件名：%s", resource.Filename))
 
 	core.OK(c, true)
 }
 
+// DownloadResource
+// @Summary 下载资源
+// @Tags    resource
+// @Accept  json
+// @Produce octet-stream
+// @Param   id  path   string   true "参数"
+// @Security JWT
+// @Router  /resource/download/:id [get]
+func (*resourceController) DownloadResource(c *gin.Context) {
+	id := c.Param("id")
+
+	var resource models.Resource
+	if res := db.Client.Model(&models.Resource{Model: core.Model{ID: id}}).First(&resource); res.Error != nil {
+		logger.Error(res.Error)
+		c.Error(errs.ErrDownloadResource)
+		return
+	}
+
+	resourceFilepath := filepath.Join(services.GetTypedResourceDir(resource.ResourceType), resource.ResourceName)
+	c.FileAttachment(resourceFilepath, resource.Filename)
+}
+
 func (rc *resourceController) Setup(r *gin.RouterGroup) {
-	resourceDir, _ := filepath.Abs(config.GetString("resource_dir"))
 	r.GET("/resources", rc.QueryResources).
-		POST("/resource", rc.UploadResource).
+		POST("/resource/:resourceType/upload", rc.UploadResource).
 		DELETE("/resource/:id", rc.DeleteResource).
-		StaticFS("/static", http.Dir(resourceDir))
+		StaticFS("/static/upload", http.Dir(services.GetTypedResourceDir("upload"))).
+		GET("/resource/download/:id", rc.DownloadResource)
 }
