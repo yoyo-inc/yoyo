@@ -19,13 +19,13 @@ import (
 type systemSettingController struct{}
 
 // QuerySystemSettings
-// @Summary 查询系统设置
-// @Tags    system
-// @Accept  json
-// @Produce json
-// @Success 200   {object} core.Response{data=models.SystemSetting}
+// @Summary  查询系统设置
+// @Tags     system
+// @Accept   json
+// @Produce  json
+// @Success  200 {object} core.Response{data=models.SystemSetting}
 // @Security JWT
-// @Router  /system/settings [get]
+// @Router   /system/settings [get]
 func (*systemSettingController) QuerySystemSettings(c *gin.Context) {
 	var systemSetting models.SystemSetting
 	if res := db.Client.Preload("Logo").Model(&models.SystemSetting{}).First(&systemSetting); res.Error != nil {
@@ -43,14 +43,14 @@ func (*systemSettingController) QuerySystemSettings(c *gin.Context) {
 }
 
 // UpdateSystemSetting
-// @Summary 更新系统设置
-// @Tags    system
-// @Accept  json
-// @Produce json
-// @Param   body body     vo.UpdateSystemSettingVO true "参数"
-// @Success 200   {object} core.Response{data=bool}
+// @Summary  更新系统设置
+// @Tags     system
+// @Accept   json
+// @Produce  json
+// @Param    body body     vo.UpdateSystemSettingVO true "参数"
+// @Success  200  {object} core.Response{data=bool}
 // @Security JWT
-// @Router  /system/setting [put]
+// @Router   /system/setting [put]
 func (*systemSettingController) UpdateSystemSetting(c *gin.Context) {
 	var query vo.UpdateSystemSettingVO
 	if err := c.ShouldBindJSON(&query); err != nil {
