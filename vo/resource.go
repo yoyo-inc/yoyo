@@ -1,5 +1,6 @@
 package vo
 
 type QueryResourceVO struct {
-	Filename string `form:"filename"`
+	ResourceType string `form:"resourceType"`
+	Filename     string `form:"filename"`
 }
