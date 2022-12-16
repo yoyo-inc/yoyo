@@ -4,14 +4,30 @@ VALUES
   ('管理系统', 0);
 
 INSERT INTO
-  permissions (name, description, enable)
+  permissions (name, description)
 VALUES
-  ('dashboard', '概览', 1),
-  ('setting', '系统设置', 1),
-  ('permission', '权限管理', 1),
-  ('role', '角色管理', 1),
-  ('user', '用户管理', 1),
-  ('log', '日志管理', 1);
+  ('dashboard', '概览'),
+  ('setting', '系统设置'),
+  ('permission', '权限管理'),
+  ('role', '角色管理'),
+  ('user', '用户管理'),
+  ('log', '日志管理'),
+  ("audit_log", "审计日志"),
+  ("security_log", "安全日志"),
+  ("run_log", "运行日志"),
+  ("log_config", "日志设置"),
+  ("alert", "告警管理"),
+  ("alert_list", "告警列表"),
+  ("alert_config", "告警配置"),
+  ("alert_access", "告警接入"),
+  ("alert_push", "告警推送"),
+  ("report", "报告管理"),
+  ("report_list", "报告列表"),
+  ("report_config", "报告配置"),
+  ("sched_job", "定时任务管理"),
+  ("resource", "资源管理"),
+  ("system", "系统设置")
+  ;
 
 INSERT INTO
   roles (name, remark, is_default)
@@ -29,6 +45,21 @@ VALUES
   (1, 4),
   (1, 5),
   (1, 6),
+  (1, 7),
+  (1, 8),
+  (1, 9),
+  (1, 10),
+  (1, 11),
+  (1, 12),
+  (1, 13),
+  (1, 14),
+  (1, 15),
+  (1, 16),
+  (1, 17),
+  (1, 18),
+  (1, 19),
+  (1, 20),
+  (1, 21),
   (2, 1),
   (2, 2),
   (3, 1),
