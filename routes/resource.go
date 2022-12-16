@@ -178,6 +178,6 @@ func (rc *resourceController) Setup(r *gin.RouterGroup) {
 	r.GET("/resources", rc.QueryResources).
 		POST("/resource/:resourceType/upload", rc.UploadResource).
 		DELETE("/resource/:id", rc.DeleteResource).
-		StaticFS("/static/upload", http.Dir(services.GetTypedResourceDir("upload"))).
+		StaticFS("/resource/upload", http.Dir(services.GetTypedResourceDir("upload"))).
 		GET("/resource/download/:id", rc.DownloadResource)
 }
