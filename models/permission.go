@@ -14,7 +14,7 @@ type Permission struct {
 	// 父级权限
 	ParentID int `json:"parentID" gorm:"comment:父级权限"`
 	// 是否开启
-	Enable bool `json:"enable" gorm:"comment:是否启用"`
+	Enable bool `json:"enable" gorm:"default:true;comment:是否启用"`
 }
 
 func init() {
