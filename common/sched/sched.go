@@ -8,7 +8,7 @@ import (
 var C *cron.Cron
 
 func Setup() {
-	C = cron.New(cron.WithLogger(&cronLogger{}), cron.WithSeconds())
+	C = cron.New(cron.WithLogger(&cronLogger{}))
 	C.Start()
 }
 
