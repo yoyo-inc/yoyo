@@ -6,6 +6,7 @@ import (
 	"github.com/yoyo-inc/yoyo/common/db"
 	"github.com/yoyo-inc/yoyo/common/hub"
 	"github.com/yoyo-inc/yoyo/common/logger"
+	"github.com/yoyo-inc/yoyo/common/sched"
 	"github.com/yoyo-inc/yoyo/common/swag"
 	"github.com/yoyo-inc/yoyo/common/validator"
 	"github.com/yoyo-inc/yoyo/middlewares"
@@ -59,7 +60,10 @@ func main() {
 	hub.Setup()
 	// validator
 	validator.Setup()
+	// sched
+	sched.Setup()
 
+	gin.SetMode(gin.ReleaseMode)
 	engine := gin.New()
 	// middlewares
 	// logger
