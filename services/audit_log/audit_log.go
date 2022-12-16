@@ -41,6 +41,9 @@ func Fail(ctx *gin.Context, module string, operation, detail string) {
 }
 
 func getUserID(ctx *gin.Context) *int {
+	if ctx == nil {
+		return nil
+	}
 	claims := jwt.ExtractClaims(ctx)
 	if userID, ok := claims["userID"]; ok {
 		id, _ := strconv.Atoi(userID.(string))
