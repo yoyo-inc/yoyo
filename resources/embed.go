@@ -13,3 +13,6 @@ var PrometheusDir embed.FS
 
 //go:embed alert-manager
 var AlertmanagerDir embed.FS
+
+//go:embed report
+var InternalReportTplDir embed.FS
