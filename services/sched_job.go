@@ -22,7 +22,7 @@ var (
 )
 
 // AddSchedJob creates sched job
-func AddSchedJob(jobID string, description string, spec string, job func() error) error {
+func AddSchedJob(jobID string, jobType string, description string, spec string, job func() error) error {
 	ErrExistSchedJob = fmt.Errorf("定时任务(%s)已存在", jobID)
 	// judge whether exists the jobID
 	if _, ok := schedJobMappings[jobID]; ok {
@@ -58,6 +58,7 @@ func AddSchedJob(jobID string, description string, spec string, job func() error
 			Description: description,
 			Status:      1,
 			JobID:       jobID,
+			Type:        jobType,
 		}); res.Error != nil {
 			logger.Error(res.Error)
 			return ErrCreateSchedJob
@@ -93,14 +94,28 @@ func StopSchedJob(jobID string) error {
 	ErrStopSchedJob = fmt.Errorf("关闭定时任务(%s)失败", jobID)
 	entryID, ok := schedJobMappings[jobID]
 	if !ok {
-		logger.Error(ErrExistSchedJob)
 		return ErrExistSchedJob
 	}
 
 	sched.C.Pause(entryID)
 
 	if res := db.Client.Model(&models.SchedJob{}).Where("job_id = ?", jobID).Update("status", 0); res.Error != nil {
-		logger.Error(res.Error)
+		return ErrStopSchedJob
+	}
+
+	return nil
+}
+
+// RemoveSchedJob remove sched job by jobID
+func RemoveSchedJob(jobID string) error {
+	entryID, ok := schedJobMappings[jobID]
+	if !ok {
+		return ErrExistSchedJob
+	}
+
+	sched.C.Remove(entryID)
+
+	if res := db.Client.Delete(&models.SchedJob{}, "job_id = ?", jobID); res.Error != nil {
 		return ErrStopSchedJob
 	}
 
