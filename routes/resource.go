@@ -25,14 +25,14 @@ import (
 type resourceController struct{}
 
 // QueryResources
-// @Summary 查询资源文件列表
-// @Tags    resource
-// @Accept  json
-// @Produce json
-// @Param query query vo.QueryResourceVO true "参数"
-// @Success 200   {object} core.Response{data=core.PaginatedData{list=[]models.Resource}}
+// @Summary  查询资源文件列表
+// @Tags     resource
+// @Accept   json
+// @Produce  json
+// @Param    query query    vo.QueryResourceVO true "参数"
+// @Success  200   {object} core.Response{data=core.PaginatedData{list=[]models.Resource}}
 // @Security JWT
-// @Router  /resources [get]
+// @Router   /resources [get]
 func (*resourceController) QueryResources(c *gin.Context) {
 	var query vo.QueryResourceVO
 	if err := c.ShouldBindQuery(&query); err != nil {
@@ -68,15 +68,15 @@ func (*resourceController) QueryResources(c *gin.Context) {
 }
 
 // UploadResource
-// @Summary 上传资源
-// @Tags    resource
-// @Accept  mpfd
-// @Produce json
-// @Param resourceType path string true "资源类型"
-// @Param   file formData     file true "参数"
-// @Success 200   {object} core.Response{data=bool}
+// @Summary  上传资源
+// @Tags     resource
+// @Accept   mpfd
+// @Produce  json
+// @Param    resourceType path     string true "资源类型"
+// @Param    file         formData file   true "参数"
+// @Success  200          {object} core.Response{data=bool}
 // @Security JWT
-// @Router  /resource/:resourceType/upload [post]
+// @Router   /resource/:resourceType/upload [post]
 func (*resourceController) UploadResource(c *gin.Context) {
 	errUploadResource := errors.New("文件上传失败")
 
@@ -132,14 +132,14 @@ func (*resourceController) UploadResource(c *gin.Context) {
 }
 
 // DeleteResource
-// @Summary 删除资源文件
-// @Tags    resource
-// @Accept  json
-// @Produce json
-// @Param   id path     string true "参数"
-// @Success 200   {object} core.Response{data=bool}
+// @Summary  删除资源文件
+// @Tags     resource
+// @Accept   json
+// @Produce  json
+// @Param    id  path     string true "参数"
+// @Success  200 {object} core.Response{data=bool}
 // @Security JWT
-// @Router  /resource/:id [delete]
+// @Router   /resource/:id [delete]
 func (rc *resourceController) DeleteResource(c *gin.Context) {
 	id := c.Param("id")
 
@@ -153,25 +153,55 @@ func (rc *resourceController) DeleteResource(c *gin.Context) {
 }
 
 // DownloadResource
-// @Summary 下载资源
-// @Tags    resource
-// @Accept  json
-// @Produce octet-stream
-// @Param   id  path   string   true "参数"
+// @Summary  下载资源
+// @Tags     resource
+// @Accept   json
+// @Produce  octet-stream
+// @Param    id path string true "参数"
 // @Security JWT
-// @Router  /resource/download/:id [get]
+// @Router   /resource/download/:id [get]
 func (*resourceController) DownloadResource(c *gin.Context) {
 	id := c.Param("id")
 
 	var resource models.Resource
-	if res := db.Client.Model(&models.Resource{Model: core.Model{ID: id}}).First(&resource); res.Error != nil {
+	if res := db.Client.Model(&models.Resource{}).First(&resource, "id = ?", id); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrDownloadResource)
 		return
 	}
 
 	resourceFilepath := filepath.Join(services.GetTypedResourceDir(resource.ResourceType), resource.ResourceName)
+	logger.Debugf("文件路径:%s", resourceFilepath)
 	c.FileAttachment(resourceFilepath, resource.Filename)
+	logger.Debug(c.Writer.Status())
+	if c.Writer.Status() > 400 {
+		audit_log.Fail(c, "资源", "下载", fmt.Sprintf("资源名称：%s，状态码：%d", resource.Filename, c.Writer.Status()))
+	} else {
+		audit_log.Success(c, "资源", "下载", fmt.Sprintf("资源名称：%s", resource.Filename))
+	}
+}
+
+// QueryResourceTypes
+// @Summary  查询资源类型
+// @Tags     resource
+// @Accept   json
+// @Produce  json
+// @Success  200 {object} core.Response{data=[]models.Dict}
+// @Security JWT
+// @Router   /resource/types [get]
+func (*resourceController) QueryResourceTypes(c *gin.Context) {
+	types := []models.Dict{
+		{
+			Label: "用户上传",
+			Value: "upload",
+		},
+		{
+			Label: "报告",
+			Value: "report",
+		},
+	}
+
+	core.OK(c, types)
 }
 
 func (rc *resourceController) Setup(r *gin.RouterGroup) {
@@ -179,5 +209,6 @@ func (rc *resourceController) Setup(r *gin.RouterGroup) {
 		POST("/resource/:resourceType/upload", rc.UploadResource).
 		DELETE("/resource/:id", rc.DeleteResource).
 		StaticFS("/resource/upload", http.Dir(services.GetTypedResourceDir("upload"))).
-		GET("/resource/download/:id", rc.DownloadResource)
+		GET("/resource/download/:id", rc.DownloadResource).
+		GET("/resource/types", rc.QueryResourceTypes)
 }
