@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>报告</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="./echarts.min.js"></script>
+  <link rel="stylesheet" href="./bootstrap.min.css">
+  <style>
+    .card {
+      margin-block-end: 24px;
+    }
+  </style>
+</head>
+
+<body>
+  <div style="width: 1280px;margin-inline: auto;padding-top: 64px;">
+    <h3 style="text-align: center;">蜜网统计报告</h3>
+    <h5>时间：{{.dateTimeRange}}</h5>
+    <h5>总结：</h5>
+    <p style="text-indent: 2em;">
+      当前资产数：{{.stats.assetCount}}；蜜罐入侵事件数：{{.stats.intrusionEventCount}}；入侵人员数：{{.stats.intrusionPersonCount}}；总访客数：{{.stats.visitorCount}}
+    </p>
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">受攻击资产Top5</div>
+        <div id="asset" style="height: 320px;"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">受攻击沙箱Top5</div>
+        <div id="sanbox" style="height: 320px;"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">威胁事件统计</div>
+        <div id="threat" style="height: 320px;"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="card-title">攻击探测事件统计</div>
+        <div id="attackDetection" style="height: 320px;"></div>
+      </div>
+    </div>
+  </div>
+  <script src="./bootstrap.bundle.min.js"></script>
+  <script>
+    const asset = document.getElementById("asset")
+    const bar = echarts.init(asset)
+    const option = {
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'shadow'
+        }
+      },
+      legend: {},
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      xAxis: {
+        type: 'value',
+        boundaryGap: [0, 0.01]
+      },
+      yAxis: {
+        type: 'category',
+        data: ['Brazil', 'Indonesia', 'USA', 'India', 'China', 'World']
+      },
+      series: [
+        {
+          name: '2011',
+          type: 'bar',
+          data: [18203, 23489, 29034, 104970, 131744, 630230]
+        },
+        {
+          name: '2012',
+          type: 'bar',
+          data: [19325, 23438, 31000, 121594, 134141, 681807]
+        }
+      ]
+    }
+    bar.setOption(option)
+  </script>
+</body>
+
+</html>

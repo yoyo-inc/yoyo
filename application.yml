@@ -8,6 +8,11 @@ db:
   logger:
     level: info
 logger:
+  level: debug
   rolling_file:
     base_dir: "./logs"
 resource_dir: "./data"
+converter:
+  url: 'http://localhost:8090'
+  waiting_time: 5000
+  preview_host: '192.168.2.79'

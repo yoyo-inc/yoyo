@@ -6,9 +6,7 @@ import (
 	"github.com/yoyo-inc/yoyo/middlewares"
 )
 
-var (
-	controllers []core.Controller
-)
+var controllers []core.Controller
 
 func init() {
 	controllers = []core.Controller{
@@ -22,6 +20,7 @@ func init() {
 		&systemSettingController{},
 		&resourceController{},
 		&reportController{},
+		&schedJobController{},
 	}
 }
 
@@ -34,10 +33,11 @@ func Setup(r *gin.RouterGroup) {
 		"/api/login",
 		"/api/swagger/*path",
 		"/api/system/settings",
+		"/api/resource/*path",
+		"/api/report/preview/*path",
 	)
 
 	for _, sc := range controllers {
 		sc.Setup(r)
 	}
-
 }
