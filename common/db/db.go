@@ -16,8 +16,10 @@ import (
 var Client *gorm.DB
 
 // AutoMigrateModels contains all models which to be migrated
-var AutoMigrateModels []interface{}
-var AutoMigrateMethods []func(db *gorm.DB)
+var (
+	AutoMigrateModels  []interface{}
+	AutoMigrateMethods []func(db *gorm.DB)
+)
 
 // Setup setups database connection
 func Setup() {
@@ -125,13 +127,13 @@ func recordMigrate() {
 
 func autoMigrate() {
 	RunMigrateModels([]interface{}{&AutoMigrateModel{}})
-	if !canMigrate() {
-		return
-	}
 
 	logger.Info("Begin to autoMigrate")
 	// migrate models
 	if !RunMigrateModels(AutoMigrateModels) {
+		return
+	}
+	if !canMigrate() {
 		return
 	}
 	// migrate methods
