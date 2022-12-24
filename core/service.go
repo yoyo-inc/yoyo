@@ -36,8 +36,14 @@ func DateTimeRanger(c *gin.Context, fieldName string) func(db *gorm.DB) *gorm.DB
 	}
 }
 
+func Orderer(c *gin.Context) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Order("create_time desc")
+	}
+}
+
 func getParam(c *gin.Context, key string, defaultValue string) string {
-	var result = defaultValue
+	result := defaultValue
 	if param, exists := c.GetQuery(key); exists {
 		result = param
 	}
