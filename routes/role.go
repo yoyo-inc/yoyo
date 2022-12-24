@@ -86,7 +86,7 @@ func (*roleController) CreateRole(c *gin.Context) {
 	}
 
 	// process role permissions
-	var role = query.Role
+	role := query.Role
 	if query.Permissions != nil {
 		for _, val := range query.Permissions {
 			role.Permissions = append(role.Permissions, models.Permission{IModel: core.IModel{ID: val}})
@@ -163,7 +163,7 @@ func (*roleController) UpdateRole(c *gin.Context) {
 			return models.Permission{IModel: core.IModel{ID: permissionID}}
 		})
 
-		if err := db.Client.Model(&models.User{}).Association("Permissions").Replace(permissions); err != nil {
+		if err := db.Client.Model(&models.Role{}).Association("Permissions").Replace(permissions); err != nil {
 			logger.Error(err)
 			c.Error(errs.ErrUpdateRole)
 			return
