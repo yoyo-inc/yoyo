@@ -15,6 +15,7 @@ func Setup() {
 type cronLogger struct{}
 
 func (*cronLogger) Info(msg string, keysAndValues ...interface{}) {
+	logger.Debugf(msg, keysAndValues...)
 }
 
 func (*cronLogger) Error(err error, msg string, keysAndValues ...interface{}) {
