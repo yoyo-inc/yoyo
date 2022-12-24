@@ -16,3 +16,5 @@ docker run --name prom -v /etc/hosts:/etc/hosts -v /etc/prometheus:/etc/promethe
 	-p 9090:9090 --restart=always --network=host -d prom/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --storage.tsdb.retention=7d --web.enable-admin-api --web.enable-lifecycle --enable-feature=remote-write-receiver
 
 docker run --name alert -v /etc/hosts:/etc/hosts -v /etc/alertmanager:/etc/alertmanager -p 9093:9093 --network=host --restart=always -d prom/alertmanager
+
+docker run --name doctron -p 8090:8080 --restart=always -d lampnick/doctron
