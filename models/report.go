@@ -18,7 +18,7 @@ type Report struct {
 type ReportConfig struct {
 	core.Model
 	Period     datatypes.JSON `json:"period" gorm:"type:json;default:(json_array());comment:周期" swaggertype:"array,string"`
-	ReportType datatypes.JSON `json:"reportType" gorm:"type:json;default:(json_array());comment:报告类型"`
+	ReportType datatypes.JSON `json:"reportType" gorm:"type:json;default:(json_array());comment:报告类型" swaggertype:"array,string"`
 	ReportName string         `json:"reportName" gorm:"size:100;comment:报告名称"`
 }
 
