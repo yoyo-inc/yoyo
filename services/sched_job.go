@@ -68,7 +68,7 @@ func AddSchedJob(jobID string, jobType string, description string, spec string, 
 	return nil
 }
 
-// StartSchedJob stops sched job
+// StartSchedJob starts sched job
 func StartSchedJob(jobID string) error {
 	ErrNotExistSchedJob = fmt.Errorf("定时任务(%s)不存在", jobID)
 	ErrStopSchedJob = fmt.Errorf("开启定时任务(%s)失败", jobID)
