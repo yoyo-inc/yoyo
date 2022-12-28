@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-module/carbon/v2"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/yoyo-inc/yoyo/common/db"
 	"github.com/yoyo-inc/yoyo/common/logger"
@@ -238,6 +239,44 @@ func (*reportController) UpdateReportConfig(c *gin.Context) {
 			return res.Error
 		}
 
+		if len(query.Period) > 0 && len(query.ReportType) > 0 {
+			for _, v := range query.Period {
+				var spec string
+				var description string
+				switch v {
+				case "day":
+					spec = "0 0 * * *"
+				case "week":
+					spec = "0 0 * * 0"
+				case "month":
+					spec = "0 0 1 * *"
+				}
+
+				for _, t := range query.ReportType {
+					jobID := t + v
+					services.AddSchedJob(jobID, "report", description, spec, func() error {
+						var startTime, endTime string
+						switch v {
+						case "day":
+							startTime = carbon.Now().StartOfDay().ToDateTimeString()
+							endTime = carbon.Now().EndOfDay().ToDateTimeString()
+						case "week":
+							startTime = carbon.Now().StartOfWeek().ToDateTimeString()
+							endTime = carbon.Now().EndOfWeek().ToDateTimeString()
+						case "month":
+							startTime = carbon.Now().StartOfMonth().ToDateTimeString()
+							endTime = carbon.Now().EndOfMonth().ToDateTimeString()
+						}
+						return services.GenerateReport(services.GenerateReportOption{
+							ReportType: t,
+							StartTime:  startTime,
+							EndTime:    endTime,
+						})
+					})
+				}
+			}
+		}
+
 		return nil
 	})
 	if err != nil {
@@ -266,10 +305,4 @@ func (rc *reportController) Setup(r *gin.RouterGroup) {
 		PUT("/report/config", rc.UpdateReportConfig)
 
 	services.RegisterReportCallback("default", ReportDefaultCallback)
-	// if err := services.AddSchedJob("defaultReport", "report", "每日默认报告", "* * * * *", func() error {
-	// 	logger.Info("defaultReport")
-	// 	return nil
-	// }); err != nil {
-	// 	logger.Error(err)
-	// }
 }
