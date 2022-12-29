@@ -19,6 +19,7 @@ var (
 	ErrNotExistSchedJob = errors.New("定时任务不存在")
 	ErrStopSchedJob     = errors.New("停止定时任务失败")
 	ErrCreateSchedJob   = errors.New("创建定时任务失败")
+	ErrRemoveSchedJob   = errors.New("删除定时任务失败")
 )
 
 // AddSchedJob creates sched job
@@ -108,16 +109,19 @@ func StopSchedJob(jobID string) error {
 
 // RemoveSchedJob remove sched job by jobID
 func RemoveSchedJob(jobID string) error {
+	ErrRemoveSchedJob = fmt.Errorf("删除定时任务(%s)失败", jobID)
 	entryID, ok := schedJobMappings[jobID]
 	if !ok {
-		return ErrExistSchedJob
+		return nil
 	}
 
 	sched.C.Remove(entryID)
 
 	if res := db.Client.Delete(&models.SchedJob{}, "job_id = ?", jobID); res.Error != nil {
-		return ErrStopSchedJob
+		return ErrRemoveSchedJob
 	}
+
+	delete(schedJobMappings, jobID)
 
 	return nil
 }
