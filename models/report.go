@@ -1,6 +1,7 @@
 package models
 
 import (
+	jsoniter "github.com/json-iterator/go"
 	"github.com/yoyo-inc/yoyo/common/db"
 	"github.com/yoyo-inc/yoyo/core"
 	"gorm.io/datatypes"
@@ -19,9 +20,31 @@ type ReportConfig struct {
 	core.Model
 	Period     datatypes.JSON `json:"period" gorm:"type:json;default:(json_array());comment:周期" swaggertype:"array,string"`
 	ReportType datatypes.JSON `json:"reportType" gorm:"type:json;default:(json_array());comment:报告类型" swaggertype:"array,string"`
-	ReportName string         `json:"reportName" gorm:"size:100;comment:报告名称"`
+}
+
+func (rc ReportConfig) GetPeriod() []string {
+	json := jsoniter.ConfigCompatibleWithStandardLibrary
+
+	var period []string
+	if err := json.Unmarshal(rc.Period, &period); err != nil {
+		return []string{}
+	}
+
+	return period
+}
+
+func (rc ReportConfig) GetReportType() []string {
+	json := jsoniter.ConfigCompatibleWithStandardLibrary
+
+	var reportType []string
+	if err := json.Unmarshal(rc.ReportType, &reportType); err != nil {
+		return []string{}
+	}
+
+	return reportType
 }
 
 func init() {
 	db.AddAutoMigrateModel(&Report{})
+	db.AddAutoMigrateModel(&ReportConfig{})
 }

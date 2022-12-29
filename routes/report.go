@@ -174,6 +174,10 @@ func (*reportController) GenerateReport(c *gin.Context) {
 // @Security JWT
 // @Router   /report/types [get]
 func (rc *reportController) QueryReportType(c *gin.Context) {
+	core.OK(c, rc.GetReportType())
+}
+
+func (*reportController) GetReportType() []models.Dict {
 	types := []models.Dict{
 		{
 			Label: "默认",
@@ -181,7 +185,7 @@ func (rc *reportController) QueryReportType(c *gin.Context) {
 		},
 	}
 
-	core.OK(c, types)
+	return types
 }
 
 // QueryReportConfig
@@ -191,7 +195,7 @@ func (rc *reportController) QueryReportType(c *gin.Context) {
 // @Produce json
 // @Success 200   {object} core.Response{data=models.ReportConfig}
 // @Security JWT
-// @Router  /report/configs [get]
+// @Router  /report/config [get]
 func (*reportController) QueryReportConfig(c *gin.Context) {
 	var config models.ReportConfig
 	if res := db.Client.Model(&models.ReportConfig{}).Find(&config); res.Error != nil {
@@ -212,7 +216,7 @@ func (*reportController) QueryReportConfig(c *gin.Context) {
 // @Success 200   {object} core.Response{data=bool}
 // @Security JWT
 // @Router  /report/config [put]
-func (*reportController) UpdateReportConfig(c *gin.Context) {
+func (rc *reportController) UpdateReportConfig(c *gin.Context) {
 	var query vo.UpdateReportConfigVo
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
@@ -228,53 +232,24 @@ func (*reportController) UpdateReportConfig(c *gin.Context) {
 	} else {
 		query.ReportConfig.Period = period
 	}
+	if reportType, err := json.Marshal(query.ReportType); err != nil {
+		logger.Error(err)
+		c.Error(errs.ErrUpdateReportConfig)
+		return
+	} else {
+		query.ReportConfig.ReportType = reportType
+	}
 
 	err := db.Client.Transaction(func(tx *gorm.DB) error {
-		if query.ID != "" {
-			if res := db.Client.Delete(&models.ReportConfig{Model: core.Model{ID: query.ID}}); res.Error != nil {
-				return res.Error
-			}
+		if res := db.Client.Where("1 = 1").Delete(&models.ReportConfig{}); res.Error != nil {
+			return res.Error
 		}
 		if res := db.Client.Create(&query.ReportConfig); res.Error != nil {
 			return res.Error
 		}
 
-		if len(query.Period) > 0 && len(query.ReportType) > 0 {
-			for _, v := range query.Period {
-				var spec string
-				var description string
-				switch v {
-				case "day":
-					spec = "0 0 * * *"
-				case "week":
-					spec = "0 0 * * 0"
-				case "month":
-					spec = "0 0 1 * *"
-				}
-
-				for _, t := range query.ReportType {
-					jobID := t + v
-					services.AddSchedJob(jobID, "report", description, spec, func() error {
-						var startTime, endTime string
-						switch v {
-						case "day":
-							startTime = carbon.Now().StartOfDay().ToDateTimeString()
-							endTime = carbon.Now().EndOfDay().ToDateTimeString()
-						case "week":
-							startTime = carbon.Now().StartOfWeek().ToDateTimeString()
-							endTime = carbon.Now().EndOfWeek().ToDateTimeString()
-						case "month":
-							startTime = carbon.Now().StartOfMonth().ToDateTimeString()
-							endTime = carbon.Now().EndOfMonth().ToDateTimeString()
-						}
-						return services.GenerateReport(services.GenerateReportOption{
-							ReportType: t,
-							StartTime:  startTime,
-							EndTime:    endTime,
-						})
-					})
-				}
-			}
+		if err := rc.RegisterReportSchedJob(); err != nil {
+			return err
 		}
 
 		return nil
@@ -288,7 +263,66 @@ func (*reportController) UpdateReportConfig(c *gin.Context) {
 	core.OK(c, true)
 }
 
-func AddSchedReportJob(period []string, reportName string) {}
+func (*reportController) RegisterReportSchedJob() error {
+	var config models.ReportConfig
+	if res := db.Client.Model(&models.ReportConfig{}).First(&config); res.Error != nil {
+		return res.Error
+	}
+
+	if len(config.GetPeriod()) > 0 && len(config.GetReportType()) > 0 {
+		for _, v := range config.GetPeriod() {
+			var spec string
+			var description string
+			switch v {
+			case "day":
+				spec = "0 22 * * *"
+				description = "每日报告"
+			case "week":
+				spec = "0 22 * * 0"
+				description = "每周报告"
+			case "month":
+				spec = "0 22 31 * *"
+				description = "每月报告"
+			case "year":
+				spec = "0 22 31 12 *"
+				description = "每年报告"
+			}
+
+			for _, t := range config.GetReportType() {
+				jobID := t + v
+				// remove exists sched job
+				if err := services.RemoveSchedJob(jobID); err != nil {
+					return err
+				}
+				if err := services.AddSchedJob(jobID, "report", fmt.Sprintf("%s%s", t, description), spec, func() error {
+					var startTime, endTime string
+					switch v {
+					case "day":
+						startTime = carbon.Now().StartOfDay().ToDateTimeString()
+						endTime = carbon.Now().EndOfDay().ToDateTimeString()
+					case "week":
+						startTime = carbon.Now().StartOfWeek().ToDateTimeString()
+						endTime = carbon.Now().EndOfWeek().ToDateTimeString()
+					case "month":
+						startTime = carbon.Now().StartOfMonth().ToDateTimeString()
+						endTime = carbon.Now().EndOfMonth().ToDateTimeString()
+					case "year":
+						startTime = carbon.Now().StartOfYear().ToDateTimeString()
+						endTime = carbon.Now().EndOfYear().ToDateTimeString()
+					}
+					return services.GenerateReport(services.GenerateReportOption{
+						ReportType: t,
+						StartTime:  startTime,
+						EndTime:    endTime,
+					})
+				}); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
 
 func ReportDefaultCallback(startTime string, endTime string) services.ReportCallbackData {
 	data := make(services.ReportCallbackData)
@@ -302,7 +336,12 @@ func (rc *reportController) Setup(r *gin.RouterGroup) {
 		GET("/report/types", rc.QueryReportType).
 		GET("/report/preview/:reportType/*filepath", rc.PreviewReport).
 		POST("/report/generate/:reportType", rc.GenerateReport).
+		GET("/report/config", rc.QueryReportConfig).
 		PUT("/report/config", rc.UpdateReportConfig)
 
 	services.RegisterReportCallback("default", ReportDefaultCallback)
+
+	if err := rc.RegisterReportSchedJob(); err != nil {
+		logger.Error(err)
+	}
 }
