@@ -26,6 +26,7 @@ VALUES
   ("report_config", "报告配置"),
   ("sched_job", "定时任务管理"),
   ("resource", "资源管理"),
+  ("dict", "字典管理"),
   ("system", "系统设置")
   ;
 
@@ -60,6 +61,7 @@ VALUES
   (1, 19),
   (1, 20),
   (1, 21),
+  (1, 22),
   (2, 1),
   (2, 2),
   (3, 1),
@@ -99,3 +101,8 @@ INSERT INTO
   system_settings (name, description)
 VALUES
   ("后台管理系统", "一款开箱即用的后台管理系统");
+
+INSERT INTO
+  dicts (type, label, value, value_type)
+VALUES
+  ("report", "默认", "default", "string")
