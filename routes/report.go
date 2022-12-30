@@ -257,8 +257,11 @@ func (rc *reportController) UpdateReportConfig(c *gin.Context) {
 	if err != nil {
 		logger.Error(err)
 		c.Error(errs.ErrUpdateReportConfig)
+		audit_log.Fail(c, "报告设置", "更新", fmt.Sprintf("报告设置内容%#v", query.ReportConfig))
 		return
 	}
+
+	audit_log.Success(c, "报告设置", "更新", fmt.Sprintf("报告设置内容%#v", query.ReportConfig))
 
 	core.OK(c, true)
 }
