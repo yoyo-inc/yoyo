@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -174,18 +175,13 @@ func (*reportController) GenerateReport(c *gin.Context) {
 // @Security JWT
 // @Router   /report/types [get]
 func (rc *reportController) QueryReportType(c *gin.Context) {
-	core.OK(c, rc.GetReportType())
-}
-
-func (*reportController) GetReportType() []models.Dict {
-	types := []models.Dict{
-		{
-			Label: "默认",
-			Value: "default",
-		},
+	entries, err := services.GetEntriesByType("report")
+	if err != nil {
+		logger.Error(err)
+		c.Error(errs.ErrQueryReportType)
+		return
 	}
-
-	return types
+	core.OK(c, entries)
 }
 
 // QueryReportConfig
@@ -269,6 +265,9 @@ func (rc *reportController) UpdateReportConfig(c *gin.Context) {
 func (*reportController) RegisterReportSchedJob() error {
 	var config models.ReportConfig
 	if res := db.Client.Model(&models.ReportConfig{}).First(&config); res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return nil
+		}
 		return res.Error
 	}
 
@@ -297,7 +296,7 @@ func (*reportController) RegisterReportSchedJob() error {
 				if err := services.RemoveSchedJob(jobID); err != nil {
 					return err
 				}
-				if err := services.AddSchedJob(jobID, "report", fmt.Sprintf("%s%s", t, description), spec, func() error {
+				if err := services.AddSchedJob(jobID, "report", fmt.Sprintf("%s%s", services.GetLabelByValue("report", t), description), spec, func() error {
 					var startTime, endTime string
 					switch v {
 					case "day":
