@@ -21,6 +21,7 @@ func init() {
 		&resourceController{},
 		&reportController{},
 		&schedJobController{},
+		&dictController{},
 	}
 }
 
