@@ -163,7 +163,7 @@ func (*roleController) UpdateRole(c *gin.Context) {
 			return models.Permission{IModel: core.IModel{ID: permissionID}}
 		})
 
-		if err := db.Client.Model(&models.Role{}).Association("Permissions").Replace(permissions); err != nil {
+		if err := db.Client.Model(&query.Role).Association("Permissions").Replace(permissions); err != nil {
 			logger.Error(err)
 			c.Error(errs.ErrUpdateRole)
 			return
