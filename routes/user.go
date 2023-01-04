@@ -91,11 +91,14 @@ func (*userController) CreateUser(c *gin.Context) {
 		return
 	}
 
-	var user = query.User
+	user := query.User
 	user.Roles = slice.Map(query.Roles, func(_ int, roleID int) models.Role {
 		return models.Role{IModel: core.IModel{ID: roleID}}
 	})
 
+	if user.OrganizationID == 0 {
+		user.OrganizationID = 1
+	}
 	if res := db.Client.Create(&user); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrCreateUser)
@@ -216,7 +219,7 @@ func (*userController) QueryCurrentUserPermissions(c *gin.Context) {
 		return
 	}
 
-	var permissions = make([]string, 0)
+	permissions := make([]string, 0)
 	for _, role := range user.Roles {
 		for _, permission := range role.Permissions {
 			permissions = append(permissions, permission.Name)
