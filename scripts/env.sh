@@ -2,7 +2,7 @@
 
 set -e
 
-names="db prom alert"
+names="db prom alert doctron"
 for container_name in $names; do
 	if [[ -n $(docker ps -a -q -f "name=^${container_name}") ]]; then
 		docker rm -f "${container_name}"
