@@ -8,8 +8,8 @@ import (
 type Organization struct {
 	core.IModel
 	// 组织名
-	Name     string `json:"name" gorm:"size:255;comment:组织名称"`
-	ParentID int    `json:"parentId"`
+	Name     string `json:"name,omitempty" gorm:"size:255;comment:组织名称"`
+	ParentID int    `json:"parentId,omitempty"`
 }
 
 func init() {

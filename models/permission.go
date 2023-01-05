@@ -7,14 +7,10 @@ import (
 
 type Permission struct {
 	core.IModel
-	// 权限名称
-	Name string `json:"name" gorm:"size:255;unique;not null;comment:权限名称"`
-	// 介绍
-	Description string `json:"description" gorm:"comment:权限描述"`
-	// 父级权限
-	ParentID int `json:"parentID" gorm:"comment:父级权限"`
-	// 是否开启
-	Enable bool `json:"enable" gorm:"default:true;comment:是否启用"`
+	Name        string `json:"name,omitempty" gorm:"size:255;unique;not null;comment:权限名称"` // 权限名称
+	Description string `json:"description,omitempty" gorm:"comment:权限描述"`                   // 介绍
+	ParentID    int    `json:"parentID,omitempty" gorm:"comment:父级权限"`                      // 父级权限
+	Enable      bool   `json:"enable,omitempty" gorm:"default:true;comment:是否启用"`           // 是否开启
 }
 
 func init() {

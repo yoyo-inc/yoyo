@@ -7,13 +7,13 @@ import (
 
 type AuditLog struct {
 	core.IModel
-	UserID    *int   `json:"userID" gorm:"comment:用户ID"`
-	User      User   `json:"user"`
-	IP        string `json:"ip" gorm:"comment:ip"`
-	Module    string `json:"module" gorm:"comment:模块"`
-	Operation string `json:"operation" gorm:"comment:操作"`
-	Status    int    `json:"status" gorm:"是否成功"`
-	Detail    string `json:"detail" gorm:"详情"`
+	UserID    *int   `json:"userID,omitempty" gorm:"comment:用户ID"`
+	User      User   `json:"user,omitempty"`
+	IP        string `json:"ip,omitempty" gorm:"comment:ip"`
+	Module    string `json:"module,omitempty" gorm:"comment:模块"`
+	Operation string `json:"operation,omitempty" gorm:"comment:操作"`
+	Status    int    `json:"status,omitempty" gorm:"是否成功"`
+	Detail    string `json:"detail,omitempty" gorm:"详情"`
 }
 
 func init() {
