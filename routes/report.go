@@ -26,14 +26,15 @@ import (
 type reportController struct{}
 
 // QueryReports
-// @Summary  查询报告列表
-// @Tags     report
-// @Accept   json
-// @Produce  json
-// @Param    query query    models.Pagination false "参数"
-// @Success  200 {object} core.Response{data=core.PaginatedData{data=[]models.Report}}
-// @Security JWT
-// @Router   /reports [get]
+//	@Summary	查询报告列表
+//	@Tags		report
+//	@Accept		json
+//	@Produce	json
+//	@Param		query	query		models.Pagination	true	"参数"
+//	@Param		query	query		vo.QueryReportVO	true	"参数"
+//	@Success	200		{object}	core.Response{data=core.PaginatedData{data=[]models.Report}}
+//	@Security	JWT
+//	@Router		/reports [get]
 func (*reportController) QueryReports(c *gin.Context) {
 	var query vo.QueryReportVO
 	if err := c.ShouldBindQuery(&query); err != nil {
@@ -68,14 +69,14 @@ func (*reportController) QueryReports(c *gin.Context) {
 }
 
 // DeleteReport
-// @Summary  删除报告
-// @Tags     report
-// @Accept   json
-// @Produce  json
-// @Param    id  path     string true "参数"
-// @Success  200 {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /report/:id [delete]
+//	@Summary	删除报告
+//	@Tags		report
+//	@Accept		json
+//	@Produce	json
+//	@Param		id	path		string	true	"参数"
+//	@Success	200	{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/report/:id [delete]
 func (*reportController) DeleteReport(c *gin.Context) {
 	id := c.Param("id")
 
@@ -132,15 +133,15 @@ func (*reportController) PreviewReport(c *gin.Context) {
 }
 
 // GenerateReport
-// @Summary  生成报告
-// @Tags     report
-// @Accept   json
-// @Produce  json
-// @Param    query      body     vo.GenerateReportVO ture "参数"
-// @Param    reportType path     string              true "报告类型"
-// @Success  200        {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /report/generate/:reportType [post]
+//	@Summary	生成报告
+//	@Tags		report
+//	@Accept		json
+//	@Produce	json
+//	@Param		query		body		vo.GenerateReportVO	ture	"参数"
+//	@Param		reportType	path		string				true	"报告类型"
+//	@Success	200			{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/report/generate/:reportType [post]
 func (*reportController) GenerateReport(c *gin.Context) {
 	var query vo.GenerateReportVO
 	if err := c.ShouldBindJSON(&query); err != nil {
@@ -167,13 +168,13 @@ func (*reportController) GenerateReport(c *gin.Context) {
 }
 
 // QueryReportType
-// @Summary  查询报告类型
-// @Tags     report
-// @Accept   json
-// @Produce  json
-// @Success  200 {object} core.Response{data=[]models.Dict}
-// @Security JWT
-// @Router   /report/types [get]
+//	@Summary	查询报告类型
+//	@Tags		report
+//	@Accept		json
+//	@Produce	json
+//	@Success	200	{object}	core.Response{data=[]models.Dict}
+//	@Security	JWT
+//	@Router		/report/types [get]
 func (rc *reportController) QueryReportType(c *gin.Context) {
 	entries, err := services.GetEntriesByType("report")
 	if err != nil {
@@ -185,13 +186,13 @@ func (rc *reportController) QueryReportType(c *gin.Context) {
 }
 
 // QueryReportConfig
-// @Summary 查询报告设置
-// @Tags    report
-// @Accept  json
-// @Produce json
-// @Success 200   {object} core.Response{data=models.ReportConfig}
-// @Security JWT
-// @Router  /report/config [get]
+//	@Summary	查询报告设置
+//	@Tags		report
+//	@Accept		json
+//	@Produce	json
+//	@Success	200	{object}	core.Response{data=models.ReportConfig}
+//	@Security	JWT
+//	@Router		/report/config [get]
 func (*reportController) QueryReportConfig(c *gin.Context) {
 	var config models.ReportConfig
 	if res := db.Client.Model(&models.ReportConfig{}).Find(&config); res.Error != nil {
@@ -204,14 +205,14 @@ func (*reportController) QueryReportConfig(c *gin.Context) {
 }
 
 // UpdateReportConfig
-// @Summary 更换报告设置
-// @Tags    report
-// @Accept  json
-// @Produce json
-// @Param   body body     vo.UpdateReportConfigVo true "参数"
-// @Success 200   {object} core.Response{data=bool}
-// @Security JWT
-// @Router  /report/config [put]
+//	@Summary	更换报告设置
+//	@Tags		report
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		vo.UpdateReportConfigVo	true	"参数"
+//	@Success	200		{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/report/config [put]
 func (rc *reportController) UpdateReportConfig(c *gin.Context) {
 	var query vo.UpdateReportConfigVo
 	if err := c.ShouldBindJSON(&query); err != nil {
@@ -244,7 +245,7 @@ func (rc *reportController) UpdateReportConfig(c *gin.Context) {
 			return res.Error
 		}
 
-		if err := rc.RegisterReportSchedJob(); err != nil {
+		if err := rc.registerReportSchedJob(); err != nil {
 			return err
 		}
 
@@ -262,7 +263,7 @@ func (rc *reportController) UpdateReportConfig(c *gin.Context) {
 	core.OK(c, true)
 }
 
-func (*reportController) RegisterReportSchedJob() error {
+func (*reportController) registerReportSchedJob() error {
 	var config models.ReportConfig
 	if res := db.Client.Model(&models.ReportConfig{}).First(&config); res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
@@ -343,7 +344,7 @@ func (rc *reportController) Setup(r *gin.RouterGroup) {
 
 	services.RegisterReportCallback("default", ReportDefaultCallback)
 
-	if err := rc.RegisterReportSchedJob(); err != nil {
+	if err := rc.registerReportSchedJob(); err != nil {
 		logger.Error(err)
 	}
 }

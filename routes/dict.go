@@ -11,14 +11,14 @@ import (
 type dictController struct{}
 
 // QueryDicts
-// @Summary 查询字典表
-// @Tags    dict
-// @Accept  json
-// @Produce json
-// @Param    query query    models.Pagination false "参数"
-// @Success 200   {object} core.Response{data=core.PaginatedData{list=models.Dict}}
-// @Security JWT
-// @Router  /dicts [get]
+//	@Summary	查询字典表
+//	@Tags		dict
+//	@Accept		json
+//	@Produce	json
+//	@Param		query	query		models.Pagination	false	"参数"
+//	@Success	200		{object}	core.Response{data=core.PaginatedData{list=models.Dict}}
+//	@Security	JWT
+//	@Router		/dicts [get]
 func (*dictController) QueryDicts(c *gin.Context) {
 	queries := core.GetPaginatedQuery(&models.Dict{})
 

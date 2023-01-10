@@ -21,14 +21,14 @@ import (
 type userController struct{}
 
 // QueryUsers
-// @Summary  查询用户列表
-// @Tags     user
-// @Produce  json
-// @Param    query query    vo.QueryUserVO    false "参数"
-// @Param    query query    models.Pagination false "参数"
-// @Success  200   {object} core.Response{data=core.PaginatedData{list=[]models.User}}
-// @Security JWT
-// @Router   /users [get]
+//	@Summary	查询用户列表
+//	@Tags		user
+//	@Produce	json
+//	@Param		query	query		vo.QueryUserVO		false	"参数"
+//	@Param		query	query		models.Pagination	false	"参数"
+//	@Success	200		{object}	core.Response{data=core.PaginatedData{list=[]models.User}}
+//	@Security	JWT
+//	@Router		/users [get]
 func (*userController) QueryUsers(c *gin.Context) {
 	var query vo.QueryUserVO
 	if err := c.ShouldBindQuery(&query); err != nil {
@@ -62,14 +62,14 @@ func (*userController) QueryUsers(c *gin.Context) {
 }
 
 // CreateUser
-// @Summary  创建用户
-// @Tags     user
-// @Accept   json
-// @Produce  json
-// @Param    query body     vo.UserVO true "用户信息"
-// @Success  200   {object} core.Response{data=models.User}
-// @Security JWT
-// @Router   /user [post]
+//	@Summary	创建用户
+//	@Tags		user
+//	@Accept		json
+//	@Produce	json
+//	@Param		query	body		vo.UserVO	true	"用户信息"
+//	@Success	200		{object}	core.Response{data=models.User}
+//	@Security	JWT
+//	@Router		/user [post]
 func (*userController) CreateUser(c *gin.Context) {
 	var query vo.UserVO
 	if err := c.ShouldBindJSON(&query); err != nil {
@@ -111,14 +111,14 @@ func (*userController) CreateUser(c *gin.Context) {
 }
 
 // UpdateUser
-// @Summary  更新用户
-// @Tags     user
-// @Accept   json
-// @Produce  json
-// @Param    query body     vo.UserVO true "用户信息"
-// @Success  200   {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /user [put]
+//	@Summary	更新用户
+//	@Tags		user
+//	@Accept		json
+//	@Produce	json
+//	@Param		query	body		vo.UserVO	true	"用户信息"
+//	@Success	200		{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/user [put]
 func (*userController) UpdateUser(c *gin.Context) {
 	var query vo.UserVO
 	if err := c.ShouldBindJSON(&query); err != nil {
@@ -151,13 +151,13 @@ func (*userController) UpdateUser(c *gin.Context) {
 }
 
 // DeleteUser
-// @Summary  删除用户
-// @Tags     user
-// @Produce  json
-// @Param    userID path     string true "用户ID"
-// @Success  200    {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /user/{userID} [delete]
+//	@Summary	删除用户
+//	@Tags		user
+//	@Produce	json
+//	@Param		userID	path		string	true	"用户ID"
+//	@Success	200		{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/user/{userID} [delete]
 func (*userController) DeleteUser(c *gin.Context) {
 	userID := c.Param("userID")
 	id, _ := strconv.Atoi(userID)
@@ -181,13 +181,13 @@ func (*userController) DeleteUser(c *gin.Context) {
 }
 
 // QueryCurrentUser
-// @Summary  查询当前用户信息
-// @Tags     user
-// @Accept   json
-// @Produce  json
-// @Success  200 {object} core.Response{data=models.User}
-// @Security JWT
-// @Router   /user/current [get]
+//	@Summary	查询当前用户信息
+//	@Tags		user
+//	@Accept		json
+//	@Produce	json
+//	@Success	200	{object}	core.Response{data=models.User}
+//	@Security	JWT
+//	@Router		/user/current [get]
 func (*userController) QueryCurrentUser(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	userID, _ := claims[middlewares.IdentityKey].(string)
@@ -202,13 +202,13 @@ func (*userController) QueryCurrentUser(c *gin.Context) {
 }
 
 // QueryCurrentUserPermissions
-// @Summary  查询当前用户权限信息
-// @Tags     user
-// @Accept   json
-// @Produce  json
-// @Success  200 {object} core.Response{data=array,string}
-// @Security JWT
-// @Router   /user/current/permissions [get]
+//	@Summary	查询当前用户权限信息
+//	@Tags		user
+//	@Accept		json
+//	@Produce	json
+//	@Success	200	{object}	core.Response{data=array,string}
+//	@Security	JWT
+//	@Router		/user/current/permissions [get]
 func (*userController) QueryCurrentUserPermissions(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	userID, _ := claims[middlewares.IdentityKey].(string)

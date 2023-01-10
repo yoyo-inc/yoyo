@@ -25,14 +25,14 @@ import (
 type resourceController struct{}
 
 // QueryResources
-// @Summary  查询资源文件列表
-// @Tags     resource
-// @Accept   json
-// @Produce  json
-// @Param    query query    vo.QueryResourceVO true "参数"
-// @Success  200   {object} core.Response{data=core.PaginatedData{list=[]models.Resource}}
-// @Security JWT
-// @Router   /resources [get]
+//	@Summary	查询资源文件列表
+//	@Tags		resource
+//	@Accept		json
+//	@Produce	json
+//	@Param		query	query		vo.QueryResourceVO	true	"参数"
+//	@Success	200		{object}	core.Response{data=core.PaginatedData{list=[]models.Resource}}
+//	@Security	JWT
+//	@Router		/resources [get]
 func (*resourceController) QueryResources(c *gin.Context) {
 	var query vo.QueryResourceVO
 	if err := c.ShouldBindQuery(&query); err != nil {
@@ -68,15 +68,15 @@ func (*resourceController) QueryResources(c *gin.Context) {
 }
 
 // UploadResource
-// @Summary  上传资源
-// @Tags     resource
-// @Accept   mpfd
-// @Produce  json
-// @Param    resourceType path     string true "资源类型"
-// @Param    file         formData file   true "参数"
-// @Success  200          {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /resource/:resourceType/upload [post]
+//	@Summary	上传资源
+//	@Tags		resource
+//	@Accept		mpfd
+//	@Produce	json
+//	@Param		resourceType	path		string	true	"资源类型"
+//	@Param		file			formData	file	true	"参数"
+//	@Success	200				{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/resource/:resourceType/upload [post]
 func (*resourceController) UploadResource(c *gin.Context) {
 	errUploadResource := errors.New("文件上传失败")
 
@@ -132,14 +132,14 @@ func (*resourceController) UploadResource(c *gin.Context) {
 }
 
 // DeleteResource
-// @Summary  删除资源文件
-// @Tags     resource
-// @Accept   json
-// @Produce  json
-// @Param    id  path     string true "参数"
-// @Success  200 {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /resource/:id [delete]
+//	@Summary	删除资源文件
+//	@Tags		resource
+//	@Accept		json
+//	@Produce	json
+//	@Param		id	path		string	true	"参数"
+//	@Success	200	{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/resource/:id [delete]
 func (rc *resourceController) DeleteResource(c *gin.Context) {
 	id := c.Param("id")
 
@@ -153,13 +153,13 @@ func (rc *resourceController) DeleteResource(c *gin.Context) {
 }
 
 // DownloadResource
-// @Summary  下载资源
-// @Tags     resource
-// @Accept   json
-// @Produce  octet-stream
-// @Param    id path string true "参数"
-// @Security JWT
-// @Router   /resource/download/:id [get]
+//	@Summary	下载资源
+//	@Tags		resource
+//	@Accept		json
+//	@Produce	octet-stream
+//	@Param		id	path	string	true	"参数"
+//	@Security	JWT
+//	@Router		/resource/download/:id [get]
 func (*resourceController) DownloadResource(c *gin.Context) {
 	id := c.Param("id")
 
@@ -182,13 +182,13 @@ func (*resourceController) DownloadResource(c *gin.Context) {
 }
 
 // QueryResourceTypes
-// @Summary  查询资源类型
-// @Tags     resource
-// @Accept   json
-// @Produce  json
-// @Success  200 {object} core.Response{data=[]models.Dict}
-// @Security JWT
-// @Router   /resource/types [get]
+//	@Summary	查询资源类型
+//	@Tags		resource
+//	@Accept		json
+//	@Produce	json
+//	@Success	200	{object}	core.Response{data=[]models.Dict}
+//	@Security	JWT
+//	@Router		/resource/types [get]
 func (*resourceController) QueryResourceTypes(c *gin.Context) {
 	types := []models.Dict{
 		{

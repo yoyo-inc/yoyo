@@ -17,14 +17,14 @@ import (
 type schedJobController struct{}
 
 // QuerySchedJobs
-// @Summary  查询定时任务
-// @Tags     schedJob
-// @Accept   json
-// @Produce  json
-// @Param    query query    models.Pagination false "参数"
-// @Success  200 {object} core.Response{data=core.PaginatedData{list=[]models.SchedJob}}
-// @Security JWT
-// @Router   /schedjobs [get]
+//	@Summary	查询定时任务
+//	@Tags		schedJob
+//	@Accept		json
+//	@Produce	json
+//	@Param		query	query		models.Pagination	false	"参数"
+//	@Success	200		{object}	core.Response{data=core.PaginatedData{list=[]models.SchedJob}}
+//	@Security	JWT
+//	@Router		/schedjobs [get]
 func (*schedJobController) QuerySchedJobs(c *gin.Context) {
 	queries := core.GetPaginatedQuery(&models.SchedJob{})
 
@@ -46,14 +46,14 @@ func (*schedJobController) QuerySchedJobs(c *gin.Context) {
 }
 
 // StartSchedJobs
-// @Summary  开启定时任务
-// @Tags     schedJob
-// @Accept   json
-// @Produce  json
-// @Param    body body     vo.UpdateSchedJobVO true "参数"
-// @Success  200  {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /schedjob/open [put]
+//	@Summary	开启定时任务
+//	@Tags		schedJob
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		vo.UpdateSchedJobVO	true	"参数"
+//	@Success	200		{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/schedjob/open [put]
 func (*schedJobController) StartSchedJobs(c *gin.Context) {
 	var query vo.UpdateSchedJobVO
 	if err := c.ShouldBindJSON(&query); err != nil {
@@ -80,14 +80,14 @@ func (*schedJobController) StartSchedJobs(c *gin.Context) {
 }
 
 // CloseSchedJobs
-// @Summary  关闭定时任务
-// @Tags     schedJob
-// @Accept   json
-// @Produce  json
-// @Param    body body     vo.UpdateSchedJobVO true "参数"
-// @Success  200  {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /schedjob/close [put]
+//	@Summary	关闭定时任务
+//	@Tags		schedJob
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		vo.UpdateSchedJobVO	true	"参数"
+//	@Success	200		{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/schedjob/close [put]
 func (*schedJobController) CloseSchedJobs(c *gin.Context) {
 	var query vo.UpdateSchedJobVO
 	if err := c.ShouldBindJSON(&query); err != nil {
@@ -114,13 +114,13 @@ func (*schedJobController) CloseSchedJobs(c *gin.Context) {
 }
 
 // QuerySchedJobTypes
-// @Summary  查询定时任务类型
-// @Tags     schedJob
-// @Accept   json
-// @Produce  json
-// @Success  200 {object} core.Response{data=[]models.Dict}
-// @Security JWT
-// @Router   /schedjob/types [get]
+//	@Summary	查询定时任务类型
+//	@Tags		schedJob
+//	@Accept		json
+//	@Produce	json
+//	@Success	200	{object}	core.Response{data=[]models.Dict}
+//	@Security	JWT
+//	@Router		/schedjob/types [get]
 func (*schedJobController) QuerySchedJobTypes(c *gin.Context) {
 	types := []models.Dict{
 		{
