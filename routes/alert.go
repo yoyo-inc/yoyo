@@ -34,14 +34,15 @@ var TypeMappings = map[string]string{
 type alertController struct{}
 
 // QueryAlerts
-// @Summary  查询告警列表
-// @Tags     alert
-// @Produce  json
-// @Param    query query    vo.QueryAlertVO   false "参数"
-// @Param    query query    models.Pagination false "参数"
-// @Success  200   {object} core.Response{data=core.PaginatedData{list=[]models.Alert}}
-// @Security JWT
-// @Router   /alerts [get]
+//	@Summary	查询告警列表
+//	@Tags		alert
+//	@Produce	json
+//	@Param		query	query		vo.QueryAlertVO			false	"参数"
+//	@Param		query	query		models.Pagination		false	"参数"
+//	@Param		query	query		models.DateTimeRanger	false	"参数"
+//	@Success	200		{object}	core.Response{data=core.PaginatedData{list=[]models.Alert}}
+//	@Security	JWT
+//	@Router		/alerts [get]
 func (*alertController) QueryAlerts(c *gin.Context) {
 	var query vo.QueryAlertVO
 	if err := c.ShouldBindQuery(&query); err != nil {
@@ -69,15 +70,15 @@ func (*alertController) QueryAlerts(c *gin.Context) {
 }
 
 // QueryAlertTypes
-// @Summary  查询告警类型
-// @Tags     alert
-// @Accept   json
-// @Produce  json
-// @Success  200 {object} core.Response{data=array,vo.Record}
-// @Security JWT
-// @Router   /alert/types [get]
+//	@Summary	查询告警类型
+//	@Tags		alert
+//	@Accept		json
+//	@Produce	json
+//	@Success	200	{object}	core.Response{data=array,vo.Record}
+//	@Security	JWT
+//	@Router		/alert/types [get]
 func (*alertController) QueryAlertTypes(c *gin.Context) {
-	var types = []vo.Record[string]{
+	types := []vo.Record[string]{
 		{
 			Label: "主机",
 			Value: "host",
@@ -92,14 +93,14 @@ func (*alertController) QueryAlertTypes(c *gin.Context) {
 }
 
 // ResolvedAlert
-// @Summary  处置告警
-// @Tags     alert
-// @Accept   json
-// @Produce  json
-// @Param    body body     vo.ResolveAlertVO true "参数"
-// @Success  200  {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /alert/resolve [post]
+//	@Summary	处置告警
+//	@Tags		alert
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		vo.ResolveAlertVO	true	"参数"
+//	@Success	200		{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/alert/resolve [post]
 func (*alertController) ResolvedAlert(c *gin.Context) {
 	var query vo.ResolveAlertVO
 	if err := c.ShouldBindJSON(&query); err != nil {
@@ -124,13 +125,13 @@ func (*alertController) ResolvedAlert(c *gin.Context) {
 func (*alertController) IgnoreAlert(c *gin.Context) {}
 
 // GetAlertConfig
-// @Summary  查询告警配置
-// @Tags     alert
-// @Accept   json
-// @Produce  json
-// @Success  200 {object} core.Response{data=models.AlertConfig}
-// @Security JWT
-// @Router   /alert/config [get]
+//	@Summary	查询告警配置
+//	@Tags		alert
+//	@Accept		json
+//	@Produce	json
+//	@Success	200	{object}	core.Response{data=models.AlertConfig}
+//	@Security	JWT
+//	@Router		/alert/config [get]
 func (*alertController) GetAlertConfig(c *gin.Context) {
 	var config models.AlertConfig
 	if res := db.Client.Model(&models.AlertConfig{}).First(&config); res.Error != nil {
@@ -145,14 +146,14 @@ func (*alertController) GetAlertConfig(c *gin.Context) {
 }
 
 // UpdateAlertConfig
-// @Summary  更新告警配置
-// @Tags     alert
-// @Accept   json
-// @Produce  json
-// @Param    body body     models.AlertConfig true "参数"
-// @Success  200  {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /alert/config [put]
+//	@Summary	更新告警配置
+//	@Tags		alert
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		models.AlertConfig	true	"参数"
+//	@Success	200		{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/alert/config [put]
 func (*alertController) UpdateAlertConfig(c *gin.Context) {
 	var query vo.UpdateAlertConfigVO
 	if err := c.ShouldBindJSON(&query); err != nil {
@@ -197,14 +198,16 @@ func (*alertController) UpdateAlertConfig(c *gin.Context) {
 }
 
 // QueryAlertAccesses
-// @Summary  查询告警接入
-// @Tags     alert
-// @Accept   json
-// @Produce  json
-// @Param    query query    vo.QueryAlertAccessVO true "参数"
-// @Success  200   {object} core.Response{data=core.PaginatedData{data=models.AlertAccess}}
-// @Security JWT
-// @Router   /alert/accesses [get]
+//	@Summary	查询告警接入
+//	@Tags		alert
+//	@Accept		json
+//	@Produce	json
+//	@Param		query	query		vo.QueryAlertAccessVO	false	"参数"
+//	@Param		query	query		models.Pagination		false	"参数"
+//	@Param		query	query		models.DateTimeRanger	false	"参数"
+//	@Success	200		{object}	core.Response{data=core.PaginatedData{data=models.AlertAccess}}
+//	@Security	JWT
+//	@Router		/alert/accesses [get]
 func (*alertController) QueryAlertAccesses(c *gin.Context) {
 	var query vo.QueryAlertAccessVO
 	if err := c.ShouldBindQuery(&query); err != nil {
@@ -227,7 +230,7 @@ func (*alertController) QueryAlertAccesses(c *gin.Context) {
 		return
 	}
 	var count int64
-	if res := queries[1].Count(&count); res.Error != nil {
+	if res := queries[1].Scopes(core.DateTimeRanger(c, "")).Count(&count); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQueryAlertAccess)
 		return
@@ -237,14 +240,14 @@ func (*alertController) QueryAlertAccesses(c *gin.Context) {
 }
 
 // CreateAlertAccess
-// @Summary  创建告警接入
-// @Tags     alert
-// @Accept   json
-// @Produce  json
-// @Param    body body     models.AlertAccess true "参数"
-// @Success  200  {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /alert/access [post]
+//	@Summary	创建告警接入
+//	@Tags		alert
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		models.AlertAccess	true	"参数"
+//	@Success	200		{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/alert/access [post]
 func (*alertController) CreateAlertAccess(c *gin.Context) {
 	var access models.AlertAccess
 	if err := c.ShouldBindJSON(&access); err != nil {
@@ -265,14 +268,14 @@ func (*alertController) CreateAlertAccess(c *gin.Context) {
 }
 
 // UpdateAlertAccess
-// @Summary  更新告警接入
-// @Tags     alert
-// @Accept   json
-// @Produce  json
-// @Param    body body     vo.UpdateAlertAccessVO true "参数"
-// @Success  200  {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /alert/access [put]
+//	@Summary	更新告警接入
+//	@Tags		alert
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		vo.UpdateAlertAccessVO	true	"参数"
+//	@Success	200		{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/alert/access [put]
 func (*alertController) UpdateAlertAccess(c *gin.Context) {
 	var query vo.UpdateAlertAccessVO
 	if err := c.ShouldBindJSON(&query); err != nil {
@@ -292,14 +295,14 @@ func (*alertController) UpdateAlertAccess(c *gin.Context) {
 }
 
 // DeleteAlertAccess
-// @Summary  删除告警接入
-// @Tags     alert
-// @Accept   json
-// @Produce  json
-// @Param    id  path     string true "参数"
-// @Success  200 {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /alert/access/{id} [delete]
+//	@Summary	删除告警接入
+//	@Tags		alert
+//	@Accept		json
+//	@Produce	json
+//	@Param		id	path		string	true	"参数"
+//	@Success	200	{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/alert/access/{id} [delete]
 func (*alertController) DeleteAlertAccess(c *gin.Context) {
 	rawID := c.Param("id")
 	id, err := strconv.Atoi(rawID)
@@ -459,14 +462,14 @@ func (*alertController) Webhook(c *gin.Context) {
 }
 
 // QueryAlertCount
-// @Summary  查询告警数量
-// @Tags     alert
-// @Accept   json
-// @Produce  json
-// @Param    query query    vo.QueryAlertCountVO false "参数"
-// @Success  200   {object} core.Response{data=boolean}
-// @Security JWT
-// @Router   /alert/count [get]
+//	@Summary	查询告警数量
+//	@Tags		alert
+//	@Accept		json
+//	@Produce	json
+//	@Param		query	query		vo.QueryAlertCountVO	false	"参数"
+//	@Success	200		{object}	core.Response{data=boolean}
+//	@Security	JWT
+//	@Router		/alert/count [get]
 func (*alertController) QueryAlertCount(c *gin.Context) {
 	var query vo.QueryAlertCountVO
 	if err := c.ShouldBindQuery(&query); err != nil {
@@ -494,42 +497,42 @@ func convertType(t string) string {
 }
 
 // QueryAlertPushConfigs
-// @Summary  查询告警推送设置
-// @Tags     alert
-// @Accept   json
-// @Produce  json
-// @Success  200 {object} core.Response{data=core.PaginatedData{data=models.AlertPush}}
-// @Security JWT
-// @Router   /alert/push [get]
+//	@Summary	查询告警推送设置
+//	@Tags		alert
+//	@Accept		json
+//	@Produce	json
+//	@Param		query	query		models.DateTimeRanger	false	"参数"
+//	@Success	200		{object}	core.Response{data=core.PaginatedData{data=models.AlertPush}}
+//	@Security	JWT
+//	@Router		/alert/push [get]
 func (*alertController) QueryAlertPush(c *gin.Context) {
 	queries := core.GetPaginatedQuery(&models.AlertPush{})
 	var alertPushes []models.AlertPush
-	if res := queries[0].Find(&alertPushes); res.Error != nil {
+	if res := queries[0].Scopes(core.Paginator(c), core.DateTimeRanger(c, "")).Find(&alertPushes); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQueryAlertPush)
 		return
 	}
 
 	var count int64
-	if res := queries[1].Count(&count); res.Error != nil {
+	if res := queries[1].Scopes(core.DateTimeRanger(c, "")).Count(&count); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQueryAlertPush)
 		return
 	}
 
 	core.OK(c, core.Paginated(alertPushes, count))
-
 }
 
 // CreateAlertPush
-// @Summary  创建告警推送设置
-// @Tags     alert
-// @Accept   json
-// @Produce  json
-// @Param    body body     models.AlertPush true "参数"
-// @Success  200  {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /alert/push [post]
+//	@Summary	创建告警推送设置
+//	@Tags		alert
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		models.AlertPush	true	"参数"
+//	@Success	200		{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/alert/push [post]
 func (*alertController) CreateAlertPush(c *gin.Context) {
 	var query models.AlertPush
 	if err := c.ShouldBindJSON(&query); err != nil {
@@ -548,14 +551,14 @@ func (*alertController) CreateAlertPush(c *gin.Context) {
 }
 
 // UpdateAlertPush
-// @Summary  更新告警推送
-// @Tags     alert
-// @Accept   json
-// @Produce  json
-// @Param    body body     models.AlertPush true "参数"
-// @Success  200  {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /alert/push [put]
+//	@Summary	更新告警推送
+//	@Tags		alert
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		models.AlertPush	true	"参数"
+//	@Success	200		{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/alert/push [put]
 func (*alertController) UpdateAlertPush(c *gin.Context) {
 	var query models.AlertPush
 	if err := c.ShouldBindJSON(&query); err != nil {
@@ -574,14 +577,14 @@ func (*alertController) UpdateAlertPush(c *gin.Context) {
 }
 
 // DeleteAlertPush
-// @Summary  删除告警推送
-// @Tags     alert
-// @Accept   json
-// @Produce  json
-// @Param    id  path     string true "参数"
-// @Success  200 {object} core.Response{data=bool}
-// @Security JWT
-// @Router   /alert/push [delete]
+//	@Summary	删除告警推送
+//	@Tags		alert
+//	@Accept		json
+//	@Produce	json
+//	@Param		id	path		string	true	"参数"
+//	@Success	200	{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/alert/push [delete]
 func (*alertController) DeleteAlertPush(c *gin.Context) {
 	rawID := c.Param("id")
 	id, err := strconv.Atoi(rawID)

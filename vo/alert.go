@@ -4,8 +4,6 @@ import "github.com/yoyo-inc/yoyo/models"
 
 type QueryAlertVO struct {
 	models.Alert
-	StartTime string `form:"startTime"`
-	EndTime   string `form:"endTime"`
 }
 
 type ResolveAlertVO struct {
@@ -29,9 +27,7 @@ type UpdateAlertConfigVO struct {
 }
 
 type QueryAlertAccessVO struct {
-	StartTime string `form:"startTime"`
-	EndTime   string `form:"endTime"`
-	AccessIP  string `form:"accessIP"`
+	AccessIP string `form:"accessIP"`
 }
 
 type UpdateAlertAccessVO struct {
