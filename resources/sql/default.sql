@@ -103,6 +103,11 @@ VALUES
   ("后台管理系统", "一款开箱即用的后台管理系统");
 
 INSERT INTO
-  dicts (type, label, value, value_type)
+  log_configs (id, keep_time, archive)
 VALUES
-  ("report", "默认", "default", "string")
+  ("1", 30, 1);
+
+INSERT INTO
+  dicts (type, description, label, value, value_type)
+VALUES
+  ("report", "报表", "默认", "default", "string");
