@@ -22,6 +22,7 @@ func init() {
 		&reportController{},
 		&schedJobController{},
 		&dictController{},
+		&logConfigController{},
 	}
 }
 
