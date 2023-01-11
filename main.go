@@ -42,13 +42,13 @@ func ReadLoggerConfig() logger.Options {
 	return options
 }
 
-// @Title                      yoyo
-// @Description                yoyo
-// @Host                       127.0.0.1:8080
-// @BasePath                   /API
-// @SecurityDefinitions.apikey JWT
-// @In                         header
-// @Name                       Authorization
+//	@Title						yoyo
+//	@Description				yoyo
+//	@Host						127.0.0.1:8080
+//	@BasePath					/API
+//	@SecurityDefinitions.apikey	JWT
+//	@In							header
+//	@Name						Authorization
 func main() {
 	// config
 	config.Setup()
