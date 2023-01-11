@@ -26,6 +26,7 @@ import (
 type reportController struct{}
 
 // QueryReports
+//
 //	@Summary	查询报告列表
 //	@Tags		report
 //	@Accept		json
@@ -69,6 +70,7 @@ func (*reportController) QueryReports(c *gin.Context) {
 }
 
 // DeleteReport
+//
 //	@Summary	删除报告
 //	@Tags		report
 //	@Accept		json
@@ -133,6 +135,7 @@ func (*reportController) PreviewReport(c *gin.Context) {
 }
 
 // GenerateReport
+//
 //	@Summary	生成报告
 //	@Tags		report
 //	@Accept		json
@@ -168,6 +171,7 @@ func (*reportController) GenerateReport(c *gin.Context) {
 }
 
 // QueryReportType
+//
 //	@Summary	查询报告类型
 //	@Tags		report
 //	@Accept		json
@@ -186,6 +190,7 @@ func (rc *reportController) QueryReportType(c *gin.Context) {
 }
 
 // QueryReportConfig
+//
 //	@Summary	查询报告设置
 //	@Tags		report
 //	@Accept		json
@@ -205,6 +210,7 @@ func (*reportController) QueryReportConfig(c *gin.Context) {
 }
 
 // UpdateReportConfig
+//
 //	@Summary	更换报告设置
 //	@Tags		report
 //	@Accept		json
@@ -251,14 +257,17 @@ func (rc *reportController) UpdateReportConfig(c *gin.Context) {
 
 		return nil
 	})
+
+	cs, _ := json.MarshalToString(query.ReportConfig)
+
 	if err != nil {
 		logger.Error(err)
 		c.Error(errs.ErrUpdateReportConfig)
-		audit_log.Fail(c, "报告设置", "更新", fmt.Sprintf("报告设置内容%#v", query.ReportConfig))
+		audit_log.Fail(c, "报告设置", "更新", fmt.Sprintf("报告设置内容%s", cs))
 		return
 	}
 
-	audit_log.Success(c, "报告设置", "更新", fmt.Sprintf("报告设置内容%#v", query.ReportConfig))
+	audit_log.Success(c, "报告设置", "更新", fmt.Sprintf("报告设置内容%s", cs))
 
 	core.OK(c, true)
 }
