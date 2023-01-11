@@ -17,6 +17,7 @@ import (
 type schedJobController struct{}
 
 // QuerySchedJobs
+//
 //	@Summary	查询定时任务
 //	@Tags		schedJob
 //	@Accept		json
@@ -46,6 +47,7 @@ func (*schedJobController) QuerySchedJobs(c *gin.Context) {
 }
 
 // StartSchedJobs
+//
 //	@Summary	开启定时任务
 //	@Tags		schedJob
 //	@Accept		json
@@ -63,23 +65,24 @@ func (*schedJobController) StartSchedJobs(c *gin.Context) {
 	}
 
 	var job models.SchedJob
-	if res := db.Client.Model(&models.SchedJob{IModel: core.IModel{ID: query.ID}}).Find(&job); res.Error != nil {
+	if res := db.Client.Model(&models.SchedJob{}).Find(&job, "id = ?", query.ID); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrNotExistSchedJob)
 		return
 	}
 
 	if err := services.StartSchedJob(job.JobID); err != nil {
-		audit_log.Fail(c, "定时任务", "开启", fmt.Sprintf("定时任务(%d)开启成功", query.ID))
+		audit_log.Fail(c, "定时任务", "开启", fmt.Sprintf("定时任务(%s)开启成功", job.Description))
 		c.Error(errs.ErrStartSchedJob)
 		return
 	}
 
-	audit_log.Success(c, "定时任务", "开启", fmt.Sprintf("定时任务(%d)开启成功", query.ID))
+	audit_log.Success(c, "定时任务", "开启", fmt.Sprintf("定时任务(%s)开启成功", job.Description))
 	core.OK(c, true)
 }
 
 // CloseSchedJobs
+//
 //	@Summary	关闭定时任务
 //	@Tags		schedJob
 //	@Accept		json
@@ -97,23 +100,24 @@ func (*schedJobController) CloseSchedJobs(c *gin.Context) {
 	}
 
 	var job models.SchedJob
-	if res := db.Client.Model(&models.SchedJob{IModel: core.IModel{ID: query.ID}}).Find(&job); res.Error != nil {
+	if res := db.Client.Model(&models.SchedJob{}).Find(&job, "id = ?", query.ID); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrNotExistSchedJob)
 		return
 	}
 
 	if err := services.StopSchedJob(job.JobID); err != nil {
-		audit_log.Fail(c, "定时任务", "关闭", fmt.Sprintf("定时任务(%d)关闭成功", query.ID))
+		audit_log.Fail(c, "定时任务", "关闭", fmt.Sprintf("定时任务(%s)关闭成功", job.Description))
 		c.Error(errs.ErrStopSchedJob)
 		return
 	}
 
-	audit_log.Success(c, "定时任务", "关闭", fmt.Sprintf("定时任务(%d)关闭成功", query.ID))
+	audit_log.Success(c, "定时任务", "关闭", fmt.Sprintf("定时任务(%s)关闭成功", job.Description))
 	core.OK(c, true)
 }
 
 // QuerySchedJobTypes
+//
 //	@Summary	查询定时任务类型
 //	@Tags		schedJob
 //	@Accept		json
