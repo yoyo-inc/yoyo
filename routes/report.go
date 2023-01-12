@@ -336,10 +336,10 @@ func (*reportController) registerReportSchedJob() error {
 	return nil
 }
 
-func ReportDefaultCallback(startTime string, endTime string) services.ReportCallbackData {
+func ReportDefaultCallback(startTime string, endTime string) (services.ReportCallbackData, error) {
 	data := make(services.ReportCallbackData)
 
-	return data
+	return data, nil
 }
 
 func (rc *reportController) Setup(r *gin.RouterGroup) {

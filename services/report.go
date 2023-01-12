@@ -25,7 +25,7 @@ import (
 
 type (
 	ReportCallbackData map[string]interface{}
-	ReportCallback     func(startTime string, endTime string) ReportCallbackData
+	ReportCallback     func(startTime string, endTime string) (ReportCallbackData, error)
 )
 
 type GenerateReportOption struct {
@@ -64,7 +64,10 @@ func RenderReport(option GenerateReportOption) ([]byte, error) {
 	data := make(map[string]interface{})
 	callback, ok := reportCallbacks[option.ReportType]
 	if ok {
-		data = callback(option.StartTime, option.EndTime)
+		data, err = callback(option.StartTime, option.EndTime)
+		if err != nil {
+			return nil, err
+		}
 	}
 	data["dateTimeRange"] = option.StartTime + "至" + option.EndTime
 
