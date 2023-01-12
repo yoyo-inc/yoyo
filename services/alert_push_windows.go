@@ -12,8 +12,7 @@ import (
 )
 
 var (
-	syslogClients = make(map[int]*syslog.Writer)
-	kafkaClients  = make(map[int]*kafka.Conn)
+	kafkaClients = make(map[int]*kafka.Conn)
 )
 
 func PushAlert(push models.AlertPush, message string) bool {
