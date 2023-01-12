@@ -2,6 +2,7 @@ package routes
 
 import (
 	"errors"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	"github.com/yoyo-inc/yoyo/common/config"
@@ -36,14 +37,14 @@ func (*logConfigController) QueryLogConfig(c *gin.Context) {
 }
 
 // SaveLogConfig
-// @Summary 保存日志配置
-// @Tags    logConfig
-// @Accept  json
-// @Produce json
-// @Param   body body     models.LogConfig true "参数"
-// @Success 200   {object} core.Response{data=bool}
-// @Security JWT
-// @Router  /log_config [post]
+//	@Summary	保存日志配置
+//	@Tags		logConfig
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		models.LogConfig	true	"参数"
+//	@Success	200		{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/log_config [post]
 func (lcc *logConfigController) SaveLogConfig(c *gin.Context) {
 	var logConfig models.LogConfig
 
@@ -76,9 +77,14 @@ func (*logConfigController) registerLogSchedJob() {
 
 	if logConfig.KeepTime != nil {
 		services.AddSchedJob("deleteLog", "log", "定时清除日志文件", "0 1 * * *", func() error {
-			srvs := config.GetMap("services")
+			srvs := config.GetMap("service_logs")
 			for k, v := range srvs {
-				if err := services.DeleteLogByRecent(v, *logConfig.KeepTime); err != nil {
+				p, err := filepath.Abs(v)
+				if err != nil {
+					logger.Errorf("清除%s(%s)失败: %s", k, v, err)
+					continue
+				}
+				if err := services.DeleteLogByRecent(p, *logConfig.KeepTime); err != nil {
 					logger.Errorf("清除%s(%s)失败: %s", k, v, err)
 				}
 			}
@@ -88,9 +94,14 @@ func (*logConfigController) registerLogSchedJob() {
 
 	if logConfig.Archive {
 		services.AddSchedJob("archiveLog", "log", "定时归档日志文件", "0 1 * * *", func() error {
-			srvs := config.GetMap("services")
+			srvs := config.GetMap("service_logs")
 			for k, v := range srvs {
-				if err := services.ArchiveLogByRecent(v, 1); err != nil {
+				p, err := filepath.Abs(v)
+				if err != nil {
+					logger.Errorf("清除%s(%s)失败: %s", k, v, err)
+					continue
+				}
+				if err := services.ArchiveLogByRecent(p, 1); err != nil {
 					logger.Errorf("归档%s(%s)失败: %s", k, v, err)
 				}
 			}

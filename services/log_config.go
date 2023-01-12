@@ -17,7 +17,13 @@ import (
 
 var logFileReg = `.*(\d{4}-\d{2}-\d{2}).(log|zip)`
 
-func logFilter(name string) (string, bool) {
+type FileStat struct {
+	Filename string
+	Date     string
+	Filesize int64
+}
+
+func LogFilter(name string) (string, bool) {
 	matched := regexp.MustCompile(logFileReg).FindStringSubmatch(name)
 	if matched == nil {
 		return "", false
@@ -25,39 +31,53 @@ func logFilter(name string) (string, bool) {
 	return matched[1], true
 }
 
-func ScanLogByRecent(dir string, recent int) ([]string, error) {
-	deadline := carbon.Now().SubDays(recent).StartOfDay()
+func ScanLogByRecent(dir string, recent int) ([]FileStat, error) {
+	var deadline carbon.Carbon
+	if recent == 0 {
+		deadline = carbon.Now()
+	} else {
+		deadline = carbon.Now().SubDays(recent).StartOfDay()
+	}
 
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}
 
-	names := make([]string, 0, len(entries))
+	stats := make([]FileStat, 0, len(entries))
 	for _, entry := range entries {
 		if !entry.IsDir() {
-			date, ok := logFilter(entry.Name())
+			date, ok := LogFilter(entry.Name())
 			if !ok {
 				break
 			}
 
 			if carbon.Parse(date).Lt(deadline) {
-				names = append(names, entry.Name())
+				info, err := entry.Info()
+				if err != nil {
+					logger.Error(err)
+					continue
+				}
+				stats = append(stats, FileStat{
+					Filename: entry.Name(),
+					Date:     date,
+					Filesize: int64(info.Size()),
+				})
 			}
 		}
 	}
 
-	return names, nil
+	return stats, nil
 }
 
 func DeleteLogByRecent(dir string, recent int) error {
-	names, err := ScanLogByRecent(dir, recent)
+	stats, err := ScanLogByRecent(dir, recent)
 	if err != nil {
 		return err
 	}
 
-	for _, name := range names {
-		if err := fileutil.RemoveFile(filepath.Join(dir, name)); err != nil {
+	for _, stat := range stats {
+		if err := fileutil.RemoveFile(filepath.Join(dir, stat.Filename)); err != nil {
 			logger.Error(err)
 		}
 	}
@@ -66,25 +86,25 @@ func DeleteLogByRecent(dir string, recent int) error {
 }
 
 func ArchiveLogByRecent(dir string, recent int) error {
-	names, err := ScanLogByRecent(dir, recent)
+	stats, err := ScanLogByRecent(dir, recent)
 	if err != nil {
 		return err
 	}
 
-	for _, name := range names {
-		if strings.HasSuffix(name, ".zip") {
+	for _, stat := range stats {
+		if strings.HasSuffix(stat.Filename, ".zip") {
 			continue
 		}
 		var buf bytes.Buffer
 		w := zip.NewWriter(&buf)
 
-		f, err := w.Create(name)
+		f, err := w.Create(stat.Filename)
 		if err != nil {
 			logger.Error(err)
 			continue
 		}
 
-		src, err := os.Open(filepath.Join(dir, name))
+		src, err := os.Open(filepath.Join(dir, stat.Filename))
 		if err != nil {
 			logger.Error(err)
 			continue
@@ -99,7 +119,7 @@ func ArchiveLogByRecent(dir string, recent int) error {
 			continue
 		}
 
-		err = ioutil.WriteFile(name+".zip", buf.Bytes(), 0644)
+		err = ioutil.WriteFile(stat.Filename+".zip", buf.Bytes(), 0644)
 		if err != nil {
 			logger.Error(err)
 		}
