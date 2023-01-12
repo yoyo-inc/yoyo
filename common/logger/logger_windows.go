@@ -1,22 +1,19 @@
-//go:build linux
+//go:build windows
 
 package logger
 
 import (
-	"log/syslog"
 	"strings"
 
 	logrus_rollingfile_hook "github.com/gfremex/logrus-rollingfile-hook"
 	"github.com/sirupsen/logrus"
-	logrusSyslog "github.com/sirupsen/logrus/hooks/syslog"
 )
 
 var logger logrus.Logger
 
 type SyslogOption struct {
-	Network  string
-	Addr     string
-	Priority syslog.Priority
+	Network string
+	Addr    string
 }
 
 type RollingFileOption struct {
@@ -76,13 +73,6 @@ func Setup(options Options) {
 }
 
 func SetupSyslog(service string, option *SyslogOption) {
-	hook, err := logrusSyslog.NewSyslogHook(option.Network, option.Addr, option.Priority, service)
-	if err != nil {
-		logger.Error(err)
-		return
-	} else {
-		logger.AddHook(hook)
-	}
 }
 
 func SetupRollingFile(service string, option *RollingFileOption) {
