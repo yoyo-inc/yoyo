@@ -32,12 +32,7 @@ func LogFilter(name string) (string, bool) {
 }
 
 func ScanLogByRecent(dir string, recent int) ([]FileStat, error) {
-	var deadline carbon.Carbon
-	if recent == 0 {
-		deadline = carbon.Now()
-	} else {
-		deadline = carbon.Now().SubDays(recent).StartOfDay()
-	}
+	deadline := carbon.Now().SubDays(recent).EndOfDay()
 
 	entries, err := os.ReadDir(dir)
 	if err != nil {
@@ -119,7 +114,13 @@ func ArchiveLogByRecent(dir string, recent int) error {
 			continue
 		}
 
-		err = ioutil.WriteFile(stat.Filename+".zip", buf.Bytes(), 0644)
+		err = ioutil.WriteFile(filepath.Join(dir, stat.Filename+".zip"), buf.Bytes(), 0644)
+		if err != nil {
+			logger.Error(err)
+			continue
+		}
+
+		err = os.Remove(filepath.Join(dir, stat.Filename))
 		if err != nil {
 			logger.Error(err)
 		}

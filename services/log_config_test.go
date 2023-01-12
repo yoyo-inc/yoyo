@@ -1,6 +1,9 @@
 package services
 
-import "testing"
+import (
+	"path/filepath"
+	"testing"
+)
 
 func TestLogFilter(t *testing.T) {
 	type args struct {
@@ -45,6 +48,34 @@ func TestLogFilter(t *testing.T) {
 			}
 			if got1 != tt.want1 {
 				t.Errorf("logFilter() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func TestArchiveLogByRecent(t *testing.T) {
+	p, _ := filepath.Abs("../logs")
+	type args struct {
+		dir    string
+		recent int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "archive_log",
+			args: args{
+				dir:    p,
+				recent: 1,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := ArchiveLogByRecent(tt.args.dir, tt.args.recent); (err != nil) != tt.wantErr {
+				t.Errorf("ArchiveLogByRecent() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
