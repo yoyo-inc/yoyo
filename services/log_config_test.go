@@ -39,7 +39,7 @@ func TestLogFilter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := logFilter(tt.args.name)
+			got, got1 := LogFilter(tt.args.name)
 			if got != tt.want {
 				t.Errorf("logFilter() got = %v, want %v", got, tt.want)
 			}
