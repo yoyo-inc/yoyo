@@ -11,14 +11,15 @@ import (
 	"github.com/yoyo-inc/yoyo/vo"
 )
 
-type auditLogController struct {
-}
+type auditLogController struct{}
 
 // QueryAuditLog
+//
 //	@Summary	查询审计日志列表
 //	@Tags		auditLog
 //	@Produce	json
 //	@Param		query	query		models.Pagination	false	"参数"
+//	@Param		query	query		vo.QueryAuditLogVO	false	"参数"
 //	@Success	200		{object}	core.Response{data=core.PaginatedData{list=[]models.AuditLog}}
 //	@Security	JWT
 //	@Router		/audit_logs [get]
@@ -32,7 +33,7 @@ func (*auditLogController) QueryAuditLog(c *gin.Context) {
 
 	var auditLogs []models.AuditLog
 	queries := core.GetPaginatedQuery(&models.AuditLog{})
-	if res := queries[0].Preload("User").Scopes(core.Paginator(c)).Where(query).Order("create_time desc").Find(&auditLogs); res.Error != nil {
+	if res := queries[0].Preload("User").Scopes(core.Paginator(c), core.DateTimeRanger(c, "")).Where(query).Order("create_time desc").Find(&auditLogs); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQueryAuditLog)
 		return
@@ -47,6 +48,7 @@ func (*auditLogController) QueryAuditLog(c *gin.Context) {
 }
 
 // QueryAuditLogModules
+//
 //	@Summary	查询审计日志列表
 //	@Tags		auditLog
 //	@Produce	json
