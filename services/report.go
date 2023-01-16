@@ -82,7 +82,7 @@ func RenderReport(option GenerateReportOption) ([]byte, error) {
 
 func GenerateReport(option GenerateReportOption) error {
 	url := fmt.Sprintf("http://%s:%d/api/report/preview/%s?startTime=%s&endTime=%s", config.GetString("converter.preview_host"), config.GetInt("server.port"), option.ReportType, option.StartTime, option.EndTime)
-	filename := fmt.Sprintf("%s%s.pdf", condition.TernaryOperator(option.ReportName != "", option.ReportName, option.ReportType), carbon.Now().ToShortDateTimeString())
+	filename := fmt.Sprintf("%s%s.pdf", condition.TernaryOperator(option.ReportName != "", option.ReportName, GetLabelByValue("report", option.ReportType)), carbon.Now().ToShortDateTimeString())
 	output := filepath.Join(GetReportRootDir(), filename)
 
 	report := models.Report{
