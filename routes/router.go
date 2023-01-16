@@ -24,6 +24,7 @@ func init() {
 		&dictController{},
 		&logConfigController{},
 		&runLogController{},
+		&systemSecurityController{},
 	}
 }
 
