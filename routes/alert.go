@@ -34,6 +34,7 @@ var TypeMappings = map[string]string{
 type alertController struct{}
 
 // QueryAlerts
+//
 //	@Summary	查询告警列表
 //	@Tags		alert
 //	@Produce	json
@@ -70,6 +71,7 @@ func (*alertController) QueryAlerts(c *gin.Context) {
 }
 
 // QueryAlertTypes
+//
 //	@Summary	查询告警类型
 //	@Tags		alert
 //	@Accept		json
@@ -93,6 +95,7 @@ func (*alertController) QueryAlertTypes(c *gin.Context) {
 }
 
 // ResolvedAlert
+//
 //	@Summary	处置告警
 //	@Tags		alert
 //	@Accept		json
@@ -125,6 +128,7 @@ func (*alertController) ResolvedAlert(c *gin.Context) {
 func (*alertController) IgnoreAlert(c *gin.Context) {}
 
 // GetAlertConfig
+//
 //	@Summary	查询告警配置
 //	@Tags		alert
 //	@Accept		json
@@ -146,6 +150,7 @@ func (*alertController) GetAlertConfig(c *gin.Context) {
 }
 
 // UpdateAlertConfig
+//
 //	@Summary	更新告警配置
 //	@Tags		alert
 //	@Accept		json
@@ -198,6 +203,7 @@ func (*alertController) UpdateAlertConfig(c *gin.Context) {
 }
 
 // QueryAlertAccesses
+//
 //	@Summary	查询告警接入
 //	@Tags		alert
 //	@Accept		json
@@ -240,6 +246,7 @@ func (*alertController) QueryAlertAccesses(c *gin.Context) {
 }
 
 // CreateAlertAccess
+//
 //	@Summary	创建告警接入
 //	@Tags		alert
 //	@Accept		json
@@ -268,6 +275,7 @@ func (*alertController) CreateAlertAccess(c *gin.Context) {
 }
 
 // UpdateAlertAccess
+//
 //	@Summary	更新告警接入
 //	@Tags		alert
 //	@Accept		json
@@ -295,6 +303,7 @@ func (*alertController) UpdateAlertAccess(c *gin.Context) {
 }
 
 // DeleteAlertAccess
+//
 //	@Summary	删除告警接入
 //	@Tags		alert
 //	@Accept		json
@@ -462,6 +471,7 @@ func (*alertController) Webhook(c *gin.Context) {
 }
 
 // QueryAlertCount
+//
 //	@Summary	查询告警数量
 //	@Tags		alert
 //	@Accept		json
@@ -497,6 +507,7 @@ func convertType(t string) string {
 }
 
 // QueryAlertPushConfigs
+//
 //	@Summary	查询告警推送设置
 //	@Tags		alert
 //	@Accept		json
@@ -525,6 +536,7 @@ func (*alertController) QueryAlertPush(c *gin.Context) {
 }
 
 // CreateAlertPush
+//
 //	@Summary	创建告警推送设置
 //	@Tags		alert
 //	@Accept		json
@@ -551,6 +563,7 @@ func (*alertController) CreateAlertPush(c *gin.Context) {
 }
 
 // UpdateAlertPush
+//
 //	@Summary	更新告警推送
 //	@Tags		alert
 //	@Accept		json
@@ -577,6 +590,7 @@ func (*alertController) UpdateAlertPush(c *gin.Context) {
 }
 
 // DeleteAlertPush
+//
 //	@Summary	删除告警推送
 //	@Tags		alert
 //	@Accept		json
