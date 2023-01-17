@@ -79,8 +79,9 @@ func (*runLogController) QueryRunLogs(c *gin.Context) {
 }
 
 // DownloadRunLog
+//
 //	@Summary	下载运行日志
-//	@Tags		runlog
+//	@Tags		runLog
 //	@Accept		json
 //	@Produce	octet-stream
 //	@Param		query	query	vo.DownloadRunLogVO	false	"参数"
