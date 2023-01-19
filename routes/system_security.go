@@ -22,7 +22,8 @@ func (*systemSecurityController) QuerySystemSecurity(c *gin.Context) {
 	core.OK(c, systemSecurity)
 }
 
-func (*systemSecurityController) UpdateSystemSecurity() {}
+func (*systemSecurityController) UpdateSystemSecurity(c *gin.Context) {
+}
 
 func (ssc *systemSecurityController) Setup(r *gin.RouterGroup) {
 }
