@@ -11,7 +11,6 @@ import (
 	"github.com/yoyo-inc/yoyo/errs"
 	"github.com/yoyo-inc/yoyo/models"
 	"github.com/yoyo-inc/yoyo/services"
-	"github.com/yoyo-inc/yoyo/services/audit_log"
 )
 
 var (
@@ -73,7 +72,6 @@ func Security() func() gin.HandlerFunc {
 			})
 		},
 		LogoutResponse: func(c *gin.Context, code int) {
-			audit_log.Success(c, "用户", "登出", "退出登录成功")
 			core.OK(c, true)
 		},
 	})

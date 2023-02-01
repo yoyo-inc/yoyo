@@ -3,13 +3,10 @@ package errs
 import "github.com/yoyo-inc/yoyo/core"
 
 var (
-	ErrFailToLogin        = core.NewBusinessError("100", "登录失败")
-	ErrUsernameNotExists  = core.NewBusinessError("101", "账号不存在")
-	ErrUsernameOrPassword = core.NewBusinessError("102", "账号或密码错误")
-	ErrCreateUser         = core.NewBusinessError("103", "用户创建失败")
-	ErrQueryUser          = core.NewBusinessError("104", "用户查询失败")
-	ErrDeleteUser         = core.NewBusinessError("105", "用户删除失败")
-	ErrUpdateUser         = core.NewBusinessError("106", "用户更新失败")
-	ErrQueryCurrentUser   = core.NewBusinessError("107", "当前用户查询失败")
-	ErrExistUser          = core.NewBusinessError("108", "用户已存在")
+	ErrCreateUser       = core.NewBusinessError("101", "用户创建失败")
+	ErrQueryUser        = core.NewBusinessError("102", "用户查询失败")
+	ErrDeleteUser       = core.NewBusinessError("103", "用户删除失败")
+	ErrUpdateUser       = core.NewBusinessError("104", "用户更新失败")
+	ErrQueryCurrentUser = core.NewBusinessError("105", "当前用户查询失败")
+	ErrExistUser        = core.NewBusinessError("106", "用户已存在")
 )
