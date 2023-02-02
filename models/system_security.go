@@ -10,7 +10,7 @@ import (
 type SystemSecurity struct {
 	core.IModel
 	ForbidRepeatLogin      *bool           `json:"forbidRepeatLogin,omitempty" gorm:"comment:是否启用禁用重复登录"`
-	LoginExpire            *bool           `json:"loginExpire,omitempty" gorm:"comment:是否启用登录过期"`
+	LoginExpireEnable      *bool           `json:"loginExpireEnable,omitempty" gorm:"comment:是否启用登录过期"`
 	LoginExpireTime        int             `json:"loginExpireTime,omitempty" gorm:"comment:登录过期时间，单位小时"`
 	LoginIPWhitelistEnable *bool           `json:"loginIPWhitelistEnable,omitempty" gorm:"comment:登录IP限制"`
 	LoginIPWhitelist       *datatypes.JSON `json:"loginIPWhitelist,omitempty" gorm:"comment:登录IP白名单" swaggertype:"array,object"`
