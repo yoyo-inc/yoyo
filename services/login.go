@@ -24,7 +24,7 @@ func DoLogin(c *gin.Context, username string, password string) (user models.User
 
 	var systemSecurity models.SystemSecurity
 	if res := db.Client.Model(&models.SystemSecurity{}).First(&systemSecurity); res.Error == nil {
-		if systemSecurity.ForbidRepeatLogin != nil && *(systemSecurity.ForbidRepeatLogin) == true {
+		if systemSecurity.ForbidRepeatLogin == true {
 			var count int64
 			if res := db.Client.Model(&models.LoginSession{}).Where("username = ?", username).Count(&count); res.Error == nil {
 				if count > 1 {

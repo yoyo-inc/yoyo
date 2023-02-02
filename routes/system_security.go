@@ -10,6 +10,7 @@ import (
 	"github.com/yoyo-inc/yoyo/models"
 	"github.com/yoyo-inc/yoyo/vo"
 	"gorm.io/datatypes"
+	"gorm.io/gorm"
 )
 
 type systemSecurityController struct{}
@@ -53,11 +54,24 @@ func (*systemSecurityController) UpdateSystemSecurity(c *gin.Context) {
 	if systemSecurityVO.LoginIPWhitelist != nil {
 		json := jsoniter.ConfigCompatibleWithStandardLibrary
 		if b, err := json.Marshal(systemSecurityVO.LoginIPWhitelist); err != nil {
-			systemSecurityVO.SystemSecurity.LoginIPWhitelist = (*datatypes.JSON)(&b)
+			systemSecurityVO.SystemSecurity.LoginIPWhitelist = datatypes.JSON(b)
 		}
 	}
 
-	if res := db.Client.Model(&models.SystemSecurity{IModel: core.IModel{ID: systemSecurityVO.ID}}).Updates(systemSecurityVO.SystemSecurity); res.Error != nil {
+	var res *gorm.DB
+	if systemSecurityVO.ID == 0 {
+		var count int64
+		if res := db.Client.Model(&models.SystemSecurity{}).Count(&count); res.Error == nil {
+			if count > 0 {
+				db.Client.Delete(&models.SystemSecurity{})
+			}
+		}
+		res = db.Client.Create(&(systemSecurityVO.SystemSecurity))
+	} else {
+		res = db.Client.Model(&models.SystemSecurity{IModel: core.IModel{ID: systemSecurityVO.ID}}).Updates(systemSecurityVO.SystemSecurity)
+	}
+
+	if res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrUpdateSystemSecurity)
 		return
@@ -67,5 +81,5 @@ func (*systemSecurityController) UpdateSystemSecurity(c *gin.Context) {
 }
 
 func (ssc *systemSecurityController) Setup(r *gin.RouterGroup) {
-	r.GET("/system_security", ssc.QuerySystemSecurity)
+	r.GET("/system_security", ssc.QuerySystemSecurity).PUT("/system_security", ssc.UpdateSystemSecurity)
 }
