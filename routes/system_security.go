@@ -68,7 +68,7 @@ func (*systemSecurityController) UpdateSystemSecurity(c *gin.Context) {
 		}
 		res = db.Client.Create(&(systemSecurityVO.SystemSecurity))
 	} else {
-		res = db.Client.Model(&models.SystemSecurity{IModel: core.IModel{ID: systemSecurityVO.ID}}).Updates(systemSecurityVO.SystemSecurity)
+		res = db.Client.Model(&models.SystemSecurity{IModel: core.IModel{ID: systemSecurityVO.ID}}).Select("*").Updates(systemSecurityVO.SystemSecurity)
 	}
 
 	if res.Error != nil {
