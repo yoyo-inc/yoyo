@@ -27,7 +27,7 @@ func DoLogin(c *gin.Context, username string, password string) (user models.User
 		if systemSecurity.ForbidRepeatLogin == true {
 			var count int64
 			if res := db.Client.Model(&models.LoginSession{}).Where("username = ?", username).Count(&count); res.Error == nil {
-				if count > 1 {
+				if count > 0 {
 					err = errs.ErrRepeatLogin
 					audit_log.Fail(c, "用户", "登录", fmt.Sprintf("帐号（%s）重复登录", username))
 					return
