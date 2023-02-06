@@ -8,6 +8,7 @@ import (
 	"github.com/yoyo-inc/yoyo/core"
 	"github.com/yoyo-inc/yoyo/errs"
 	"github.com/yoyo-inc/yoyo/models"
+	"github.com/yoyo-inc/yoyo/services/audit_log"
 	"github.com/yoyo-inc/yoyo/vo"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -74,9 +75,11 @@ func (*systemSecurityController) UpdateSystemSecurity(c *gin.Context) {
 	if res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrUpdateSystemSecurity)
+		audit_log.Fail(c, "系统安全", "更新", "")
 		return
 	}
 
+	audit_log.Success(c, "系统安全", "更新", "")
 	core.OK(c, true)
 }
 

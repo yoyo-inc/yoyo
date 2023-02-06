@@ -6,9 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	jwt "github.com/yoyo-inc/gin-jwt/v3"
+	"github.com/yoyo-inc/yoyo/common/db"
 	"github.com/yoyo-inc/yoyo/common/logger"
 	"github.com/yoyo-inc/yoyo/core"
-	"github.com/yoyo-inc/yoyo/errs"
 	"github.com/yoyo-inc/yoyo/models"
 	"github.com/yoyo-inc/yoyo/services"
 )
@@ -17,20 +17,30 @@ var (
 	// SecurityMiddleware security middleware
 	SecurityMiddleware *jwt.GinJWTMiddleware
 	IdentityKey        = "userID"
+	DefaultTimeout     = 1440 * time.Minute
 )
-
-type loginPayload struct {
-	Username string `form:"username" json:"username" binding:"required"`
-	Password string `form:"password" json:"password" binding:"required"`
-}
 
 // Security setups security
 func Security() func() gin.HandlerFunc {
 	var err error
 	SecurityMiddleware, err = jwt.New(&jwt.GinJWTMiddleware{
-		Realm:       "yoyo",
-		Key:         []byte{},
-		Timeout:     30 * 24 * time.Hour,
+		Realm:   "yoyo",
+		Key:     []byte{},
+		Timeout: DefaultTimeout,
+		GetTimeout: func() time.Duration {
+			// get token timeout from system setting
+			var systemSecurity models.SystemSecurity
+			if res := db.Client.Model(&models.SystemSecurity{}).First(&systemSecurity); res.Error != nil {
+				logger.Error(res.Error)
+				return DefaultTimeout
+			}
+
+			if systemSecurity.LoginExpireEnable {
+				return time.Duration(systemSecurity.LoginExpireTime) * time.Minute
+			} else {
+				return DefaultTimeout
+			}
+		},
 		MaxRefresh:  30 * 24 * time.Hour,
 		IdentityKey: IdentityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
@@ -48,15 +58,9 @@ func Security() func() gin.HandlerFunc {
 		},
 		TokenLookup: "header: Authorization, query: token",
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			var payload loginPayload
-			if err := c.ShouldBindJSON(&payload); err != nil {
-				logger.Error(err)
-				return nil, errs.ErrUsernameOrPassword
-			}
-
-			user, err := services.DoLogin(c, payload.Username, payload.Password)
+			user, err := services.DoLogin(c)
 			if err != nil {
-				logger.Errorf("%s: %s", err, payload.Username)
+				logger.Errorf("%s: %s", err, user.Username)
 				return nil, err
 			}
 
