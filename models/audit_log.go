@@ -12,7 +12,7 @@ type AuditLog struct {
 	IP        string `json:"ip,omitempty" gorm:"comment:ip"`
 	Module    string `json:"module,omitempty" gorm:"comment:模块"`
 	Operation string `json:"operation,omitempty" gorm:"comment:操作"`
-	Status    int    `json:"status,omitempty" gorm:"是否成功"`
+	Status    int    `json:"status" gorm:"是否成功"`
 	Detail    string `json:"detail,omitempty" gorm:"详情"`
 }
 
