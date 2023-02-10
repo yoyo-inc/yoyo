@@ -126,14 +126,14 @@ func (*schedJobController) CloseSchedJobs(c *gin.Context) {
 //	@Security	JWT
 //	@Router		/schedjob/types [get]
 func (*schedJobController) QuerySchedJobTypes(c *gin.Context) {
-	types := []models.Dict{
-		{
-			Label: "报告",
-			Value: "report",
-		},
+	entries, err := services.GetEntriesByType("schedJob")
+	if err != nil {
+		logger.Error(err)
+		c.Error(errs.ErrQuerySchedJob)
+		return
 	}
 
-	core.OK(c, types)
+	core.OK(c, entries)
 }
 
 func (sjc *schedJobController) Setup(r *gin.RouterGroup) {

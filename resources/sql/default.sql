@@ -134,4 +134,6 @@ VALUES
 INSERT INTO
   dicts (type, description, label, value, value_type)
 VALUES
-  ("report", "报表", "默认", "default", "string");
+  ("report", "报表", "默认", "default", "string"),
+  ("schedJob", "定时任务", "报告", "report", "string"),
+  ("schedJob", "定时任务", "日志", "log", "string");
