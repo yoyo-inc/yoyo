@@ -46,9 +46,9 @@ func (*reportController) QueryReports(c *gin.Context) {
 	queries := core.GetPaginatedQuery(&models.Report{})
 
 	for i := range queries {
-		if query.Filename != "" {
-			queries[i].Where("filename like ?", "%"+query.Filename+"%")
-			query.Filename = ""
+		if query.ReportName != "" {
+			queries[i].Where("report_name like ?", "%"+query.ReportName+"%")
+			query.ReportName = ""
 		}
 	}
 
