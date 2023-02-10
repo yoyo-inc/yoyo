@@ -27,17 +27,23 @@ type schedJobController struct{}
 //	@Security	JWT
 //	@Router		/schedjobs [get]
 func (*schedJobController) QuerySchedJobs(c *gin.Context) {
+	var query vo.QuerySchedJobVO
+	if err := c.ShouldBindQuery(&query); err != nil {
+		logger.Error(err)
+		c.Error(core.NewParameterError(err))
+		return
+	}
 	queries := core.GetPaginatedQuery(&models.SchedJob{})
 
 	var jobs []models.SchedJob
-	if res := queries[0].Scopes(core.Paginator(c)).Find(&jobs); res.Error != nil {
+	if res := queries[0].Scopes(core.Paginator(c), core.DateTimeRanger(c, "")).Where(query).Find(&jobs); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQuerySchedJob)
 		return
 	}
 
 	var count int64
-	if res := queries[1].Count(&count); res.Error != nil {
+	if res := queries[1].Where(query).Count(&count); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQuerySchedJob)
 		return
