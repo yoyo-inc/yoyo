@@ -3,11 +3,6 @@ package services
 import (
 	"bytes"
 	"errors"
-	"net/http"
-	"os"
-	"path"
-	"text/template"
-
 	"github.com/duke-git/lancet/v2/fileutil"
 	"github.com/duke-git/lancet/v2/netutil"
 	"github.com/duke-git/lancet/v2/slice"
@@ -16,6 +11,10 @@ import (
 	"github.com/yoyo-inc/yoyo/models"
 	"github.com/yoyo-inc/yoyo/resources"
 	"github.com/yoyo-inc/yoyo/vo"
+	"net/http"
+	"os"
+	"path"
+	"text/template"
 )
 
 const (
@@ -84,40 +83,36 @@ func GenerateAlertManagerConfig(alertConfig models.AlertConfig) (err error) {
 	}
 
 	alertmanagerConfigFile := path.Join(alertmanagerConfigDirPath, "alertmanager.yml")
-	if !fileutil.IsExist(alertmanagerConfigFile) {
-		tpl, _ := resources.AlertmanagerDir.ReadFile("alert-manager/alertmanager.tpl")
-		var buf bytes.Buffer
-		t := template.Must(template.New("alertmanager").Parse(string(tpl)))
+	tpl, _ := resources.AlertmanagerDir.ReadFile("alert-manager/alertmanager.tpl")
+	var buf bytes.Buffer
+	t := template.Must(template.New("alertmanager").Parse(string(tpl)))
 
-		var receivers []vo.SmtpReceiver
-		if alertConfig.SmtpReceivers != nil {
-			json := jsoniter.ConfigCompatibleWithStandardLibrary
-			json.Unmarshal(alertConfig.SmtpReceivers, &receivers)
-		}
+	var receivers []vo.SmtpReceiver
+	if alertConfig.SmtpReceivers != nil {
+		json := jsoniter.ConfigCompatibleWithStandardLibrary
+		_ = json.Unmarshal(alertConfig.SmtpReceivers, &receivers)
+	}
 
-		if err = t.Execute(&buf, map[string]interface{}{
-			"EmailEnable":      alertConfig.EmailEnable,
-			"SmtpServer":       alertConfig.SmtpServer,
-			"SmtpSender":       alertConfig.SmtpSender,
-			"SmtpAuthUser":     alertConfig.SmtpAuthUser,
-			"SmtpAuthPassword": alertConfig.SmtpAuthPassword,
-			"SmtpReceivers": slice.Filter(receivers, func(_ int, receiver vo.SmtpReceiver) bool {
-				return receiver.Enable
-			}),
-		}); err != nil {
-			return
-		}
-		if err = os.WriteFile(alertmanagerConfigFile, buf.Bytes(), configFileMode); err != nil {
-			return
-		}
+	if err = t.Execute(&buf, map[string]interface{}{
+		"EmailEnable":      alertConfig.EmailEnable,
+		"SmtpServer":       alertConfig.SmtpServer,
+		"SmtpSender":       alertConfig.SmtpSender,
+		"SmtpAuthUser":     alertConfig.SmtpAuthUser,
+		"SmtpAuthPassword": alertConfig.SmtpAuthPassword,
+		"SmtpReceivers": slice.Filter(receivers, func(_ int, receiver vo.SmtpReceiver) bool {
+			return receiver.Enable
+		}),
+	}); err != nil {
+		return
+	}
+	if err = os.WriteFile(alertmanagerConfigFile, buf.Bytes(), configFileMode); err != nil {
+		return
 	}
 
 	alertTemplateFile := path.Join(alertmanagerTemplateDirPath, "alert.yml")
-	if !fileutil.IsExist(alertTemplateFile) {
-		tpl, _ := resources.AlertmanagerDir.ReadFile("alert-manager/template/alert.yml")
-		if err = os.WriteFile(alertTemplateFile, tpl, configFileMode); err != nil {
-			return
-		}
+	tpl, _ = resources.AlertmanagerDir.ReadFile("alert-manager/template/alert.yml")
+	if err = os.WriteFile(alertTemplateFile, tpl, configFileMode); err != nil {
+		return
 	}
 	logger.Info("Success to generate alertmanager config")
 

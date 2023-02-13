@@ -10,13 +10,13 @@ global:
 templates:
   - '/etc/alertmanager/template/*.tmpl'
 route:
-  receiver: "default-receiver"
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 1d
   group_by: ["alertname", "id"]
+  receiver: "webhook"
   routes:
-    - receiver: "web.hook"
+    - receiver: "webhook"
       match_re:
         severity: warning|critical
       continue: true
@@ -28,7 +28,7 @@ route:
 {{ end }}
 
 receivers:
-  - name: "web.hook"
+  - name: "webhook"
     webhook_configs:
       - url: "http://localhost:8080/api/alert/webhook"
 {{ if .EmailEnable}}
