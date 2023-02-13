@@ -8,7 +8,8 @@ groups:
       severity: warning
       group: service
     annotations:
-      summary: mariadb.service dead (instance {{ $labels.instance }})
+#      summary: mariadb.service dead (instance {{ $labels.instance }})
+      summary: 数据库服务下线 (instance {{ $labels.instance }})
       description: ""
 
   - alert: ContainerMonitorDead
@@ -18,7 +19,8 @@ groups:
       severity: warning
       group: service
     annotations:
-      summary: cadvisor.service dead (instance {{ $labels.instance }})
+#      summary: cadvisor.service dead (instance {{ $labels.instance }})
+      summary: cadvisor服务下线 (instance {{ $labels.instance }})
       description: ""
 
   - alert: ContainerDead
@@ -28,5 +30,6 @@ groups:
       severity: warning
       group: service
     annotations:
-      summary: Container dead (instance {{ $labels.instance $labels.name }})
+#      summary: Container dead (instance {{ $labels.instance $labels.name }})
+      summary: 容器服务下线 (instance {{ $labels.instance $labels.name }})
       description: "A container has disappeared\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
