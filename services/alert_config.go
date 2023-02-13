@@ -3,7 +3,6 @@ package services
 import (
 	"bytes"
 	"errors"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
@@ -44,7 +43,7 @@ func GeneratePrometheusConfig() (err error) {
 	prometheusConfig := path.Join(prometheusConfigDirPath, "prometheus.yml")
 	if !fileutil.IsExist(prometheusConfig) {
 		tpl, _ := resources.PrometheusDir.ReadFile("prometheus/prometheus.yml")
-		if err = ioutil.WriteFile(prometheusConfig, tpl, configFileMode); err != nil {
+		if err = os.WriteFile(prometheusConfig, tpl, configFileMode); err != nil {
 			return
 		}
 	}
@@ -52,7 +51,7 @@ func GeneratePrometheusConfig() (err error) {
 	hostRules := path.Join(prometheusRulesDirPath, "host.rules")
 	if !fileutil.IsExist(hostRules) {
 		tpl, _ := resources.PrometheusDir.ReadFile("prometheus/rules/host.rules")
-		if err = ioutil.WriteFile(hostRules, tpl, configFileMode); err != nil {
+		if err = os.WriteFile(hostRules, tpl, configFileMode); err != nil {
 			return
 		}
 	}
@@ -60,7 +59,7 @@ func GeneratePrometheusConfig() (err error) {
 	servicesRules := path.Join(prometheusRulesDirPath, "services.rules")
 	if !fileutil.IsExist(servicesRules) {
 		tpl, _ := resources.PrometheusDir.ReadFile("prometheus/rules/services.rules")
-		if err = ioutil.WriteFile(servicesRules, tpl, configFileMode); err != nil {
+		if err = os.WriteFile(servicesRules, tpl, configFileMode); err != nil {
 			return
 		}
 	}
@@ -86,13 +85,15 @@ func GenerateAlertManagerConfig(alertConfig models.AlertConfig) (err error) {
 
 	alertmanagerConfigFile := path.Join(alertmanagerConfigDirPath, "alertmanager.yml")
 	if !fileutil.IsExist(alertmanagerConfigFile) {
-		tpl, _ := resources.AlertmanagerDir.ReadFile("alert-manager/alertmanager.yml")
+		tpl, _ := resources.AlertmanagerDir.ReadFile("alert-manager/alertmanager.tpl")
 		var buf bytes.Buffer
 		t := template.Must(template.New("alertmanager").Parse(string(tpl)))
 
 		var receivers []vo.SmtpReceiver
-		json := jsoniter.ConfigCompatibleWithStandardLibrary
-		json.Unmarshal(alertConfig.SmtpReceivers, &receivers)
+		if alertConfig.SmtpReceivers != nil {
+			json := jsoniter.ConfigCompatibleWithStandardLibrary
+			json.Unmarshal(alertConfig.SmtpReceivers, &receivers)
+		}
 
 		if err = t.Execute(&buf, map[string]interface{}{
 			"EmailEnable":      alertConfig.EmailEnable,
@@ -106,7 +107,7 @@ func GenerateAlertManagerConfig(alertConfig models.AlertConfig) (err error) {
 		}); err != nil {
 			return
 		}
-		if err = ioutil.WriteFile(alertmanagerConfigFile, tpl, configFileMode); err != nil {
+		if err = os.WriteFile(alertmanagerConfigFile, tpl, configFileMode); err != nil {
 			return
 		}
 	}
@@ -114,7 +115,7 @@ func GenerateAlertManagerConfig(alertConfig models.AlertConfig) (err error) {
 	alertTemplateFile := path.Join(alertmanagerTemplateDirPath, "alert.yml")
 	if !fileutil.IsExist(alertTemplateFile) {
 		tpl, _ := resources.AlertmanagerDir.ReadFile("alert-manager/template/alert.yml")
-		if err = ioutil.WriteFile(alertTemplateFile, tpl, configFileMode); err != nil {
+		if err = os.WriteFile(alertTemplateFile, tpl, configFileMode); err != nil {
 			return
 		}
 	}
