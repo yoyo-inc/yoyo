@@ -107,7 +107,7 @@ func GenerateAlertManagerConfig(alertConfig models.AlertConfig) (err error) {
 		}); err != nil {
 			return
 		}
-		if err = os.WriteFile(alertmanagerConfigFile, tpl, configFileMode); err != nil {
+		if err = os.WriteFile(alertmanagerConfigFile, buf.Bytes(), configFileMode); err != nil {
 			return
 		}
 	}
