@@ -35,6 +35,7 @@ func AddService(controller core.Controller) {
 func Setup(r *gin.RouterGroup) {
 	middlewares.SecurityMiddleware.AddIgnore(
 		"/api/login",
+		"/api/alert/webhook",
 		"/api/swagger/*path",
 		"/api/system/settings",
 		"/api/resource/*path",
