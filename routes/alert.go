@@ -80,15 +80,11 @@ func (*alertController) QueryAlerts(c *gin.Context) {
 //	@Security	JWT
 //	@Router		/alert/types [get]
 func (*alertController) QueryAlertTypes(c *gin.Context) {
-	types := []vo.Record[string]{
-		{
-			Label: "主机",
-			Value: "host",
-		},
-		{
-			Label: "服务",
-			Value: "service",
-		},
+	types, err := services.GetEntriesByType("alertType")
+	if err != nil {
+		logger.Error(err)
+		c.Error(errs.ErrQueryAlertTypes)
+		return
 	}
 
 	core.OK(c, types)
@@ -634,4 +630,16 @@ func (ac *alertController) Setup(r *gin.RouterGroup) {
 		POST("/alert/push", ac.CreateAlertPush).
 		PUT("/alert/push", ac.UpdateAlertPush).
 		DELETE("/alert/push/:id", ac.DeleteAlertPush)
+	if err := services.GeneratePrometheusConfig(); err != nil {
+		logger.Error(err)
+	}
+
+	// generate prometheus and alertmanager rules
+	var alertConfig models.AlertConfig
+	if res := db.Client.Model(&models.AlertConfig{}).First(&alertConfig); res.Error != nil {
+		logger.Debug(res.Error)
+	}
+	if err := services.GenerateAlertManagerConfig(alertConfig); err != nil {
+		logger.Error(err)
+	}
 }

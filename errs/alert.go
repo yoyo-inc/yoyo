@@ -21,4 +21,5 @@ var (
 	ErrCreateAlertPush            = core.NewBusinessError("515", "创建告警推送配置失败")
 	ErrUpdateAlertPush            = core.NewBusinessError("516", "更新告警推送配置失败")
 	ErrDeleteAlertPush            = core.NewBusinessError("517", "删除告警推送配置失败")
+	ErrQueryAlertTypes            = core.NewBusinessError("518", "查询告警类型失败")
 )
