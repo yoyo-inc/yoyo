@@ -64,7 +64,7 @@ func GeneratePrometheusConfig() (err error) {
 	}
 
 	// reload prometheus
-	err = reload("localhost:9090/-/reload")
+	err = reload("http://localhost:9090/-/reload")
 	return err
 }
 
@@ -117,7 +117,7 @@ func GenerateAlertManagerConfig(alertConfig models.AlertConfig) (err error) {
 	logger.Info("Success to generate alertmanager config")
 
 	// reload alertmanager
-	err = reload("localhost:9093/-/reload")
+	err = reload("http://localhost:9093/-/reload")
 	return
 }
 
