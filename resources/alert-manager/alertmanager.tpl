@@ -16,12 +16,10 @@ route:
   repeat_interval: 1d
   group_by: ["alertname", "id"]
   routes:
-{{ if .WebHookEnable }}
     - receiver: "web.hook"
       match_re:
         severity: warning|critical
       continue: true
-{{ end }}
 {{ if .EmailEnable}}
     - receiver: "email"
       match_re:
