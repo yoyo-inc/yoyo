@@ -136,4 +136,6 @@ INSERT INTO
 VALUES
   ("report", "报表", "默认", "default", "string"),
   ("schedJob", "定时任务", "报告", "report", "string"),
-  ("schedJob", "定时任务", "日志", "log", "string");
+  ("schedJob", "定时任务", "日志", "log", "string"),
+  ("alertType", "告警类型", "主机", "host", "string"),
+  ("alertType", "告警类型", "服务", "service", "string");
