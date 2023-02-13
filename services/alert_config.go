@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path"
 	"text/template"
 
@@ -23,18 +24,19 @@ const (
 	prometheusRulesDirPath      = "/etc/prometheus/rules"      // prometheus 规则目录
 	alertmanagerConfigDirPath   = "/etc/alertmanager"          // alertmanager 配置目录
 	alertmanagerTemplateDirPath = "/etc/alertmanager/template" // alertmanager 模板路径
+	configDirMode               = 0755
 	configFileMode              = 0644
 )
 
 // GeneratePrometheusConfig generates prometheus config
 func GeneratePrometheusConfig() (err error) {
 	if !fileutil.IsExist(prometheusConfigDirPath) {
-		if err = fileutil.CreateDir(prometheusConfigDirPath); err != nil {
+		if err = os.MkdirAll(prometheusConfigDirPath, configDirMode); err != nil {
 			return
 		}
 	}
 	if !fileutil.IsExist(prometheusRulesDirPath) {
-		if err = fileutil.CreateDir(prometheusRulesDirPath); err != nil {
+		if err = os.MkdirAll(prometheusRulesDirPath, configDirMode); err != nil {
 			return
 		}
 	}
@@ -72,12 +74,12 @@ func GeneratePrometheusConfig() (err error) {
 func GenerateAlertManagerConfig(alertConfig models.AlertConfig) (err error) {
 	logger.Info("Start to generate alertmanager config")
 	if !fileutil.IsExist(alertmanagerConfigDirPath) {
-		if err = fileutil.CreateDir(alertmanagerConfigDirPath); err != nil {
+		if err = os.MkdirAll(alertmanagerConfigDirPath, configDirMode); err != nil {
 			return
 		}
 	}
 	if !fileutil.IsExist(alertmanagerTemplateDirPath) {
-		if err = fileutil.CreateDir(alertmanagerTemplateDirPath); err != nil {
+		if err = os.MkdirAll(alertmanagerTemplateDirPath, configDirMode); err != nil {
 			return
 		}
 	}
