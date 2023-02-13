@@ -30,7 +30,7 @@ route:
 receivers:
   - name: "webhook"
     webhook_configs:
-      - url: "http://localhost:8080/api/alert/webhook"
+      - url: "http://admin:8080/api/alert/webhook"
 {{ if .EmailEnable}}
   - name: "email"
     email_configs:
