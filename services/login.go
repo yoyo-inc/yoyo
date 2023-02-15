@@ -40,6 +40,7 @@ func DoLogin(c *gin.Context) (user models.User, err error) {
 		}
 		if !canPass {
 			err = errs.ErrFailToLogin
+			logger.Errorf("%s不在IP白名单列表", clientIP)
 			return
 		}
 	}
