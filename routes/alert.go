@@ -26,11 +26,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var TypeMappings = map[string]string{
-	"host":    "主机",
-	"service": "服务",
-}
-
 type alertController struct{}
 
 // QueryAlerts
@@ -440,7 +435,7 @@ func (*alertController) Webhook(c *gin.Context) {
 		var modelAlert models.Alert
 		modelAlert.From = "本系统"
 		modelAlert.Level = alert.Labels["severity"]
-		modelAlert.Type = convertType(alert.Labels["group"])
+		modelAlert.Type = services.GetLabelByValue("alertType", alert.Labels["group"])
 		modelAlert.Content = alert.Annotations["summary"]
 		modelAlert.StartAt = (*dt.LocalTime)(&alert.StartsAt)
 
@@ -492,14 +487,6 @@ func (*alertController) QueryAlertCount(c *gin.Context) {
 	}
 
 	core.OK(c, count)
-}
-
-func convertType(t string) string {
-	if convertedType, ok := TypeMappings[t]; ok {
-		return convertedType
-	} else {
-		return t
-	}
 }
 
 // QueryAlertPushConfigs
