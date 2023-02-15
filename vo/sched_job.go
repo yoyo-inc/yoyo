@@ -2,7 +2,7 @@ package vo
 
 type QuerySchedJobVO struct {
 	Type   string `form:"type"`
-	Status int    `form:"status"`
+	Status *int   `form:"status"`
 }
 
 type UpdateSchedJobVO struct {
