@@ -18,10 +18,12 @@ import (
 type roleController struct{}
 
 // QueryRoles
+//
 //	@Summary	查询角色列表
 //	@Tags		role
 //	@Accept		json
 //	@Produce	json
+//	@Param		query	query		models.Pagination	false	"参数"
 //	@Param		query	query		vo.QueryRoleVO	true	"参数"
 //	@Success	200		{object}	core.Response
 //	@Security	JWT
@@ -58,6 +60,7 @@ func (*roleController) QueryRoles(c *gin.Context) {
 }
 
 // CreateRole
+//
 //	@Summary	创建角色
 //	@Tags		role
 //	@Accept		json
@@ -103,6 +106,7 @@ func (*roleController) CreateRole(c *gin.Context) {
 }
 
 // DeleteRole
+//
 //	@Summary	删除角色
 //	@Tags		role
 //	@Accept		json
@@ -133,6 +137,7 @@ func (*roleController) DeleteRole(c *gin.Context) {
 }
 
 // UpdateRole
+//
 //	@Summary	更新角色
 //	@Tags		role
 //	@Accept		json
