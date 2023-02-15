@@ -23,7 +23,6 @@ type SmtpReceiver struct {
 
 type UpdateAlertConfigVO struct {
 	models.AlertConfig
-	SmptReceivers []SmtpReceiver `json:"smptReceivers"`
 }
 
 type QueryAlertAccessVO struct {

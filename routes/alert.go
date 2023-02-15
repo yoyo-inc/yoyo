@@ -164,11 +164,6 @@ func (*alertController) UpdateAlertConfig(c *gin.Context) {
 		}
 
 		model := query.AlertConfig
-		rawSmtpReceivers, err := json.Marshal(query.SmptReceivers)
-		if err != nil {
-			return err
-		}
-		model.SmtpReceivers = rawSmtpReceivers
 		if err := tx.Create(&model).Error; err != nil {
 			return err
 		}
