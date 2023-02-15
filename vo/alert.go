@@ -4,6 +4,8 @@ import "github.com/yoyo-inc/yoyo/models"
 
 type QueryAlertVO struct {
 	models.Alert
+	Status         *int `form:"status"`
+	ResolvedStatus *int `form:"resolvedStatus"`
 }
 
 type ResolveAlertVO struct {
