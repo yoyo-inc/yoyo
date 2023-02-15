@@ -10,7 +10,6 @@ import (
 	"github.com/yoyo-inc/yoyo/models"
 	"github.com/yoyo-inc/yoyo/services/audit_log"
 	"github.com/yoyo-inc/yoyo/vo"
-	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -55,7 +54,9 @@ func (*systemSecurityController) UpdateSystemSecurity(c *gin.Context) {
 	if systemSecurityVO.LoginIPWhitelist != nil {
 		json := jsoniter.ConfigCompatibleWithStandardLibrary
 		if b, err := json.Marshal(systemSecurityVO.LoginIPWhitelist); err != nil {
-			systemSecurityVO.SystemSecurity.LoginIPWhitelist = datatypes.JSON(b)
+			logger.Error(err)
+		} else {
+			systemSecurityVO.SystemSecurity.LoginIPWhitelist = b
 		}
 	}
 
