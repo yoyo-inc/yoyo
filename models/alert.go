@@ -13,8 +13,8 @@ type Alert struct {
 	Type           string        `json:"type,omitempty" form:"type" gorm:"size:20;index;comment:类型"`
 	Level          string        `json:"level,omitempty" form:"level" gorm:"size:10;index;comment:级别"`
 	Content        string        `json:"content,omitempty" gorm:"size:2000;comment:告警内容"`
-	Status         int           `json:"status,omitempty" form:"status" gorm:"comment:状态(0:未读 1:已读)"`
-	ResolvedStatus int           `json:"resolvedStatus,omitempty" form:"resolvedStatus" gorm:"comment:处置状态(0:未处置 1:已手动处置 2:自动处置)"`
+	Status         int           `json:"status" form:"status" gorm:"comment:状态(0:未读 1:已读)"`
+	ResolvedStatus int           `json:"resolvedStatus" form:"resolvedStatus" gorm:"comment:处置状态(0:未处置 1:已手动处置 2:自动处置)"`
 	Remark         string        `json:"remark,omitempty" gorm:"size:2000;comment:备注"`
 	From           string        `json:"from,omitempty" form:"from" gorm:"size:255;default:本系统;comment:来源"`
 }
