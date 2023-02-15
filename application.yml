@@ -14,7 +14,7 @@ logger:
 resource_dir: "./data"
 converter:
   url: 'http://localhost:8090'
-  waiting_time: 5000
+  waiting_time: 3000
   preview_host: '192.168.2.79'
 service_logs:
   yoyo: ./logs
