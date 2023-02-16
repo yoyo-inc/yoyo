@@ -10,11 +10,11 @@ type QueryAlertVO struct {
 
 type ResolveAlertVO struct {
 	models.Alert
-	ID string `json:"id" binding:"required"`
+	ID int `json:"id" binding:"required"`
 }
 
 type IgnoreAlertVO struct {
-	ID string `json:"id" binding:"required"`
+	ID int `json:"id" binding:"required"`
 }
 
 type SmtpReceiver struct {
@@ -37,6 +37,6 @@ type UpdateAlertAccessVO struct {
 }
 
 type QueryAlertCountVO struct {
-	Status         int `form:"status"`
-	ResolvedStatus int `form:"resolvedStatus"`
+	Status         *int `form:"status"`
+	ResolvedStatus *int `form:"resolvedStatus"`
 }
