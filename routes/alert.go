@@ -94,7 +94,7 @@ func (*alertController) QueryAlertTypes(c *gin.Context) {
 //	@Param		body	body		vo.ResolveAlertVO	true	"参数"
 //	@Success	200		{object}	core.Response{data=bool}
 //	@Security	JWT
-//	@Router		/alert/resolve [post]
+//	@Router		/alert/resolve [put]
 func (*alertController) ResolvedAlert(c *gin.Context) {
 	var query vo.ResolveAlertVO
 	if err := c.ShouldBindJSON(&query); err != nil {
@@ -116,7 +116,34 @@ func (*alertController) ResolvedAlert(c *gin.Context) {
 	core.OK(c, true)
 }
 
-func (*alertController) IgnoreAlert(c *gin.Context) {}
+// IgnoreAlert
+// @Summary 更新告警
+// @Tags    alert
+// @Accept  json
+// @Produce json
+// @Param   body body     vo.IgnoreAlertVO true "参数"
+// @Success 200   {object} core.Response{data=bool}
+// @Security JWT
+// @Router  /alert/ignore [put]
+func (*alertController) IgnoreAlert(c *gin.Context) {
+	var query vo.IgnoreAlertVO
+	if err := c.ShouldBindJSON(&query); err != nil {
+		logger.Error(err)
+		c.Error(core.NewParameterError(err))
+		return
+	}
+
+	if res := db.Client.Model(&models.Alert{}).Where("id = ?", query.ID).Updates(map[string]interface{}{
+		"resolved_status": 3,
+		"status":          1,
+	}); res.Error != nil {
+		logger.Error(res.Error)
+		c.Error(errs.ErrIgnoreAlert)
+		return
+	}
+
+	core.OK(c, true)
+}
 
 // GetAlertConfig
 //
@@ -576,7 +603,7 @@ func (*alertController) UpdateAlertPush(c *gin.Context) {
 //	@Param		id	path		string	true	"参数"
 //	@Success	200	{object}	core.Response{data=bool}
 //	@Security	JWT
-//	@Router		/alert/push [delete]
+//	@Router		/alert/push/{id} [delete]
 func (*alertController) DeleteAlertPush(c *gin.Context) {
 	rawID := c.Param("id")
 	id, err := strconv.Atoi(rawID)
@@ -605,7 +632,8 @@ func (ac *alertController) Setup(r *gin.RouterGroup) {
 		PUT("/alert/access", ac.UpdateAlertAccess).
 		DELETE("/alert/access/:id", ac.DeleteAlertAccess).
 		POST("/access/alert", ac.AccessAlert).
-		POST("/alert/resolve", ac.ResolvedAlert).
+		PUT("/alert/resolve", ac.ResolvedAlert).
+		PUT("/alert/ignore", ac.IgnoreAlert).
 		POST("/alert/webhook", ac.Webhook).
 		GET("/alert/count", ac.QueryAlertCount).
 		GET("/alert/push", ac.QueryAlertPush).
