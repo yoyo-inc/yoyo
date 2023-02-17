@@ -107,6 +107,19 @@ func StopSchedJob(jobID string) error {
 	return nil
 }
 
+func RemoveSchedJobByType(t string) error {
+	var jobs []models.SchedJob
+	if res := db.Client.Model(&models.SchedJob{}).Where("type = ?", t).Find(&jobs); res.Error != nil {
+		return res.Error
+	}
+
+	for _, v := range jobs {
+		RemoveSchedJob(v.JobID)
+	}
+
+	return nil
+}
+
 // RemoveSchedJob remove sched job by jobID
 func RemoveSchedJob(jobID string) error {
 	ErrRemoveSchedJob = fmt.Errorf("删除定时任务(%s)失败", jobID)

@@ -244,6 +244,9 @@ func (rc *reportController) UpdateReportConfig(c *gin.Context) {
 	}
 
 	err := db.Client.Transaction(func(tx *gorm.DB) error {
+		if err := services.RemoveSchedJobByType("report"); err != nil {
+			return err
+		}
 		if res := db.Client.Where("1 = 1").Delete(&models.ReportConfig{}); res.Error != nil {
 			return res.Error
 		}
