@@ -36,7 +36,7 @@ func (*schedJobController) QuerySchedJobs(c *gin.Context) {
 	queries := core.GetPaginatedQuery(&models.SchedJob{})
 
 	var jobs []models.SchedJob
-	if res := queries[0].Scopes(core.Paginator(c), core.DateTimeRanger(c, "")).Where(query).Find(&jobs); res.Error != nil {
+	if res := queries[0].Scopes(core.Paginator(c), core.DateTimeRanger(c, "")).Where(query).Order("create_time desc").Find(&jobs); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQuerySchedJob)
 		return
