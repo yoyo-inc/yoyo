@@ -200,7 +200,7 @@ func (rc *reportController) QueryReportType(c *gin.Context) {
 //	@Router		/report/config [get]
 func (*reportController) QueryReportConfig(c *gin.Context) {
 	var config models.ReportConfig
-	if res := db.Client.Model(&models.ReportConfig{}).Find(&config); res.Error != nil {
+	if res := db.Client.Model(&models.ReportConfig{}).First(&config); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQueryReportConfig)
 		return
@@ -228,19 +228,24 @@ func (rc *reportController) UpdateReportConfig(c *gin.Context) {
 	}
 
 	json := jsoniter.ConfigCompatibleWithStandardLibrary
-	if period, err := json.Marshal(query.Period); err != nil {
-		logger.Error(err)
-		c.Error(errs.ErrUpdateReportConfig)
-		return
-	} else {
-		query.ReportConfig.Period = period
+	if query.Period != nil {
+		if period, err := json.Marshal(query.Period); err != nil {
+			logger.Error(err)
+			c.Error(errs.ErrUpdateReportConfig)
+			return
+		} else {
+			query.ReportConfig.Period = period
+		}
 	}
-	if reportType, err := json.Marshal(query.ReportType); err != nil {
-		logger.Error(err)
-		c.Error(errs.ErrUpdateReportConfig)
-		return
-	} else {
-		query.ReportConfig.ReportType = reportType
+
+	if query.ReportType != nil {
+		if reportType, err := json.Marshal(query.ReportType); err != nil {
+			logger.Error(err)
+			c.Error(errs.ErrUpdateReportConfig)
+			return
+		} else {
+			query.ReportConfig.ReportType = reportType
+		}
 	}
 
 	err := db.Client.Transaction(func(tx *gorm.DB) error {
