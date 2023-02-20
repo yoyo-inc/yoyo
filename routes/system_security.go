@@ -65,7 +65,7 @@ func (*systemSecurityController) UpdateSystemSecurity(c *gin.Context) {
 		var count int64
 		if res := db.Client.Model(&models.SystemSecurity{}).Count(&count); res.Error == nil {
 			if count > 0 {
-				db.Client.Delete(&models.SystemSecurity{})
+				db.Client.Exec("delete from system_securities")
 			}
 		}
 		res = db.Client.Create(&(systemSecurityVO.SystemSecurity))
