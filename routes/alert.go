@@ -375,8 +375,6 @@ func (*alertController) AccessAlert(c *gin.Context) {
 		}
 	}
 
-	logger.Info(remoteIP)
-
 	if access, ok := slice.Find(accesses, func(_ int, item models.AlertAccess) bool {
 		return item.AccessIP == remoteIP
 	}); ok {
