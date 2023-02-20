@@ -438,7 +438,7 @@ func (*alertController) AccessAlert(c *gin.Context) {
 	}
 }
 
-// Webhook
+// Webhook webhook
 func (*alertController) Webhook(c *gin.Context) {
 	var message template.Data
 	if err := c.ShouldBindJSON(&message); err != nil {
@@ -473,7 +473,7 @@ func (*alertController) Webhook(c *gin.Context) {
 		if pushes != nil && len(pushes) > 0 {
 			for _, push := range pushes {
 				if ok := services.PushAlert(push, msg); !ok {
-					// faile to push message
+					// failed to push message
 					logger.Errorf("Failed to push %s to %v", msg, push)
 				}
 			}
@@ -511,7 +511,7 @@ func (*alertController) QueryAlertCount(c *gin.Context) {
 	core.OK(c, count)
 }
 
-// QueryAlertPushConfigs
+// QueryAlertPush
 //
 //	@Summary	查询告警推送设置
 //	@Tags		alert
