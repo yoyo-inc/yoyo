@@ -62,8 +62,17 @@ func (lcc *logConfigController) SaveLogConfig(c *gin.Context) {
 			return
 		}
 	} else {
-		if res := db.Client.Create(&logConfig); res.Error != nil {
-			logger.Error(res.Error)
+		if err := db.Client.Transaction(func(tx *gorm.DB) error {
+			if err := db.Client.Exec("delete from log_configs").Error; err != nil {
+				return err
+			}
+
+			if res := db.Client.Create(&logConfig); res.Error != nil {
+				return res.Error
+			}
+			return nil
+		}); err != nil {
+			logger.Error(err)
 			c.Error(errs.ErrUpdateLogConfig)
 			return
 		}
