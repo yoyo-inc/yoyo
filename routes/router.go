@@ -40,6 +40,7 @@ func Setup(r *gin.RouterGroup) {
 		"/api/system/settings",
 		"/api/resource/*path",
 		"/api/report/preview/*path",
+		"/api/access/alert",
 	)
 
 	for _, sc := range controllers {
