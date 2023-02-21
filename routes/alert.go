@@ -49,7 +49,8 @@ func (*alertController) QueryAlerts(c *gin.Context) {
 	queries := core.GetPaginatedQuery(&models.Alert{})
 
 	var alerts []models.Alert
-	if res := queries[0].Scopes(core.Paginator(c), core.DateTimeRanger(c, "start_at")).Where(&query).Find(&alerts); res.Error != nil {
+	if res := queries[0].Scopes(core.Paginator(c), core.DateTimeRanger(c, "start_at")).
+		Where(&query).Order("create_time desc").Find(&alerts); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQueryAlert)
 		return
