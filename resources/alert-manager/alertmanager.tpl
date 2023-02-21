@@ -13,7 +13,7 @@ route:
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 1d
-  group_by: ["alertname", "id"]
+  group_by: ["alertname"]
   receiver: "webhook"
   routes:
     - receiver: "webhook"
@@ -46,4 +46,4 @@ inhibit_rules:
       - severity = "warning"
     source_matchers:
       - severity = "critical"
-    equal: ["alertname", "instance", "id"]
+    equal: ["group", "alertname", "instance"]
