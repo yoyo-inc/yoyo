@@ -1,6 +1,7 @@
 package models
 
 import (
+	jsoniter "github.com/json-iterator/go"
 	"github.com/yoyo-inc/yoyo/common/db"
 	"github.com/yoyo-inc/yoyo/common/dt"
 	"github.com/yoyo-inc/yoyo/core"
@@ -52,6 +53,20 @@ type AlertPush struct {
 	KafkaPort     int            `json:"kafkaPort,omitempty" gorm:"comment:kafka端口"`
 	KafkaTopic    string         `json:"kafkaTopic,omitempty" gorm:"comment:kafka topic"`
 	AlertTypes    datatypes.JSON `json:"alertTypes,omitempty" gorm:"type:json;default:(json_array());comment:告警类型" swaggertype:"array,string"`
+}
+
+func (ap *AlertPush) GetAlertTypes() []string {
+	if ap.AlertTypes != nil {
+		return nil
+	}
+
+	var alertTypes []string
+	json := jsoniter.ConfigCompatibleWithStandardLibrary
+	if err := json.Unmarshal(ap.AlertTypes, &alertTypes); err != nil {
+		return nil
+	}
+
+	return alertTypes
 }
 
 func init() {
