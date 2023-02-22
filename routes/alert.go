@@ -511,9 +511,11 @@ func (*alertController) Webhook(c *gin.Context) {
 		// broadcast alert to third party platform
 		if pushes != nil && len(pushes) > 0 {
 			for _, push := range pushes {
-				if ok := services.PushAlert(push, msg); !ok {
-					// failed to push message
-					logger.Errorf("Failed to push %s to %v", msg, push)
+				if slice.Contain(push.GetAlertTypes(), alert.Labels["group"]) {
+					if ok := services.PushAlert(push, msg); !ok {
+						// failed to push message
+						logger.Errorf("Failed to push %s to %v", msg, push)
+					}
 				}
 			}
 		}
