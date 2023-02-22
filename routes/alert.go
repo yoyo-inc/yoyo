@@ -92,6 +92,10 @@ func (*alertController) QueryAlertTypes(c *gin.Context) {
 	}
 
 	if query.Type == 1 {
+		alertTypes = slice.Map(alertTypes, func(index int, item services.Entry) services.Entry {
+			item.Value = item.Label
+			return item
+		})
 		rows, err := db.Client.Raw("select distinct(type) as type from alerts").Rows()
 		if err != nil {
 			logger.Error(err)
