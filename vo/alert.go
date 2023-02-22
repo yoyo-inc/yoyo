@@ -40,3 +40,7 @@ type QueryAlertCountVO struct {
 	Status         *int `form:"status"`
 	ResolvedStatus *int `form:"resolvedStatus"`
 }
+
+type QueryAlertTypeVO struct {
+	Type int `form:"type"`
+}

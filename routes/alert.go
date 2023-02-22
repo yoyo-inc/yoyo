@@ -68,14 +68,22 @@ func (*alertController) QueryAlerts(c *gin.Context) {
 
 // QueryAlertTypes
 //
-//	@Summary	查询告警类型
-//	@Tags		alert
-//	@Accept		json
-//	@Produce	json
-//	@Success	200	{object}	core.Response{data=array,vo.Record}
-//	@Security	JWT
-//	@Router		/alert/types [get]
+//		@Summary	查询告警类型
+//		@Tags		alert
+//		@Accept		json
+//		@Produce	json
+//	 @Param 		query query vo.QueryAlertTypeVO true "类型"
+//		@Success	200	{object}	core.Response{data=array,vo.Record}
+//		@Security	JWT
+//		@Router		/alert/types [get]
 func (*alertController) QueryAlertTypes(c *gin.Context) {
+	var query vo.QueryAlertTypeVO
+	if err := c.ShouldBindQuery(&query); err != nil {
+		logger.Error(err)
+		c.Error(core.NewParameterError(err))
+		return
+	}
+
 	alertTypes, err := services.GetEntriesByType("alertType")
 	if err != nil {
 		logger.Error(err)
@@ -83,25 +91,27 @@ func (*alertController) QueryAlertTypes(c *gin.Context) {
 		return
 	}
 
-	rows, err := db.Client.Raw("select distinct(type) as type from alerts").Rows()
-	if err != nil {
-		logger.Error(err)
-		c.Error(errs.ErrQueryAlertTypes)
-		return
-	}
-
-	for rows.Next() {
-		var t string
-		err := rows.Scan(&t)
+	if query.Type == 1 {
+		rows, err := db.Client.Raw("select distinct(type) as type from alerts").Rows()
 		if err != nil {
 			logger.Error(err)
 			c.Error(errs.ErrQueryAlertTypes)
 			return
 		}
-		if t != "" && !slice.Some(alertTypes, func(index int, item services.Entry) bool {
-			return item.Label == t
-		}) {
-			alertTypes = append(alertTypes, services.Entry{Label: t, Value: t})
+
+		for rows.Next() {
+			var t string
+			err := rows.Scan(&t)
+			if err != nil {
+				logger.Error(err)
+				c.Error(errs.ErrQueryAlertTypes)
+				return
+			}
+			if t != "" && !slice.Some(alertTypes, func(index int, item services.Entry) bool {
+				return item.Label == t
+			}) {
+				alertTypes = append(alertTypes, services.Entry{Label: t, Value: t})
+			}
 		}
 	}
 
@@ -426,7 +436,11 @@ func (*alertController) AccessAlert(c *gin.Context) {
 				alert.StartAt = (*dt.LocalTime)(&t)
 			}
 			if v, ok := assertStr(value, access.TypeField); ok {
-				alert.Type = v
+				if v == "" {
+					alert.Type = "其他"
+				} else {
+					alert.Type = v
+				}
 			}
 			if v, ok := assertStr(value, access.LevelField); ok {
 				alert.Level = v
