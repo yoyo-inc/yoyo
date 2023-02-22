@@ -21,6 +21,7 @@ import (
 type userController struct{}
 
 // QueryUsers
+//
 //	@Summary	查询用户列表
 //	@Tags		user
 //	@Produce	json
@@ -45,14 +46,15 @@ func (*userController) QueryUsers(c *gin.Context) {
 	}
 
 	var users []models.User
-	if res := queries[0].Preload("Roles").Omit("password").Scopes(core.Paginator(c)).Where(query).Find(&users); res.Error != nil {
+	if res := queries[0].Preload("Roles").Omit("password").Scopes(core.Paginator(c), core.DateTimeRanger(c, "")).
+		Where(query).Order("create_time desc").Find(&users); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQueryUser)
 		return
 	}
 
 	var total int64
-	if res := queries[1].Where(query).Count(&total); res.Error != nil {
+	if res := queries[1].Scopes(core.DateTimeRanger(c, "")).Where(query).Count(&total); res.Error != nil {
 		logger.Error(res.Error)
 		c.Error(errs.ErrQueryUser)
 		return
@@ -62,6 +64,7 @@ func (*userController) QueryUsers(c *gin.Context) {
 }
 
 // CreateUser
+//
 //	@Summary	创建用户
 //	@Tags		user
 //	@Accept		json
@@ -111,6 +114,7 @@ func (*userController) CreateUser(c *gin.Context) {
 }
 
 // UpdateUser
+//
 //	@Summary	更新用户
 //	@Tags		user
 //	@Accept		json
@@ -151,6 +155,7 @@ func (*userController) UpdateUser(c *gin.Context) {
 }
 
 // DeleteUser
+//
 //	@Summary	删除用户
 //	@Tags		user
 //	@Produce	json
@@ -181,6 +186,7 @@ func (*userController) DeleteUser(c *gin.Context) {
 }
 
 // QueryCurrentUser
+//
 //	@Summary	查询当前用户信息
 //	@Tags		user
 //	@Accept		json
@@ -202,6 +208,7 @@ func (*userController) QueryCurrentUser(c *gin.Context) {
 }
 
 // QueryCurrentUserPermissions
+//
 //	@Summary	查询当前用户权限信息
 //	@Tags		user
 //	@Accept		json
