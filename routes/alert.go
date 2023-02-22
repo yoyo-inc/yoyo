@@ -76,12 +76,12 @@ func (*alertController) QueryAlerts(c *gin.Context) {
 //	@Security	JWT
 //	@Router		/alert/types [get]
 func (*alertController) QueryAlertTypes(c *gin.Context) {
-	//types, err := services.GetEntriesByType("alertType")
-	//if err != nil {
-	//	logger.Error(err)
-	//	c.Error(errs.ErrQueryAlertTypes)
-	//	return
-	//}
+	alertTypes, err := services.GetEntriesByType("alertType")
+	if err != nil {
+		logger.Error(err)
+		c.Error(errs.ErrQueryAlertTypes)
+		return
+	}
 
 	rows, err := db.Client.Raw("select distinct(type) as type from alerts").Rows()
 	if err != nil {
@@ -90,7 +90,6 @@ func (*alertController) QueryAlertTypes(c *gin.Context) {
 		return
 	}
 
-	var types []models.Dict
 	for rows.Next() {
 		var t string
 		err := rows.Scan(&t)
@@ -99,10 +98,14 @@ func (*alertController) QueryAlertTypes(c *gin.Context) {
 			c.Error(errs.ErrQueryAlertTypes)
 			return
 		}
-		types = append(types, models.Dict{Label: t, Value: t})
+		if t != "" && !slice.Some(alertTypes, func(index int, item services.Entry) bool {
+			return item.Label == t
+		}) {
+			alertTypes = append(alertTypes, services.Entry{Label: t, Value: t})
+		}
 	}
 
-	core.OK(c, types)
+	core.OK(c, alertTypes)
 }
 
 // ResolvedAlert
