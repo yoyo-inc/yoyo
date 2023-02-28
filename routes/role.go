@@ -24,7 +24,7 @@ type roleController struct{}
 //	@Accept		json
 //	@Produce	json
 //	@Param		query	query		models.Pagination	false	"参数"
-//	@Param		query	query		vo.QueryRoleVO	true	"参数"
+//	@Param		query	query		vo.QueryRoleVO		true	"参数"
 //	@Success	200		{object}	core.Response
 //	@Security	JWT
 //	@Router		/roles  [get]

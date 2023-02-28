@@ -68,14 +68,14 @@ func (*alertController) QueryAlerts(c *gin.Context) {
 
 // QueryAlertTypes
 //
-//		@Summary	查询告警类型
-//		@Tags		alert
-//		@Accept		json
-//		@Produce	json
-//	 @Param 		query query vo.QueryAlertTypeVO true "类型"
-//		@Success	200	{object}	core.Response{data=array,vo.Record}
-//		@Security	JWT
-//		@Router		/alert/types [get]
+//	@Summary	查询告警类型
+//	@Tags		alert
+//	@Accept		json
+//	@Produce	json
+//	@Param		query	query		vo.QueryAlertTypeVO	true	"类型"
+//	@Success	200		{object}	core.Response{data=array,vo.Record}
+//	@Security	JWT
+//	@Router		/alert/types [get]
 func (*alertController) QueryAlertTypes(c *gin.Context) {
 	var query vo.QueryAlertTypeVO
 	if err := c.ShouldBindQuery(&query); err != nil {
@@ -154,14 +154,15 @@ func (*alertController) ResolvedAlert(c *gin.Context) {
 }
 
 // IgnoreAlert
-// @Summary 更新告警
-// @Tags    alert
-// @Accept  json
-// @Produce json
-// @Param   body body     vo.IgnoreAlertVO true "参数"
-// @Success 200   {object} core.Response{data=bool}
-// @Security JWT
-// @Router  /alert/ignore [put]
+//
+//	@Summary	更新告警
+//	@Tags		alert
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		vo.IgnoreAlertVO	true	"参数"
+//	@Success	200		{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/alert/ignore [put]
 func (*alertController) IgnoreAlert(c *gin.Context) {
 	var query vo.IgnoreAlertVO
 	if err := c.ShouldBindJSON(&query); err != nil {

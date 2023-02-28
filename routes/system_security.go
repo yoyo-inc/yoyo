@@ -16,13 +16,14 @@ import (
 type systemSecurityController struct{}
 
 // QuerySystemSecurity
-// @Summary 查询系统安全设置
-// @Tags    systemSecurity
-// @Accept  json
-// @Produce json
-// @Success 200   {object} core.Response{data=models.SystemSecurity}
-// @Security JWT
-// @Router  /system_security [get]
+//
+//	@Summary	查询系统安全设置
+//	@Tags		systemSecurity
+//	@Accept		json
+//	@Produce	json
+//	@Success	200	{object}	core.Response{data=models.SystemSecurity}
+//	@Security	JWT
+//	@Router		/system_security [get]
 func (*systemSecurityController) QuerySystemSecurity(c *gin.Context) {
 	var systemSecurity models.SystemSecurity
 
@@ -36,14 +37,15 @@ func (*systemSecurityController) QuerySystemSecurity(c *gin.Context) {
 }
 
 // UpdateSystemSecurity
-// @Summary 更新系统安全设置
-// @Tags    systemSecurity
-// @Accept  json
-// @Produce json
-// @Param   body body     vo.SystemSecurityVO true "参数"
-// @Success 200   {object} core.Response{data=bool}
-// @Security JWT
-// @Router  /system_security [put]
+//
+//	@Summary	更新系统安全设置
+//	@Tags		systemSecurity
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		vo.SystemSecurityVO	true	"参数"
+//	@Success	200		{object}	core.Response{data=bool}
+//	@Security	JWT
+//	@Router		/system_security [put]
 func (*systemSecurityController) UpdateSystemSecurity(c *gin.Context) {
 	var systemSecurityVO vo.SystemSecurityVO
 	if err := c.ShouldBindJSON(&systemSecurityVO); err != nil {
