@@ -1,3 +1,5 @@
+//go:build swag
+
 package swag
 
 import (
