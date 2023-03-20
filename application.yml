@@ -7,6 +7,9 @@ db:
   dns: "yoyo:yoyo@tcp(localhost:3306)/yoyo?charset=utf8mb4,utf8&parseTime=True&loc=Local"
   logger:
     level: info
+mongo:
+  url: "mongodb://root:123456@localhost:27017"
+  database: "yoyo"
 logger:
   level: debug
   rolling_file:
