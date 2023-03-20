@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	"errors"
+	"gorm.io/gorm"
 	"strconv"
 	"time"
 
@@ -31,7 +33,9 @@ func Security() func() gin.HandlerFunc {
 			// get token timeout from system setting
 			var systemSecurity models.SystemSecurity
 			if res := db.Client.Model(&models.SystemSecurity{}).First(&systemSecurity); res.Error != nil {
-				logger.Error(res.Error)
+				if !errors.Is(res.Error, gorm.ErrRecordNotFound) {
+					logger.Error(res.Error)
+				}
 				return DefaultTimeout
 			}
 

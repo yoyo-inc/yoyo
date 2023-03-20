@@ -689,7 +689,9 @@ func (ac *alertController) Setup(r *gin.RouterGroup) {
 	// generate prometheus and alertmanager rules
 	var alertConfig models.AlertConfig
 	if res := db.Client.Model(&models.AlertConfig{}).First(&alertConfig); res.Error != nil {
-		logger.Debug(res.Error)
+		if !errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			logger.Debug(res.Error)
+		}
 	}
 	if err := services.GenerateAlertManagerConfig(alertConfig); err != nil {
 		logger.Error(err)
