@@ -23,5 +23,11 @@ func Setup() {
 	if err != nil {
 		logger.Panicf("fail to connect mongodb: %s", err)
 	}
+	pingCtx, pingCancel := context.WithTimeout(ctx, 5*time.Second)
+	defer pingCancel()
+	err = Client.Ping(pingCtx, nil)
+	if err != nil {
+		logger.Fatal(err)
+	}
 	DB = Client.Database(config.GetString("mongodb.database"))
 }
