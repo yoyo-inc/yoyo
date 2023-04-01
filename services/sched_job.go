@@ -138,3 +138,16 @@ func RemoveSchedJob(jobID string) error {
 
 	return nil
 }
+
+// ReplaceSchedJob replace sched job by jobID
+func ReplaceSchedJob(jobID string, jobType string, description string, spec string, job func() error) error {
+	err := RemoveSchedJob(jobID)
+	if err != nil {
+		return err
+	}
+	err = AddSchedJob(jobID, jobType, description, spec, job)
+	if err != nil {
+		return err
+	}
+	return nil
+}
