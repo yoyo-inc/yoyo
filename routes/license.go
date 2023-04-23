@@ -27,7 +27,7 @@ func (*LicenseController) QueryLicense(c *gin.Context) {
 	var license models.License
 	if res := db.Client.Model(&models.License{}).First(license); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryLicense)
+		_ = c.Error(errs.ErrQueryLicense)
 		return
 	}
 
@@ -48,7 +48,7 @@ func (*LicenseController) ActivateLicense(c *gin.Context) {
 	var query vo.ActivateLicenseVO
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 

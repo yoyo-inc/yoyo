@@ -57,7 +57,7 @@ func (*runLogController) QueryRunLogs(c *gin.Context) {
 	err := slice.SortByField(runlogs, "Date", "desc")
 	if err != nil {
 		logger.Error(err)
-		c.Error(errs.ErrQueryRunLog)
+		_ = c.Error(errs.ErrQueryRunLog)
 		return
 	}
 
@@ -91,7 +91,7 @@ func (*runLogController) DownloadRunLog(c *gin.Context) {
 	var query vo.DownloadRunLogVO
 	if err := c.ShouldBindQuery(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 

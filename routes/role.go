@@ -31,7 +31,7 @@ type roleController struct{}
 func (*roleController) QueryRoles(c *gin.Context) {
 	var query vo.QueryRoleVO
 	if err := c.ShouldBindQuery(&query); err != nil {
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -45,14 +45,14 @@ func (*roleController) QueryRoles(c *gin.Context) {
 	var roles []models.Role
 	if res := queries[0].Preload("Permissions").Scopes(core.Paginator(c)).Where(&query).Find(&roles); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryRole)
+		_ = c.Error(errs.ErrQueryRole)
 		return
 	}
 
 	var count int64
 	if res := queries[1].Where(&query).Count(&count); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryRole)
+		_ = c.Error(errs.ErrQueryRole)
 		return
 	}
 
@@ -72,19 +72,19 @@ func (*roleController) QueryRoles(c *gin.Context) {
 func (*roleController) CreateRole(c *gin.Context) {
 	var query vo.RoleVO
 	if err := c.ShouldBindJSON(&query); err != nil {
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
 	var count int64
 	if res := db.Client.Model(&models.Role{}).Where("name = ?", query.Name).Count(&count); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrCreateRole)
+		_ = c.Error(errs.ErrCreateRole)
 		return
 	}
 	if count > 0 {
 		logger.Error(errs.ErrExistRole.Message)
-		c.Error(errs.ErrExistRole)
+		_ = c.Error(errs.ErrExistRole)
 		return
 	}
 
@@ -97,7 +97,7 @@ func (*roleController) CreateRole(c *gin.Context) {
 	}
 	if result := db.Client.Create(&role); result.Error != nil {
 		logger.Error(result.Error)
-		c.Error(errs.ErrCreateRole)
+		_ = c.Error(errs.ErrCreateRole)
 		return
 	}
 
@@ -122,14 +122,14 @@ func (*roleController) DeleteRole(c *gin.Context) {
 	var existRole models.Role
 	if res := db.Client.Where("id = ?", id).First(&existRole); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrNotExistRole)
+		_ = c.Error(errs.ErrNotExistRole)
 		return
 	}
 
 	// delete associations
 	if res := db.Client.Select(clause.Associations).Delete(&models.Role{IModel: core.IModel{ID: id}}); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrDeleteRole)
+		_ = c.Error(errs.ErrDeleteRole)
 		return
 	}
 
@@ -151,13 +151,13 @@ func (*roleController) UpdateRole(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
 	if res := db.Client.Updates(&query.Role); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrUpdateRole)
+		_ = c.Error(errs.ErrUpdateRole)
 		return
 	}
 
@@ -170,7 +170,7 @@ func (*roleController) UpdateRole(c *gin.Context) {
 
 		if err := db.Client.Model(&query.Role).Association("Permissions").Replace(permissions); err != nil {
 			logger.Error(err)
-			c.Error(errs.ErrUpdateRole)
+			_ = c.Error(errs.ErrUpdateRole)
 			return
 		}
 	}

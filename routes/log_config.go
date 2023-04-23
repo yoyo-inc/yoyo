@@ -51,14 +51,14 @@ func (lcc *logConfigController) SaveLogConfig(c *gin.Context) {
 	var logConfig models.LogConfig
 	if err := c.ShouldBindJSON(&logConfig); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
 	if logConfig.ID != "" {
 		if res := db.Client.Omit("id").Where("id = ?", logConfig.ID).Updates(&logConfig); res.Error != nil {
 			logger.Error(res.Error)
-			c.Error(errs.ErrUpdateLogConfig)
+			_ = c.Error(errs.ErrUpdateLogConfig)
 			return
 		}
 	} else {
@@ -73,7 +73,7 @@ func (lcc *logConfigController) SaveLogConfig(c *gin.Context) {
 			return nil
 		}); err != nil {
 			logger.Error(err)
-			c.Error(errs.ErrUpdateLogConfig)
+			_ = c.Error(errs.ErrUpdateLogConfig)
 			return
 		}
 	}
@@ -81,7 +81,7 @@ func (lcc *logConfigController) SaveLogConfig(c *gin.Context) {
 	err := lcc.registerLogSchedJob()
 	if err != nil {
 		logger.Error(err)
-		c.Error(errs.ErrUpdateLogConfig)
+		_ = c.Error(errs.ErrUpdateLogConfig)
 		return
 	}
 

@@ -11,6 +11,7 @@ import (
 type dictController struct{}
 
 // QueryDicts
+//
 //	@Summary	查询字典表
 //	@Tags		dict
 //	@Accept		json
@@ -25,14 +26,14 @@ func (*dictController) QueryDicts(c *gin.Context) {
 	var dicts []models.Dict
 	if res := queries[0].Scopes(core.Paginator(c), core.DateTimeRanger(c, "")).Find(&dicts); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryDict)
+		_ = c.Error(errs.ErrQueryDict)
 		return
 	}
 
 	var count int64
 	if res := queries[1].Count(&count); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryDict)
+		_ = c.Error(errs.ErrQueryDict)
 		return
 	}
 

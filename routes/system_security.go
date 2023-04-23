@@ -29,7 +29,7 @@ func (*systemSecurityController) QuerySystemSecurity(c *gin.Context) {
 
 	if res := db.Client.Model(&models.SystemSecurity{}).Find(&systemSecurity); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQuerySystemSecurity)
+		_ = c.Error(errs.ErrQuerySystemSecurity)
 		return
 	}
 
@@ -49,7 +49,7 @@ func (*systemSecurityController) QuerySystemSecurity(c *gin.Context) {
 func (*systemSecurityController) UpdateSystemSecurity(c *gin.Context) {
 	var systemSecurityVO vo.SystemSecurityVO
 	if err := c.ShouldBindJSON(&systemSecurityVO); err != nil {
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -77,7 +77,7 @@ func (*systemSecurityController) UpdateSystemSecurity(c *gin.Context) {
 
 	if res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrUpdateSystemSecurity)
+		_ = c.Error(errs.ErrUpdateSystemSecurity)
 		audit_log.Fail(c, "系统安全", "更新", "")
 		return
 	}

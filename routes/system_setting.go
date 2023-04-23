@@ -19,6 +19,7 @@ import (
 type systemSettingController struct{}
 
 // QuerySystemSettings
+//
 //	@Summary	查询系统设置
 //	@Tags		system
 //	@Accept		json
@@ -34,7 +35,7 @@ func (*systemSettingController) QuerySystemSettings(c *gin.Context) {
 			return
 		} else {
 			logger.Error(res.Error)
-			c.Error(errs.ErrQuerySystemSetting)
+			_ = c.Error(errs.ErrQuerySystemSetting)
 			return
 		}
 	}
@@ -43,6 +44,7 @@ func (*systemSettingController) QuerySystemSettings(c *gin.Context) {
 }
 
 // UpdateSystemSetting
+//
 //	@Summary	更新系统设置
 //	@Tags		system
 //	@Accept		json
@@ -55,13 +57,13 @@ func (*systemSettingController) UpdateSystemSetting(c *gin.Context) {
 	var query vo.UpdateSystemSettingVO
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
 	if res := db.Client.Model(&models.SystemSetting{IModel: core.IModel{ID: query.ID}}).Updates(query.SystemSetting); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrUpdateSystemSetting)
+		_ = c.Error(errs.ErrUpdateSystemSetting)
 		return
 	}
 

@@ -27,7 +27,7 @@ func (*auditLogController) QueryAuditLog(c *gin.Context) {
 	var query vo.QueryAuditLogVO
 	if err := c.ShouldBindQuery(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -35,13 +35,13 @@ func (*auditLogController) QueryAuditLog(c *gin.Context) {
 	queries := core.GetPaginatedQuery(&models.AuditLog{})
 	if res := queries[0].Preload("User").Scopes(core.Paginator(c), core.DateTimeRanger(c, "")).Where(query).Order("create_time desc").Find(&auditLogs); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryAuditLog)
+		_ = c.Error(errs.ErrQueryAuditLog)
 		return
 	}
 	var total int64
 	if res := queries[1].Where(query).Count(&total); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryAuditLog)
+		_ = c.Error(errs.ErrQueryAuditLog)
 		return
 	}
 	core.OK(c, core.Paginated(auditLogs, total))
@@ -59,7 +59,7 @@ func (*auditLogController) QueryAuditLogModules(c *gin.Context) {
 	var auditLogs []models.AuditLog
 	if res := db.Client.Model(&models.AuditLog{}).Select("module").Distinct("module").Find(&auditLogs); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryAuditLogModule)
+		_ = c.Error(errs.ErrQueryAuditLogModule)
 		return
 	}
 

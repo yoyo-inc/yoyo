@@ -43,7 +43,7 @@ func (*alertController) QueryAlerts(c *gin.Context) {
 	var query vo.QueryAlertVO
 	if err := c.ShouldBindQuery(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 	queries := core.GetPaginatedQuery(&models.Alert{})
@@ -52,14 +52,14 @@ func (*alertController) QueryAlerts(c *gin.Context) {
 	if res := queries[0].Scopes(core.Paginator(c), core.DateTimeRanger(c, "start_at")).
 		Where(&query).Order("start_at desc").Find(&alerts); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryAlert)
+		_ = c.Error(errs.ErrQueryAlert)
 		return
 	}
 
 	var count int64
 	if res := queries[1].Scopes(core.DateTimeRanger(c, "start_at")).Where(&query).Count(&count); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryAlert)
+		_ = c.Error(errs.ErrQueryAlert)
 		return
 	}
 
@@ -80,14 +80,14 @@ func (*alertController) QueryAlertTypes(c *gin.Context) {
 	var query vo.QueryAlertTypeVO
 	if err := c.ShouldBindQuery(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
 	alertTypes, err := services.GetEntriesByType("alertType")
 	if err != nil {
 		logger.Error(err)
-		c.Error(errs.ErrQueryAlertTypes)
+		_ = c.Error(errs.ErrQueryAlertTypes)
 		return
 	}
 
@@ -99,7 +99,7 @@ func (*alertController) QueryAlertTypes(c *gin.Context) {
 		rows, err := db.Client.Raw("select distinct(type) as type from alerts").Rows()
 		if err != nil {
 			logger.Error(err)
-			c.Error(errs.ErrQueryAlertTypes)
+			_ = c.Error(errs.ErrQueryAlertTypes)
 			return
 		}
 
@@ -108,7 +108,7 @@ func (*alertController) QueryAlertTypes(c *gin.Context) {
 			err := rows.Scan(&t)
 			if err != nil {
 				logger.Error(err)
-				c.Error(errs.ErrQueryAlertTypes)
+				_ = c.Error(errs.ErrQueryAlertTypes)
 				return
 			}
 			if t != "" && !slice.Some(alertTypes, func(index int, item services.Entry) bool {
@@ -136,7 +136,7 @@ func (*alertController) ResolvedAlert(c *gin.Context) {
 	var query vo.ResolveAlertVO
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -146,7 +146,7 @@ func (*alertController) ResolvedAlert(c *gin.Context) {
 		"status":          1,
 	}); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrResolveAlert)
+		_ = c.Error(errs.ErrResolveAlert)
 		return
 	}
 
@@ -167,7 +167,7 @@ func (*alertController) IgnoreAlert(c *gin.Context) {
 	var query vo.IgnoreAlertVO
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -176,7 +176,7 @@ func (*alertController) IgnoreAlert(c *gin.Context) {
 		"status":          1,
 	}); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrIgnoreAlert)
+		_ = c.Error(errs.ErrIgnoreAlert)
 		return
 	}
 
@@ -197,7 +197,7 @@ func (*alertController) GetAlertConfig(c *gin.Context) {
 	if res := db.Client.Model(&models.AlertConfig{}).First(&config); res.Error != nil {
 		if !errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			logger.Error(res.Error)
-			c.Error(errs.ErrQueryAlertConfig)
+			_ = c.Error(errs.ErrQueryAlertConfig)
 			return
 		}
 	}
@@ -218,7 +218,7 @@ func (*alertController) GetAlertConfig(c *gin.Context) {
 func (*alertController) UpdateAlertConfig(c *gin.Context) {
 	var query vo.UpdateAlertConfigVO
 	if err := c.ShouldBindJSON(&query); err != nil {
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -243,7 +243,7 @@ func (*alertController) UpdateAlertConfig(c *gin.Context) {
 		return nil
 	}); err != nil {
 		logger.Error(err)
-		c.Error(errs.ErrUpdateAlertConfig)
+		_ = c.Error(errs.ErrUpdateAlertConfig)
 
 		s, _ := json.MarshalToString(query.AlertConfig)
 		audit_log.Fail(c, "告警配置", "更新", fmt.Sprintf("告警配置内容:%s", s))
@@ -269,7 +269,7 @@ func (*alertController) QueryAlertAccesses(c *gin.Context) {
 	var query vo.QueryAlertAccessVO
 	if err := c.ShouldBindQuery(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -283,13 +283,13 @@ func (*alertController) QueryAlertAccesses(c *gin.Context) {
 	var alertAccesses []models.AlertAccess
 	if res := queries[0].Scopes(core.Paginator(c), core.DateTimeRanger(c, "")).Find(&alertAccesses); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryAlertAccess)
+		_ = c.Error(errs.ErrQueryAlertAccess)
 		return
 	}
 	var count int64
 	if res := queries[1].Scopes(core.DateTimeRanger(c, "")).Count(&count); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryAlertAccess)
+		_ = c.Error(errs.ErrQueryAlertAccess)
 		return
 	}
 
@@ -310,13 +310,13 @@ func (*alertController) CreateAlertAccess(c *gin.Context) {
 	var access models.AlertAccess
 	if err := c.ShouldBindJSON(&access); err != nil {
 		logger.Error(err)
-		c.Error(errs.ErrCreateAlertAccess)
+		_ = c.Error(errs.ErrCreateAlertAccess)
 		return
 	}
 
 	if res := db.Client.Create(&access); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrCreateAlertAccess)
+		_ = c.Error(errs.ErrCreateAlertAccess)
 		return
 	}
 
@@ -339,13 +339,13 @@ func (*alertController) UpdateAlertAccess(c *gin.Context) {
 	var query vo.UpdateAlertAccessVO
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
 	if res := db.Client.Where("id = ?", query.ID).Updates(&query.AlertAccess); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrUpdateAlertAccess)
+		_ = c.Error(errs.ErrUpdateAlertAccess)
 		return
 	}
 	audit_log.Success(c, "告警接入", "更新", fmt.Sprintf("接入IP:%s", query.AccessIP))
@@ -368,21 +368,21 @@ func (*alertController) DeleteAlertAccess(c *gin.Context) {
 	id, err := strconv.Atoi(rawID)
 	if err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err.Error()))
+		_ = c.Error(core.NewParameterError(err.Error()))
 		return
 	}
 
 	var existAlertAccess models.AlertAccess
 	if res := db.Client.Model(&models.AlertAccess{}).First(&existAlertAccess, "id = ?", id); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrDeleteAlertAccess)
+		_ = c.Error(errs.ErrDeleteAlertAccess)
 		audit_log.Fail(c, "告警接入", "删除", fmt.Sprintf("ID不存在:%d", id))
 		return
 	}
 
 	if res := db.Client.Delete(&models.AlertAccess{IModel: core.IModel{ID: id}}); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrDeleteAlertAccess)
+		_ = c.Error(errs.ErrDeleteAlertAccess)
 		return
 	}
 
@@ -395,7 +395,7 @@ func (*alertController) AccessAlert(c *gin.Context) {
 	var accesses []models.AlertAccess
 	if res := db.Client.Model(&models.AlertAccess{}).Find(&accesses); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryAlertAccess)
+		_ = c.Error(errs.ErrQueryAlertAccess)
 		return
 	}
 
@@ -421,7 +421,7 @@ func (*alertController) AccessAlert(c *gin.Context) {
 		json := jsoniter.ConfigCompatibleWithStandardLibrary
 		if err := json.NewDecoder(c.Request.Body).Decode(&body); err != nil {
 			logger.Error(err)
-			c.Error(core.NewParameterError("参数有误"))
+			_ = c.Error(core.NewParameterError("参数有误"))
 			return
 		}
 
@@ -483,7 +483,7 @@ func (*alertController) Webhook(c *gin.Context) {
 	var message template.Data
 	if err := c.ShouldBindJSON(&message); err != nil {
 		logger.Error(err)
-		c.Error(errs.ErrReceiveAlertmanagerMessage)
+		_ = c.Error(errs.ErrReceiveAlertmanagerMessage)
 		return
 	}
 
@@ -539,14 +539,14 @@ func (*alertController) QueryAlertCount(c *gin.Context) {
 	var query vo.QueryAlertCountVO
 	if err := c.ShouldBindQuery(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
 	var count int64
 	if res := db.Client.Model(&models.Alert{}).Where(&query).Count(&count); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryAlertCount)
+		_ = c.Error(errs.ErrQueryAlertCount)
 		return
 	}
 
@@ -568,14 +568,14 @@ func (*alertController) QueryAlertPush(c *gin.Context) {
 	var alertPushes []models.AlertPush
 	if res := queries[0].Scopes(core.Paginator(c), core.DateTimeRanger(c, "")).Find(&alertPushes); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryAlertPush)
+		_ = c.Error(errs.ErrQueryAlertPush)
 		return
 	}
 
 	var count int64
 	if res := queries[1].Scopes(core.DateTimeRanger(c, "")).Count(&count); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryAlertPush)
+		_ = c.Error(errs.ErrQueryAlertPush)
 		return
 	}
 
@@ -596,13 +596,13 @@ func (*alertController) CreateAlertPush(c *gin.Context) {
 	var query models.AlertPush
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
 	if res := db.Client.Create(&query); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrCreateAlertPush)
+		_ = c.Error(errs.ErrCreateAlertPush)
 		return
 	}
 
@@ -623,13 +623,13 @@ func (*alertController) UpdateAlertPush(c *gin.Context) {
 	var query models.AlertPush
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
 	if res := db.Client.Model(&models.AlertPush{IModel: core.IModel{ID: query.ID}}).Updates(&query); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrUpdateAlertPush)
+		_ = c.Error(errs.ErrUpdateAlertPush)
 		return
 	}
 
@@ -651,13 +651,13 @@ func (*alertController) DeleteAlertPush(c *gin.Context) {
 	id, err := strconv.Atoi(rawID)
 	if err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err.Error()))
+		_ = c.Error(core.NewParameterError(err.Error()))
 		return
 	}
 
 	if res := db.Client.Delete(&models.AlertPush{IModel: core.IModel{ID: id}}); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrDeleteAlertPush)
+		_ = c.Error(errs.ErrDeleteAlertPush)
 		return
 	}
 

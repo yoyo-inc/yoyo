@@ -25,6 +25,7 @@ import (
 type resourceController struct{}
 
 // QueryResources
+//
 //	@Summary	查询资源文件列表
 //	@Tags		resource
 //	@Accept		json
@@ -37,7 +38,7 @@ func (*resourceController) QueryResources(c *gin.Context) {
 	var query vo.QueryResourceVO
 	if err := c.ShouldBindQuery(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -53,14 +54,14 @@ func (*resourceController) QueryResources(c *gin.Context) {
 	var resources []models.Resource
 	if res := queries[0].Scopes(core.DateTimeRanger(c, "create_time"), core.Paginator(c)).Where(&query).Find(&resources); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryResources)
+		_ = c.Error(errs.ErrQueryResources)
 		return
 	}
 
 	var count int64
 	if res := queries[1].Scopes(core.DateTimeRanger(c, "create_time")).Where(&query).Count(&count); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryResources)
+		_ = c.Error(errs.ErrQueryResources)
 		return
 	}
 
@@ -68,6 +69,7 @@ func (*resourceController) QueryResources(c *gin.Context) {
 }
 
 // UploadResource
+//
 //	@Summary	上传资源
 //	@Tags		resource
 //	@Accept		mpfd
@@ -83,7 +85,7 @@ func (*resourceController) UploadResource(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		logger.Error(err)
-		c.Error(errUploadResource)
+		_ = c.Error(errUploadResource)
 		return
 	}
 
@@ -92,7 +94,7 @@ func (*resourceController) UploadResource(c *gin.Context) {
 	if !fileutil.IsExist(resourceDir) {
 		if err := fileutil.CreateDir(resourceDir); err != nil {
 			logger.Error(err)
-			c.Error(errUploadResource)
+			_ = c.Error(errUploadResource)
 			return
 		}
 	}
@@ -106,7 +108,7 @@ func (*resourceController) UploadResource(c *gin.Context) {
 
 	if err := c.SaveUploadedFile(file, resourcePath); err != nil {
 		logger.Error(err)
-		c.Error(errUploadResource)
+		_ = c.Error(errUploadResource)
 		audit_log.Fail(c, "资源管理", "上传", fmt.Sprintf("文件保存失败(文件名：%s，文件大小(kb)：%f)", file.Filename, filesize))
 		return
 	}
@@ -119,7 +121,7 @@ func (*resourceController) UploadResource(c *gin.Context) {
 	resource.Filesize = filesize
 	if res := db.Client.Create(&resource); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errUploadResource)
+		_ = c.Error(errUploadResource)
 		return
 	}
 
@@ -132,6 +134,7 @@ func (*resourceController) UploadResource(c *gin.Context) {
 }
 
 // DeleteResource
+//
 //	@Summary	删除资源文件
 //	@Tags		resource
 //	@Accept		json
@@ -145,7 +148,7 @@ func (rc *resourceController) DeleteResource(c *gin.Context) {
 
 	if err := services.DeleteResourceFile(c, id); err != nil {
 		logger.Error(err)
-		c.Error(errs.ErrDeleteResource)
+		_ = c.Error(errs.ErrDeleteResource)
 		return
 	}
 
@@ -153,6 +156,7 @@ func (rc *resourceController) DeleteResource(c *gin.Context) {
 }
 
 // DownloadResource
+//
 //	@Summary	下载资源
 //	@Tags		resource
 //	@Accept		json
@@ -166,7 +170,7 @@ func (*resourceController) DownloadResource(c *gin.Context) {
 	var resource models.Resource
 	if res := db.Client.Model(&models.Resource{}).First(&resource, "id = ?", id); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrDownloadResource)
+		_ = c.Error(errs.ErrDownloadResource)
 		return
 	}
 
@@ -182,6 +186,7 @@ func (*resourceController) DownloadResource(c *gin.Context) {
 }
 
 // QueryResourceTypes
+//
 //	@Summary	查询资源类型
 //	@Tags		resource
 //	@Accept		json

@@ -33,7 +33,7 @@ type userController struct{}
 func (*userController) QueryUsers(c *gin.Context) {
 	var query vo.QueryUserVO
 	if err := c.ShouldBindQuery(&query); err != nil {
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -49,14 +49,14 @@ func (*userController) QueryUsers(c *gin.Context) {
 	if res := queries[0].Preload("Roles").Omit("password").Scopes(core.Paginator(c), core.DateTimeRanger(c, "")).
 		Where(query).Order("create_time desc").Find(&users); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryUser)
+		_ = c.Error(errs.ErrQueryUser)
 		return
 	}
 
 	var total int64
 	if res := queries[1].Scopes(core.DateTimeRanger(c, "")).Where(query).Count(&total); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryUser)
+		_ = c.Error(errs.ErrQueryUser)
 		return
 	}
 
@@ -76,7 +76,7 @@ func (*userController) QueryUsers(c *gin.Context) {
 func (*userController) CreateUser(c *gin.Context) {
 	var query vo.UserVO
 	if err := c.ShouldBindJSON(&query); err != nil {
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -84,12 +84,12 @@ func (*userController) CreateUser(c *gin.Context) {
 	var count int64
 	if res := db.Client.Model(&models.User{}).Where("username = ?", query.Username).Count(&count); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrCreateUser)
+		_ = c.Error(errs.ErrCreateUser)
 		audit_log.Fail(c, "用户", "新增", "用户名："+query.Username)
 		return
 	}
 	if count > 0 {
-		c.Error(errs.ErrExistUser)
+		_ = c.Error(errs.ErrExistUser)
 		audit_log.Fail(c, "用户", "新增", "用户已存在，用户名："+query.Username)
 		return
 	}
@@ -104,7 +104,7 @@ func (*userController) CreateUser(c *gin.Context) {
 	}
 	if res := db.Client.Create(&user); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrCreateUser)
+		_ = c.Error(errs.ErrCreateUser)
 		audit_log.Fail(c, "用户", "新增", "用户名："+query.Username)
 		return
 	}
@@ -126,13 +126,13 @@ func (*userController) CreateUser(c *gin.Context) {
 func (*userController) UpdateUser(c *gin.Context) {
 	var query vo.UserVO
 	if err := c.ShouldBindJSON(&query); err != nil {
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
 	if res := db.Client.Where("id = ?", query.ID).Updates(&query.User); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrUpdateUser)
+		_ = c.Error(errs.ErrUpdateUser)
 		audit_log.Fail(c, "用户", "更新", "用户名："+query.Username)
 		return
 	}
@@ -145,7 +145,7 @@ func (*userController) UpdateUser(c *gin.Context) {
 		})
 		if err := db.Client.Model(&models.User{IModel: core.IModel{ID: query.ID}}).Association("Roles").Replace(roles); err != nil {
 			logger.Error(err)
-			c.Error(errs.ErrUpdateUser)
+			_ = c.Error(errs.ErrUpdateUser)
 			audit_log.Fail(c, "用户", "更新", "用户名："+query.Username)
 			return
 		}
@@ -170,14 +170,14 @@ func (*userController) DeleteUser(c *gin.Context) {
 	var existUser models.User
 	if res := db.Client.Model(&models.User{IModel: core.IModel{ID: id}}).First(&existUser); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrUsernameNotExists)
+		_ = c.Error(errs.ErrUsernameNotExists)
 		audit_log.Fail(c, "用户", "删除", fmt.Sprintf("用户ID(%s)不存在", userID))
 		return
 	}
 
 	if res := db.Client.Select(clause.Associations).Delete(&models.User{IModel: core.IModel{ID: id}}); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrDeleteUser)
+		_ = c.Error(errs.ErrDeleteUser)
 		audit_log.Fail(c, "用户", "删除", "用户名："+existUser.Username)
 		return
 	}
@@ -201,7 +201,7 @@ func (*userController) QueryCurrentUser(c *gin.Context) {
 	var user models.User
 	if result := db.Client.Omit("password").Preload("Roles").Find(&user, userID); result.Error != nil {
 		logger.Error(result.Error)
-		c.Error(errs.ErrQueryCurrentUser)
+		_ = c.Error(errs.ErrQueryCurrentUser)
 		return
 	}
 	core.OK(c, user)
@@ -222,7 +222,7 @@ func (*userController) QueryCurrentUserPermissions(c *gin.Context) {
 	var user models.User
 	if result := db.Client.Preload("Roles.Permissions").Find(&user, userID); result.Error != nil {
 		logger.Error(result.Error)
-		c.Error(errs.ErrQueryCurrentUser)
+		_ = c.Error(errs.ErrQueryCurrentUser)
 		return
 	}
 

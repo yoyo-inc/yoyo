@@ -40,7 +40,7 @@ func (*reportController) QueryReports(c *gin.Context) {
 	var query vo.QueryReportVO
 	if err := c.ShouldBindQuery(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 	queries := core.GetPaginatedQuery(&models.Report{})
@@ -55,14 +55,14 @@ func (*reportController) QueryReports(c *gin.Context) {
 	var reports []models.Report
 	if res := queries[0].Preload("Resource").Scopes(core.Paginator(c), core.DateTimeRanger(c, ""), core.Orderer(c)).Where(&query).Find(&reports); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryReport)
+		_ = c.Error(errs.ErrQueryReport)
 		return
 	}
 
 	var count int64
 	if res := queries[1].Where(&query).Count(&count); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryReport)
+		_ = c.Error(errs.ErrQueryReport)
 		return
 	}
 
@@ -84,13 +84,13 @@ func (*reportController) DeleteReport(c *gin.Context) {
 
 	if err := services.DeleteResourceFile(c, id); err != nil {
 		logger.Error(err)
-		c.Error(err)
+		_ = c.Error(err)
 		return
 	}
 
 	if res := db.Client.Delete(&models.Report{}, "id = ?", id); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrDeleteReport)
+		_ = c.Error(errs.ErrDeleteReport)
 		return
 	}
 
@@ -104,7 +104,7 @@ func (*reportController) PreviewReport(c *gin.Context) {
 		var query vo.GenerateReportVO
 		if err := c.ShouldBindQuery(&query); err != nil {
 			logger.Error(err)
-			c.Error(core.NewParameterError(err))
+			_ = c.Error(core.NewParameterError(err))
 			return
 		}
 
@@ -115,7 +115,7 @@ func (*reportController) PreviewReport(c *gin.Context) {
 		})
 		if err != nil {
 			logger.Error(err)
-			c.Error(errs.ErrPreviewReport)
+			_ = c.Error(errs.ErrPreviewReport)
 			return
 		}
 
@@ -125,7 +125,7 @@ func (*reportController) PreviewReport(c *gin.Context) {
 		fsys, err := fs.Sub(resources.InternalReportTplDir, "report")
 		if err != nil {
 			logger.Error(err)
-			c.Error(errs.ErrPreviewReport)
+			_ = c.Error(errs.ErrPreviewReport)
 			return
 		}
 		prefix := strings.Replace(c.Request.URL.Path, filepath.Join(reportType, file), "", 1)
@@ -149,7 +149,7 @@ func (*reportController) GenerateReport(c *gin.Context) {
 	var query vo.GenerateReportVO
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -183,7 +183,7 @@ func (rc *reportController) QueryReportType(c *gin.Context) {
 	entries, err := services.GetEntriesByType("report")
 	if err != nil {
 		logger.Error(err)
-		c.Error(errs.ErrQueryReportType)
+		_ = c.Error(errs.ErrQueryReportType)
 		return
 	}
 	core.OK(c, entries)
@@ -202,7 +202,7 @@ func (*reportController) QueryReportConfig(c *gin.Context) {
 	var config models.ReportConfig
 	if res := db.Client.Model(&models.ReportConfig{}).First(&config); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryReportConfig)
+		_ = c.Error(errs.ErrQueryReportConfig)
 		return
 	}
 
@@ -223,7 +223,7 @@ func (rc *reportController) UpdateReportConfig(c *gin.Context) {
 	var query vo.UpdateReportConfigVo
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
@@ -231,7 +231,7 @@ func (rc *reportController) UpdateReportConfig(c *gin.Context) {
 	if query.Period != nil {
 		if period, err := json.Marshal(query.Period); err != nil {
 			logger.Error(err)
-			c.Error(errs.ErrUpdateReportConfig)
+			_ = c.Error(errs.ErrUpdateReportConfig)
 			return
 		} else {
 			query.ReportConfig.Period = period
@@ -241,7 +241,7 @@ func (rc *reportController) UpdateReportConfig(c *gin.Context) {
 	if query.ReportType != nil {
 		if reportType, err := json.Marshal(query.ReportType); err != nil {
 			logger.Error(err)
-			c.Error(errs.ErrUpdateReportConfig)
+			_ = c.Error(errs.ErrUpdateReportConfig)
 			return
 		} else {
 			query.ReportConfig.ReportType = reportType
@@ -270,7 +270,7 @@ func (rc *reportController) UpdateReportConfig(c *gin.Context) {
 
 	if err != nil {
 		logger.Error(err)
-		c.Error(errs.ErrUpdateReportConfig)
+		_ = c.Error(errs.ErrUpdateReportConfig)
 		audit_log.Fail(c, "报告设置", "更新", fmt.Sprintf("报告设置内容%s", cs))
 		return
 	}

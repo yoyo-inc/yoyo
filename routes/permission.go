@@ -13,6 +13,7 @@ import (
 type permissionController struct{}
 
 // QueryPermissions
+//
 //	@Summary	查询列表
 //	@Tags		permissions
 //	@Produce	json
@@ -23,7 +24,7 @@ func (*permissionController) QueryPermissions(c *gin.Context) {
 	var permissions []models.Permission
 	if res := db.Client.Model(&models.Permission{}).Find(&permissions); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQueryPermissions)
+		_ = c.Error(errs.ErrQueryPermissions)
 		return
 	}
 

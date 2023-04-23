@@ -30,7 +30,7 @@ func (*schedJobController) QuerySchedJobs(c *gin.Context) {
 	var query vo.QuerySchedJobVO
 	if err := c.ShouldBindQuery(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 	queries := core.GetPaginatedQuery(&models.SchedJob{})
@@ -38,14 +38,14 @@ func (*schedJobController) QuerySchedJobs(c *gin.Context) {
 	var jobs []models.SchedJob
 	if res := queries[0].Scopes(core.Paginator(c), core.DateTimeRanger(c, "")).Where(query).Order("create_time desc").Find(&jobs); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQuerySchedJob)
+		_ = c.Error(errs.ErrQuerySchedJob)
 		return
 	}
 
 	var count int64
 	if res := queries[1].Where(query).Count(&count); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrQuerySchedJob)
+		_ = c.Error(errs.ErrQuerySchedJob)
 		return
 	}
 
@@ -66,20 +66,20 @@ func (*schedJobController) StartSchedJobs(c *gin.Context) {
 	var query vo.UpdateSchedJobVO
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
 	var job models.SchedJob
 	if res := db.Client.Model(&models.SchedJob{}).Find(&job, "id = ?", query.ID); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrNotExistSchedJob)
+		_ = c.Error(errs.ErrNotExistSchedJob)
 		return
 	}
 
 	if err := services.StartSchedJob(job.JobID); err != nil {
 		audit_log.Fail(c, "定时任务", "开启", fmt.Sprintf("定时任务(%s)开启成功", job.Description))
-		c.Error(errs.ErrStartSchedJob)
+		_ = c.Error(errs.ErrStartSchedJob)
 		return
 	}
 
@@ -101,20 +101,20 @@ func (*schedJobController) CloseSchedJobs(c *gin.Context) {
 	var query vo.UpdateSchedJobVO
 	if err := c.ShouldBindJSON(&query); err != nil {
 		logger.Error(err)
-		c.Error(core.NewParameterError(err))
+		_ = c.Error(core.NewParameterError(err))
 		return
 	}
 
 	var job models.SchedJob
 	if res := db.Client.Model(&models.SchedJob{}).Find(&job, "id = ?", query.ID); res.Error != nil {
 		logger.Error(res.Error)
-		c.Error(errs.ErrNotExistSchedJob)
+		_ = c.Error(errs.ErrNotExistSchedJob)
 		return
 	}
 
 	if err := services.StopSchedJob(job.JobID); err != nil {
 		audit_log.Fail(c, "定时任务", "关闭", fmt.Sprintf("定时任务(%s)关闭成功", job.Description))
-		c.Error(errs.ErrStopSchedJob)
+		_ = c.Error(errs.ErrStopSchedJob)
 		return
 	}
 
@@ -135,7 +135,7 @@ func (*schedJobController) QuerySchedJobTypes(c *gin.Context) {
 	entries, err := services.GetEntriesByType("schedJob")
 	if err != nil {
 		logger.Error(err)
-		c.Error(errs.ErrQuerySchedJob)
+		_ = c.Error(errs.ErrQuerySchedJob)
 		return
 	}
 
